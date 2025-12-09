@@ -16,12 +16,15 @@ if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!isset($_SESSION['cart'][$id])) $_SESSION['cart'][$id] = 0;
         $_SESSION['cart'][$id] += $qty;
     }
+    // ensure session data is written before redirect
+    if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
     header('Location: index.php?action=cart'); exit;
 }
 
 if ($action === 'remove') {
     $id = (int)($_GET['id'] ?? 0);
     if ($id > 0 && isset($_SESSION['cart'][$id])) unset($_SESSION['cart'][$id]);
+    if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
     header('Location: index.php?action=cart'); exit;
 }
 
@@ -92,7 +95,7 @@ SQL;
     }
 }
 
-$stmt = $pdo->query("SELECT p.id_produk, p.nama_produk, p.deskripsi, p.harga, p.stok, k.nama_kategori FROM produk p JOIN kategori_produk k ON p.id_kategori = k.id_kategori ORDER BY p.created_at LIMIT 12");
+$stmt = $pdo->query("SELECT p.id_produk, p.nama_produk, p.deskripsi, p.harga, p.stok, p.gambar, k.nama_kategori FROM produk p JOIN kategori_produk k ON p.id_kategori = k.id_kategori ORDER BY p.created_at LIMIT 12");
 $products = $stmt->fetchAll();
 
 $cart_items = [];

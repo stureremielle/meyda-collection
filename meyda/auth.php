@@ -2,14 +2,22 @@
 // auth.php - session & authentication logic
 // Ensure consistent session cookie params and start session safely
 if (session_status() !== PHP_SESSION_ACTIVE) {
+    // use a fixed session name to avoid collisions
+    if (!headers_sent()) {
+        session_name('meyda_session');
+    }
     $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
-    session_set_cookie_params([
+    // Set cookie params (array form supported since PHP 7.3)
+    $cookieParams = [
         'lifetime' => 0,
         'path' => '/',
         'secure' => $secure,
         'httponly' => true,
         'samesite' => 'Lax'
-    ]);
+    ];
+    if (!headers_sent()) {
+        session_set_cookie_params($cookieParams);
+    }
     session_start();
 }
 require_once __DIR__ . '/config.php';
