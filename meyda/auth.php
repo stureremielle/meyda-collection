@@ -1,6 +1,17 @@
 <?php
 // auth.php - session & authentication logic
-session_start();
+// Ensure consistent session cookie params and start session safely
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => $secure,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+    session_start();
+}
 require_once __DIR__ . '/config.php';
 
 function isLoggedIn() {
@@ -48,11 +59,19 @@ function customerLogin($email, $password) {
 
 function staffLogin($username, $password) {
     $pdo = getPDO();
-    $stmt = $pdo->prepare("SELECT id_user, username, nama_lengkap, role FROM `user` WHERE username = :username");
+    $stmt = $pdo->prepare("SELECT id_user, username, nama_lengkap, role, password_hash FROM `user` WHERE username = :username");
     $stmt->execute([':username' => $username]);
     $staff = $stmt->fetch();
-    
-    if ($staff && password_verify($password, $staff['password_hash'])) {
+
+    if ($staff) {
+        $hash = $staff['password_hash'] ?? null;
+        if (empty($hash)) {
+            // No password set for this account
+            return false;
+        }
+        if (!password_verify($password, $hash)) {
+            return false;
+        }
         $_SESSION['user_type'] = 'staff';
         $_SESSION['staff_id'] = $staff['id_user'];
         $_SESSION['staff_name'] = $staff['nama_lengkap'];
@@ -73,8 +92,8 @@ function logout() {
     exit;
 }
 
-// Handle logout action if triggered via GET
-if ($_GET['action'] ?? null === 'logout') {
+// Handle logout only when auth.php is requested directly with action=logout
+if (basename($_SERVER['SCRIPT_NAME']) === 'auth.php' && ($_GET['action'] ?? null) === 'logout') {
     logout();
 }
 

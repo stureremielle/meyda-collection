@@ -6,6 +6,8 @@ define('DB_USER', 'meyda');     // set to the DB user you create on AlwaysData
 define('DB_PASS', 'kraccbacc');
 define('DEFAULT_USER_ID', 2);        // id_user used for transactions (kasir). Ensure it exists.
 
+putenv('MEYDA_ADMIN_KEY=sikrit_dokumen');
+
 $pdoOptions = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

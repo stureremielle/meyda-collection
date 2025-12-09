@@ -43,19 +43,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Login - MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    .login-container { max-width: 400px; margin: 60px auto; padding: 20px; border: 1px solid #eef2f6; border-radius: 6px; background: #f8fafc; }
-    .login-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-    .login-tabs a { flex: 1; padding: 10px; text-align: center; border: 1px solid #e6e9ee; cursor: pointer; text-decoration: none; color: #6b7280; border-radius: 4px 4px 0 0; }
-    .login-tabs a.active { background: white; color: #1f6feb; border-bottom: 2px solid #1f6feb; }
-    .login-form { background: white; padding: 20px; border-radius: 0 4px 4px 4px; border: 1px solid #eef2f6; border-top: none; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
-    .form-group input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-    .form-group button { width: 100%; padding: 10px; background: #1f6feb; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    .form-group button:hover { opacity: 0.95; }
-    .error-msg { color: #8b1e1e; background: #fff4f4; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
-    .register-link { text-align: center; margin-top: 15px; }
-    .register-link a { color: #1f6feb; text-decoration: none; }
+    .login-container { max-width: 420px; margin: 48px auto; padding: 0; border-radius: 12px; background: transparent; }
+    .login-card { background: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline); border-radius: 12px; box-shadow: var(--elevation-1); overflow: hidden }
+    .login-tabs { display: flex; gap: 8px; margin: 0; }
+    .login-tabs a { flex: 1; padding: 12px; text-align: center; cursor: pointer; text-decoration: none; color: var(--muted); border-bottom: 2px solid transparent }
+    .login-tabs a.active { color: var(--accent); border-bottom-color: var(--accent); font-weight:600 }
+    .login-form { padding: 20px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color:var(--muted); }
+    .form-group input { width: 100%; padding: 12px; border: 1px solid var(--md-sys-color-outline); border-radius: 10px; background: var(--md-sys-color-surface); }
+    .form-group button { width: 100%; padding: 12px; background: var(--accent); color: var(--md-sys-color-on-primary); border: none; border-radius: 12px; cursor: pointer; font-weight:600 }
+    .form-group button:hover { transform: translateY(-1px) }
+    .error-msg { color: #8b1e1e; background: #fff4f4; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+    .register-link { text-align: center; margin-top: 12px; }
+    .register-link a { color: var(--accent); text-decoration: none; font-weight:600 }
   </style>
 </head>
 <body>
@@ -70,12 +71,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <main class="container">
     <div class="login-container">
-      <div class="login-tabs">
-        <a href="login.php?mode=customer<?php echo isset($_GET['redirect']) ? '&redirect=' . urlencode($_GET['redirect']) : ''; ?>" class="<?php echo $mode === 'customer' ? 'active' : ''; ?>">Customer</a>
-        <a href="login.php?mode=staff<?php echo isset($_GET['redirect']) ? '&redirect=' . urlencode($_GET['redirect']) : ''; ?>" class="<?php echo $mode === 'staff' ? 'active' : ''; ?>">Staff</a>
-      </div>
+      <div class="login-card">
+        <div class="login-tabs">
+          <a href="login.php?mode=customer<?php echo isset($_GET['redirect']) ? '&redirect=' . urlencode($_GET['redirect']) : ''; ?>" class="<?php echo $mode === 'customer' ? 'active' : ''; ?>">Customer</a>
+          <a href="login.php?mode=staff<?php echo isset($_GET['redirect']) ? '&redirect=' . urlencode($_GET['redirect']) : ''; ?>" class="<?php echo $mode === 'staff' ? 'active' : ''; ?>">Staff</a>
+        </div>
 
-      <div class="login-form">
+        <div class="login-form">
         <?php if (!empty($error)): ?>
           <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
