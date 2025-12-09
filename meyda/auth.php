@@ -95,7 +95,26 @@ function staffLogin($username, $password) {
 }
 
 function logout() {
-    session_destroy();
+    // Preserve cart across logout/login cycles
+    $cart = $_SESSION['cart'] ?? [];
+
+    // Remove only authentication-related keys
+    unset($_SESSION['user_type']);
+    unset($_SESSION['customer_id']);
+    unset($_SESSION['customer_name']);
+    unset($_SESSION['customer_email']);
+    unset($_SESSION['staff_id']);
+    unset($_SESSION['staff_name']);
+    unset($_SESSION['staff_role']);
+
+    // Regenerate session id to avoid session fixation while keeping data
+    if (function_exists('session_regenerate_id')) {
+        session_regenerate_id(true);
+    }
+
+    // Restore cart if any
+    $_SESSION['cart'] = $cart;
+
     header('Location: index.php');
     exit;
 }
