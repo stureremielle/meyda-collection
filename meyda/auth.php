@@ -19,13 +19,24 @@ function isAdmin() {
     return (isStaff() && ($_SESSION['staff_role'] ?? null) === 'admin');
 }
 
-function customerLogin($email) {
+function customerLogin($email, $password) {
     $pdo = getPDO();
-    $stmt = $pdo->prepare("SELECT id_pelanggan, nama FROM pelanggan WHERE email = :email");
+    $stmt = $pdo->prepare("SELECT id_pelanggan, nama, password_hash FROM pelanggan WHERE email = :email");
     $stmt->execute([':email' => $email]);
     $customer = $stmt->fetch();
-    
-    if ($customer) {
+
+    if ($customer && !empty($customer['password_hash'])) {
+        if (password_verify($password, $customer['password_hash'])) {
+            $_SESSION['user_type'] = 'customer';
+            $_SESSION['customer_id'] = $customer['id_pelanggan'];
+            $_SESSION['customer_name'] = $customer['nama'];
+            $_SESSION['customer_email'] = $email;
+            return true;
+        }
+        return false;
+    }
+    // If no password is set for customer (old data), allow login by email only
+    if ($customer && empty($customer['password_hash'])) {
         $_SESSION['user_type'] = 'customer';
         $_SESSION['customer_id'] = $customer['id_pelanggan'];
         $_SESSION['customer_name'] = $customer['nama'];

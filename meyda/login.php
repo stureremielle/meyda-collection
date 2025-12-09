@@ -6,18 +6,19 @@ $mode = $_GET['mode'] ?? 'customer'; // 'customer' or 'staff'
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($mode === 'customer') {
-        $email = trim($_POST['email'] ?? '');
-        if (empty($email)) {
-            $error = 'Email harus diisi.';
+      $email = trim($_POST['email'] ?? '');
+      $password = trim($_POST['password'] ?? '');
+      if (empty($email) || empty($password)) {
+        $error = 'Email dan password harus diisi.';
+      } else {
+        if (customerLogin($email, $password)) {
+          $redirect = $_GET['redirect'] ?? 'index.php';
+          header('Location: ' . $redirect);
+          exit;
         } else {
-            if (customerLogin($email)) {
-                $redirect = $_GET['redirect'] ?? 'index.php';
-                header('Location: ' . $redirect);
-                exit;
-            } else {
-                $error = 'Email tidak ditemukan. Silakan daftar terlebih dahulu.';
-            }
+          $error = 'Email atau password salah. Jika Anda belum mendaftar, silakan daftar terlebih dahulu.';
         }
+      }
     } else {
         $username = trim($_POST['username'] ?? '');
         $password = trim($_POST['password'] ?? '');
@@ -84,6 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
               <label for="email">Email</label>
               <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" required>
             </div>
             <div class="form-group">
               <button type="submit">Login</button>

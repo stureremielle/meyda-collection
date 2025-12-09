@@ -5,13 +5,14 @@ $error = null;
 $success = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama = trim($_POST['nama'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $telepon = trim($_POST['telepon'] ?? '');
-    $alamat = trim($_POST['alamat'] ?? '');
+  $nama = trim($_POST['nama'] ?? '');
+  $email = trim($_POST['email'] ?? '');
+  $password = trim($_POST['password'] ?? '');
+  $telepon = trim($_POST['telepon'] ?? '');
+  $alamat = trim($_POST['alamat'] ?? '');
 
-    if (empty($nama) || empty($email)) {
-        $error = 'Nama dan email harus diisi.';
+    if (empty($nama) || empty($email) || empty($password)) {
+      $error = 'Nama, email dan password harus diisi.';
     } else {
         $pdo = getPDO();
         // Check if email already exists
@@ -21,13 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Email sudah terdaftar.';
         } else {
             try {
-                $stmt = $pdo->prepare("INSERT INTO pelanggan (nama, email, telepon, alamat) VALUES (:nama, :email, :telepon, :alamat)");
-                $stmt->execute([
-                    ':nama' => $nama,
-                    ':email' => $email,
-                    ':telepon' => $telepon,
-                    ':alamat' => $alamat
-                ]);
+          $hash = password_hash($password, PASSWORD_DEFAULT);
+          $stmt = $pdo->prepare("INSERT INTO pelanggan (nama, email, password_hash, telepon, alamat) VALUES (:nama, :email, :password_hash, :telepon, :alamat)");
+          $stmt->execute([
+            ':nama' => $nama,
+            ':email' => $email,
+            ':password_hash' => $hash,
+            ':telepon' => $telepon,
+            ':alamat' => $alamat
+          ]);
                 $success = 'Pendaftaran berhasil! Silakan login dengan email Anda.';
             } catch (Exception $e) {
                 $error = 'Terjadi kesalahan: ' . $e->getMessage();
@@ -91,6 +94,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="form-group">
             <label for="email">Email *</label>
             <input type="email" id="email" name="email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password *</label>
+            <input type="password" id="password" name="password" required>
           </div>
 
           <div class="form-group">
