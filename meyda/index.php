@@ -29,8 +29,11 @@ if ($action === 'remove') {
 }
 
 if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (empty($_SESSION['cart'])) {
-        $error = 'Keranjang kosong.';
+  // Only logged-in customers can checkout
+  if (!isCustomer()) {
+    $error = 'Silakan login sebagai pelanggan untuk melakukan checkout.';
+  } elseif (empty($_SESSION['cart'])) {
+    $error = 'Keranjang kosong.';
     } else {
         try {
             $pdo->beginTransaction();

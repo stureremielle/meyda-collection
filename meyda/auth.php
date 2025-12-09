@@ -44,22 +44,31 @@ function customerLogin($email, $password) {
     $stmt->execute([':email' => $email]);
     $customer = $stmt->fetch();
 
-    if ($customer && !empty($customer['password_hash'])) {
-        if (password_verify($password, $customer['password_hash'])) {
-            $_SESSION['user_type'] = 'customer';
-            $_SESSION['customer_id'] = $customer['id_pelanggan'];
-            $_SESSION['customer_name'] = $customer['nama'];
-            $_SESSION['customer_email'] = $email;
-            return true;
+    if ($customer) {
+        $hash = $customer['password_hash'] ?? null;
+        if (!empty($hash)) {
+            if (!password_verify($password, $hash)) return false;
         }
-        return false;
-    }
-    // If no password is set for customer (old data), allow login by email only
-    if ($customer && empty($customer['password_hash'])) {
+
+        // Login success: attach cart to this customer's account in-session
         $_SESSION['user_type'] = 'customer';
         $_SESSION['customer_id'] = $customer['id_pelanggan'];
         $_SESSION['customer_name'] = $customer['nama'];
         $_SESSION['customer_email'] = $email;
+
+        // Ensure carts mapping exists
+        if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts'])) $_SESSION['carts'] = [];
+
+        $custId = $customer['id_pelanggan'];
+        // If there's a transient cart (guest) in session, save it under this customer
+        if (!empty($_SESSION['cart'])) {
+            $_SESSION['carts'][$custId] = $_SESSION['cart'];
+        }
+
+        // Load saved cart for this customer (if any)
+        $_SESSION['cart'] = $_SESSION['carts'][$custId] ?? [];
+        $_SESSION['cart_owner'] = $custId;
+
         return true;
     }
     return false;
@@ -95,10 +104,16 @@ function staffLogin($username, $password) {
 }
 
 function logout() {
-    // Preserve cart across logout/login cycles
-    $cart = $_SESSION['cart'] ?? [];
+    // Remove only authentication-related keys and clear transient cart
+    $cartOwner = $_SESSION['cart_owner'] ?? null;
 
-    // Remove only authentication-related keys
+    // Save customer's cart into persistent in-session storage if present
+    if ($cartOwner && isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+        if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts'])) $_SESSION['carts'] = [];
+        $_SESSION['carts'][$cartOwner] = $_SESSION['cart'];
+    }
+
+    // Remove auth keys
     unset($_SESSION['user_type']);
     unset($_SESSION['customer_id']);
     unset($_SESSION['customer_name']);
@@ -106,14 +121,13 @@ function logout() {
     unset($_SESSION['staff_id']);
     unset($_SESSION['staff_name']);
     unset($_SESSION['staff_role']);
+    unset($_SESSION['cart_owner']);
 
-    // Regenerate session id to avoid session fixation while keeping data
-    if (function_exists('session_regenerate_id')) {
-        session_regenerate_id(true);
-    }
+    // Clear transient cart so guest has empty cart
+    $_SESSION['cart'] = [];
 
-    // Restore cart if any
-    $_SESSION['cart'] = $cart;
+    // Regenerate session id to avoid session fixation
+    if (function_exists('session_regenerate_id')) session_regenerate_id(true);
 
     header('Location: index.php');
     exit;
