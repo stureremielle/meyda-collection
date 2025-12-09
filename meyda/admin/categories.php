@@ -77,14 +77,17 @@ if (isset($_GET['edit'])) {
 </head>
 <body>
   <div class="container">
-    <header class="header">
-      <div class="header-nav">
-        <a href="products.php">Produk</a>
-        <a href="categories.php" class="active">Kategori</a>
-        <a href="transactions.php">Transaksi</a>
-        <a href="reports.php">Laporan</a>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="../index.php?action=logout">Logout</a>
+    <header class="site-header">
+      <div class="container">
+        <h1 class="brand">MeyDa Collection - Admin</h1>
+        <nav class="nav">
+          <a href="dashboard.php">Dashboard</a>
+          <a href="products.php">Produk</a>
+          <a href="categories.php" class="active">Kategori</a>
+          <a href="reports.php">Laporan</a>
+          <a href="transactions.php">Transaksi</a>
+          <a href="../index.php?action=logout" class="btn logout-btn" onclick="return confirm('Logout?')">Logout</a>
+        </nav>
       </div>
     </header>
 
@@ -170,6 +173,9 @@ if (isset($_GET['edit'])) {
   </div>
 
   <style>
+    .nav { display: flex; gap: 15px; margin-top: 10px; }
+    .nav a { color: #ff6d00; text-decoration: none; padding: 8px 12px; border-radius: 4px; transition: all 0.2s; }
+    .nav a:hover { background: #404040; }
     .header-nav {
       display: flex;
       align-items: center;
