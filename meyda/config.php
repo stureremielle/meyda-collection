@@ -4,7 +4,7 @@ define('DB_HOST', 'https://mysql-meyda.alwaysdata.net/');      // Host or URL pr
 define('DB_NAME', 'meyda_collection');
 define('DB_USER', 'meyda');     // set to the DB user you create on AlwaysData
 define('DB_PASS', 'kraccbacc');
-define('DEFAULT_USER_ID', 2);        // id_user used for transactions (kasir). Ensure it exists.
+define('DEFAULT_USER_ID', 1);        // id_user used for transactions (admin). Ensure it exists.
 
 putenv('MEYDA_ADMIN_KEY=sikrit_dokumen');
 

@@ -2,11 +2,10 @@
 USE meyda_collection;
 START TRANSACTION;
 
--- users (admin + one staff) - replace password hashes with real ones later
+-- users (admin user) - replace password hashes with real ones later
 INSERT INTO `user` (username, password_hash, nama_lengkap, role)
 VALUES
-  ('admin', '$2y$10$replace_with_real_hash_admin', 'Admin MeyDa', 'admin'),
-  ('kasir1', '$2y$10$replace_with_real_hash_kasir', 'Kasir Satu', 'staff');
+  ('admin', '$2y$10$replace_with_real_hash_admin', 'Admin MeyDa', 'admin');
 
 -- customers
 -- Note: password_hash values below are placeholders. Replace with real bcrypt hashes or let users register.

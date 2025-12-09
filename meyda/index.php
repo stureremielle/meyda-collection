@@ -34,11 +34,11 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $pdo->beginTransaction();
-      // Determine user/staff relationship: if staff is logged in, set id_user to staff id; otherwise NULL
-      $customerId = isCustomer() ? $_SESSION['customer_id'] : null;
-      $idUser = isStaff() ? $_SESSION['staff_id'] : null;
-      $stmt = $pdo->prepare("INSERT INTO transaksi (id_user, id_pelanggan, tanggal, total, status) VALUES (:id_user, :id_pelanggan, NOW(), 0, 'paid')");
-      $stmt->execute([':id_user' => $idUser, ':id_pelanggan' => $customerId]);
+            // Determine user/staff relationship: if staff is logged in, set id_user to staff id; otherwise use DEFAULT_USER_ID
+            $customerId = isCustomer() ? $_SESSION['customer_id'] : null;
+            $idUser = isStaff() ? $_SESSION['staff_id'] : DEFAULT_USER_ID;
+            $stmt = $pdo->prepare("INSERT INTO transaksi (id_user, id_pelanggan, tanggal, total, status) VALUES (:id_user, :id_pelanggan, NOW(), 0, 'paid')");
+            $stmt->execute([':id_user' => $idUser, ':id_pelanggan' => $customerId]);
             $id_transaksi = $pdo->lastInsertId();
 
             $total = 0.0;
