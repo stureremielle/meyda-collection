@@ -1,0 +1,31 @@
+:root{
+  --bg: #ffffff;
+  --text: #222222;
+  --muted: #6b7280;
+  --accent: #1f6feb;
+  --card: #f8fafc;
+}
+*{box-sizing:border-box}
+body{font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; color:var(--text); background:var(--bg);}
+.container{max-width:980px;margin:0 auto;padding:16px}
+.site-header{border-bottom:1px solid #e6e9ee;padding:12px 0;background:var(--bg)}
+.brand{margin:0;display:inline-block;font-weight:600}
+.nav{float:right}
+.nav a{color:var(--muted);text-decoration:none;margin-left:12px;font-size:14px}
+.hero{padding:24px 0}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding:18px 0}
+.product-card{background:var(--card);padding:12px;border:1px solid #eef2f6;border-radius:6px;display:flex;flex-direction:column;align-items:flex-start}
+.product-img{width:100%;height:140px;background:#e9eef6;color:var(--muted);display:flex;align-items:center;justify-content:center;margin-bottom:10px;border-radius:4px}
+.product-card h3{margin:0 0 6px 0;font-size:16px}
+.price{color:var(--accent);font-weight:600;margin-bottom:8px}
+button{background:var(--accent);color:white;border:none;padding:8px 12px;border-radius:4px;cursor:pointer}
+button:hover{opacity:0.95}
+.site-footer{border-top:1px solid #eceff3;padding:16px 0;margin-top:24px;text-align:center;color:var(--muted);font-size:13px}
+.alert{padding:10px;border-radius:6px;margin-bottom:12px}
+.alert-error{background:#fff4f4;color:#8b1e1e;border:1px solid #f2c6c6}
+.alert-success{background:#f4fffb;color:#11644a;border:1px solid #a7e1cf}
+table.cart{width:100%;border-collapse:collapse}
+table.cart th, table.cart td{padding:8px;border-bottom:1px solid #eef2f6;text-align:left}
+.link{color:var(--accent);text-decoration:none}
+.muted{color:var(--muted);font-size:13px}
+.desc{font-size:13px;color:var(--muted);margin-bottom:8px}
