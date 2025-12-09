@@ -169,10 +169,11 @@ if (isset($_GET['edit'])) {
 
   <style>
     .form-section {
-      background: #f5f5f5;
+      background: #252525;
       padding: 20px;
-      border-radius: 4px;
+      border-radius: 8px;
       margin-bottom: 20px;
+      border: 1px solid #404040;
     }
     .form-group {
       margin-bottom: 15px;
@@ -180,65 +181,80 @@ if (isset($_GET['edit'])) {
     .form-group label {
       display: block;
       margin-bottom: 5px;
-      font-weight: 500;
+      font-weight: 600;
+      color: #ffffff;
     }
     .form-group input, .form-group textarea {
       width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      padding: 10px;
+      border: 1px solid #404040;
+      border-radius: 8px;
       font-family: inherit;
+      background: #1a1a1a;
+      color: #ffffff;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #ff6d00;
+      box-shadow: 0 0 0 2px rgba(255,109,0,0.1);
     }
     .form-group textarea {
       min-height: 80px;
       resize: vertical;
     }
     button, .btn-secondary {
-      background: #1f6feb;
+      background: #ff6d00;
       color: white;
       border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
+      padding: 10px 16px;
+      border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
       display: inline-block;
       margin-right: 10px;
+      font-weight: 600;
+      transition: all 0.2s;
     }
     button:hover, .btn-secondary:hover {
-      background: #0860ca;
+      background: #e55d00;
+      transform: translateY(-1px);
     }
     .btn-secondary {
-      background: #6c757d;
+      background: #404040;
     }
     .btn-secondary:hover {
-      background: #5a6268;
+      background: #505050;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
+      background: #252525;
     }
     table th, table td {
       padding: 12px;
       text-align: left;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #404040;
+      color: #ffffff;
     }
     table th {
-      background: #f5f5f5;
-      font-weight: 500;
+      background: #1a1a1a;
+      font-weight: 600;
     }
     .alert {
       padding: 12px;
-      border-radius: 4px;
+      border-radius: 8px;
       margin-bottom: 15px;
     }
     .alert-error {
-      background: #f8d7da;
-      color: #721c24;
+      background: #4a2a2a;
+      color: #ff9999;
+      border: 1px solid #662a2a;
     }
     .alert-success {
-      background: #d4edda;
-      color: #155724;
+      background: #2a4a3a;
+      color: #99ff99;
+      border: 1px solid #2a6a4a;
     }
   </style>
 </body>

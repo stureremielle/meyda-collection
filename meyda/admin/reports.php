@@ -24,9 +24,9 @@ $months = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', '
   <title>Laporan Penjualan - MeyDa Collection</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    table th, table td { padding: 10px; border-bottom: 1px solid #eef2f6; text-align: left; }
-    table th { background: #f8fafc; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #252525; }
+    table th, table td { padding: 10px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
+    table th { background: #1a1a1a; font-weight: 600; }
   </style>
 </head>
 <body>

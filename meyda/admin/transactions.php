@@ -39,14 +39,15 @@ if ($viewId > 0) {
   <title>Transaksi - MeyDa Collection</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    table th, table td { padding: 10px; border-bottom: 1px solid #eef2f6; text-align: left; }
-    table th { background: #f8fafc; font-weight: 600; }
-    .status-paid { color: #11644a; background: #f4fffb; padding: 4px 8px; border-radius: 3px; }
-    .status-pending { color: #8b5e00; background: #fffbec; padding: 4px 8px; border-radius: 3px; }
-    .status-cancelled { color: #8b1e1e; background: #fff4f4; padding: 4px 8px; border-radius: 3px; }
-    .action-link { color: #1f6feb; text-decoration: none; }
-    .detail-section { margin-top: 30px; padding: 20px; border: 1px solid #eef2f6; border-radius: 6px; background: #f8fafc; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #252525; }
+    table th, table td { padding: 10px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
+    table th { background: #1a1a1a; font-weight: 600; }
+    .status-paid { color: #99ff99; background: #2a4a3a; padding: 4px 8px; border-radius: 3px; }
+    .status-pending { color: #ffcc99; background: #4a3a2a; padding: 4px 8px; border-radius: 3px; }
+    .status-cancelled { color: #ff9999; background: #4a2a2a; padding: 4px 8px; border-radius: 3px; }
+    .action-link { color: #ff6d00; text-decoration: none; transition: opacity 0.2s; }
+    .action-link:hover { opacity: 0.8; }
+    .detail-section { margin-top: 30px; padding: 20px; border: 1px solid #404040; border-radius: 8px; background: #252525; }
   </style>
 </head>
 <body>
@@ -87,7 +88,7 @@ if ($viewId > 0) {
                 <td>Rp <?php echo number_format($d['subtotal'], 0, ',', '.'); ?></td>
               </tr>
             <?php endforeach; ?>
-            <tr style="background: #f8fafc; font-weight: 600;">
+            <tr style="background: #1a1a1a; font-weight: 600; color: #ffffff;">
               <td colspan="3">Total</td>
               <td>Rp <?php echo number_format($total, 0, ',', '.'); ?></td>
             </tr>

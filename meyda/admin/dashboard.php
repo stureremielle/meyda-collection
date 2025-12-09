@@ -28,17 +28,18 @@ $stats['total_products'] = $stmtProducts->fetch()['cnt'];
   <style>
     .admin-header { background: #f8fafc; border-bottom: 1px solid #eef2f6; padding: 15px 0; margin-bottom: 20px; }
     .admin-nav { display: flex; gap: 15px; margin-top: 10px; }
-    .admin-nav a { color: #1f6feb; text-decoration: none; padding: 8px 12px; border-radius: 4px; }
-    .admin-nav a:hover { background: #e9eef6; }
+    .admin-nav a { color: #ff6d00; text-decoration: none; padding: 8px 12px; border-radius: 4px; transition: all 0.2s; }
+    .admin-nav a:hover { background: #404040; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-    .stat-card { background: #f8fafc; border: 1px solid #eef2f6; padding: 15px; border-radius: 6px; }
-    .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: #6b7280; }
-    .stat-card .value { font-size: 28px; font-weight: 600; color: #1f6feb; }
+    .stat-card { background: #252525; border: 1px solid #404040; padding: 15px; border-radius: 8px; }
+    .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: #a0a0a0; }
+    .stat-card .value { font-size: 28px; font-weight: 600; color: #ff6d00; }
     .section { margin-bottom: 30px; }
-    .section h2 { margin-top: 0; }
-    .btn { display: inline-block; padding: 8px 16px; background: #1f6feb; color: white; text-decoration: none; border-radius: 4px; }
-    .btn:hover { opacity: 0.95; }
+    .section h2 { margin-top: 0; color: #ffffff; }
+    .btn { display: inline-block; padding: 10px 16px; background: #ff6d00; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.2s; }
+    .btn:hover { background: #e55d00; transform: translateY(-1px); }
     .logout-btn { background: #8b1e1e; float: right; }
+    .logout-btn:hover { background: #6b1515; }
   </style>
 </head>
 <body>
