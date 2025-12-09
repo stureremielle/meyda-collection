@@ -145,16 +145,18 @@ if (isset($_GET['edit'])) {
               <td><?php echo htmlspecialchars($c['deskripsi'] ?? '-'); ?></td>
               <td><?php echo $productCount; ?></td>
               <td>
-                <a href="?edit=<?php echo $c['id_kategori']; ?>">Edit</a>
-                <?php if ($productCount == 0): ?>
-                  <form method="post" style="display:inline;">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id" value="<?php echo $c['id_kategori']; ?>">
-                    <button type="submit" onclick="return confirm('Yakin?')">Hapus</button>
-                  </form>
-                <?php else: ?>
-                  <span style="color:var(--muted)">Tidak bisa hapus</span>
-                <?php endif; ?>
+                <div class="action-cell">
+                  <a href="?edit=<?php echo $c['id_kategori']; ?>" class="action-btn">Edit</a>
+                  <?php if ($productCount == 0): ?>
+                    <form method="post" style="display:inline; margin:0; padding:0;">
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="id" value="<?php echo $c['id_kategori']; ?>">
+                      <button type="submit" class="action-btn action-btn-danger" onclick="return confirm('Yakin?')">Hapus</button>
+                    </form>
+                  <?php else: ?>
+                    <span class="action-disabled">Tidak bisa hapus</span>
+                  <?php endif; ?>
+                </div>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -168,6 +170,31 @@ if (isset($_GET['edit'])) {
   </div>
 
   <style>
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .header-nav a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .header-nav a:hover {
+      background: #ff6d00;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .header-nav a.active {
+      color: #ff6d00;
+      font-weight: 600;
+      border-bottom: 2px solid #ff6d00;
+    }
     .form-section {
       background: #252525;
       padding: 20px;
@@ -240,6 +267,39 @@ if (isset($_GET['edit'])) {
     table th {
       background: #1a1a1a;
       font-weight: 600;
+    }
+    .action-cell {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .action-btn {
+      background: #ff6d00;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .action-btn:hover {
+      background: #e55d00;
+      transform: translateY(-1px);
+    }
+    .action-btn-danger {
+      background: #d32f2f;
+    }
+    .action-btn-danger:hover {
+      background: #b71c1c;
+    }
+    .action-disabled {
+      color: #888888;
+      font-size: 13px;
     }
     .alert {
       padding: 12px;
