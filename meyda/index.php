@@ -16,9 +16,9 @@ if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!isset($_SESSION['cart'][$id])) $_SESSION['cart'][$id] = 0;
         $_SESSION['cart'][$id] += $qty;
     }
-    // ensure session data is written before redirect
-    if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
-    header('Location: index.php?action=cart'); exit;
+  // ensure session data is written before redirect and stay on the storefront
+  if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
+  header('Location: index.php'); exit;
 }
 
 if ($action === 'remove') {
@@ -34,10 +34,11 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $pdo->beginTransaction();
-            // If customer is logged in, use their ID; otherwise NULL (guest)
-            $customerId = isCustomer() ? $_SESSION['customer_id'] : null;
-            $stmt = $pdo->prepare("INSERT INTO transaksi (id_user, id_pelanggan, tanggal, total, status) VALUES (:id_user, :id_pelanggan, NOW(), 0, 'paid')");
-            $stmt->execute([':id_user' => DEFAULT_USER_ID, ':id_pelanggan' => $customerId]);
+      // Determine user/staff relationship: if staff is logged in, set id_user to staff id; otherwise NULL
+      $customerId = isCustomer() ? $_SESSION['customer_id'] : null;
+      $idUser = isStaff() ? $_SESSION['staff_id'] : null;
+      $stmt = $pdo->prepare("INSERT INTO transaksi (id_user, id_pelanggan, tanggal, total, status) VALUES (:id_user, :id_pelanggan, NOW(), 0, 'paid')");
+      $stmt->execute([':id_user' => $idUser, ':id_pelanggan' => $customerId]);
             $id_transaksi = $pdo->lastInsertId();
 
             $total = 0.0;
