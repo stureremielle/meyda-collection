@@ -36,7 +36,22 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
             // Determine user/staff relationship: if staff is logged in, set id_user to staff id; otherwise use DEFAULT_USER_ID
             $customerId = isCustomer() ? $_SESSION['customer_id'] : null;
-            $idUser = isStaff() ? $_SESSION['staff_id'] : DEFAULT_USER_ID;
+            $idUser = isStaff() ? (int)$_SESSION['staff_id'] : (int)DEFAULT_USER_ID;
+
+            // Verify id_user exists in the database; if not, try to fallback to any admin/staff account
+            $chk = $pdo->prepare("SELECT id_user FROM `user` WHERE id_user = :id LIMIT 1");
+            $chk->execute([':id' => $idUser]);
+            $found = $chk->fetchColumn();
+            if (!$found) {
+              $chk2 = $pdo->query("SELECT id_user FROM `user` WHERE role IN ('admin','staff') ORDER BY id_user LIMIT 1");
+              $fallback = $chk2->fetchColumn();
+              if ($fallback) {
+                $idUser = (int)$fallback;
+              } else {
+                throw new Exception('Tidak ada akun staff/admin di sistem. Silakan buat akun admin melalui /admin/setup.php terlebih dahulu.');
+              }
+            }
+
             $stmt = $pdo->prepare("INSERT INTO transaksi (id_user, id_pelanggan, tanggal, total, status) VALUES (:id_user, :id_pelanggan, NOW(), 0, 'paid')");
             $stmt->execute([':id_user' => $idUser, ':id_pelanggan' => $customerId]);
             $id_transaksi = $pdo->lastInsertId();
