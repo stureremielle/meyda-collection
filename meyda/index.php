@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/auth.php';
 $pdo = getPDO();
 
 // Simple router via "action"
@@ -32,8 +31,10 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $pdo->beginTransaction();
-            $stmt = $pdo->prepare("INSERT INTO transaksi (id_user, id_pelanggan, tanggal, total, status) VALUES (:id_user, NULL, NOW(), 0, 'paid')");
-            $stmt->execute([':id_user' => DEFAULT_USER_ID]);
+            // If customer is logged in, use their ID; otherwise NULL (guest)
+            $customerId = isCustomer() ? $_SESSION['customer_id'] : null;
+            $stmt = $pdo->prepare("INSERT INTO transaksi (id_user, id_pelanggan, tanggal, total, status) VALUES (:id_user, :id_pelanggan, NOW(), 0, 'paid')");
+            $stmt->execute([':id_user' => DEFAULT_USER_ID, ':id_pelanggan' => $customerId]);
             $id_transaksi = $pdo->lastInsertId();
 
             $total = 0.0;
@@ -130,6 +131,18 @@ if (!empty($_SESSION['cart'])) {
       <nav class="nav">
         <a href="index.php">Home</a>
         <a href="index.php?action=cart">Cart (<?php echo array_sum($_SESSION['cart'] ?? []); ?>)</a>
+        <?php if (isLoggedIn()): ?>
+          <?php if (isCustomer()): ?>
+            <a href="account.php">Hi, <?php echo htmlspecialchars($_SESSION['customer_name']); ?></a>
+            <a href="auth.php?action=logout">Logout</a>
+          <?php elseif (isStaff()): ?>
+            <a href="admin/dashboard.php">Admin</a>
+            <a href="auth.php?action=logout">Logout</a>
+          <?php endif; ?>
+        <?php else: ?>
+          <a href="login.php?mode=customer">Login</a>
+          <a href="register.php">Register</a>
+        <?php endif; ?>
       </nav>
     </div>
   </header>
