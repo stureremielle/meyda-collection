@@ -6,10 +6,26 @@ $pdo = getPDO();
 $error = null;
 $success = null;
 
+// Create uploads directory if it doesn't exist
+$uploadsDir = __DIR__ . '/../uploads';
+if (!is_dir($uploadsDir)) {
+    mkdir($uploadsDir, 0755, true);
+}
+
+function h($s){ return htmlspecialchars($s, ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8'); }
+
 // Handle delete
 if (isset($_GET['delete']) && isAdmin()) {
     $id = (int)$_GET['delete'];
     try {
+        // Delete product image if exists
+        $stmt = $pdo->prepare("SELECT gambar FROM produk WHERE id_produk = :id");
+        $stmt->execute([':id' => $id]);
+        $product = $stmt->fetch();
+        if ($product && !empty($product['gambar'])) {
+            $imgPath = $uploadsDir . '/' . $product['gambar'];
+            if (file_exists($imgPath)) unlink($imgPath);
+        }
         $stmt = $pdo->prepare("DELETE FROM produk WHERE id_produk = :id");
         $stmt->execute([':id' => $id]);
         $success = 'Produk dihapus.';
@@ -18,7 +34,7 @@ if (isset($_GET['delete']) && isAdmin()) {
     }
 }
 
-// Handle add/edit
+// Handle add/edit with image upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isAdmin()) {
     $id = (int)($_POST['id'] ?? 0);
     $nama = trim($_POST['nama'] ?? '');
@@ -26,28 +42,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isAdmin()) {
     $deskripsi = trim($_POST['deskripsi'] ?? '');
     $harga = (float)($_POST['harga'] ?? 0);
     $stok = (int)($_POST['stok'] ?? 0);
+    $gambar = null;
 
     if (empty($nama) || $kategori <= 0 || $harga <= 0) {
         $error = 'Nama, kategori, dan harga harus diisi dengan benar.';
     } else {
-        try {
-            if ($id > 0) {
-                $stmt = $pdo->prepare("UPDATE produk SET nama_produk=:nama, id_kategori=:kat, deskripsi=:desk, harga=:harga, stok=:stok WHERE id_produk=:id");
-                $stmt->execute([':nama' => $nama, ':kat' => $kategori, ':desk' => $deskripsi, ':harga' => $harga, ':stok' => $stok, ':id' => $id]);
-                $success = 'Produk diperbarui.';
+        // Handle image upload
+        if (!empty($_FILES['gambar']['name'])) {
+            $file = $_FILES['gambar'];
+            $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $maxSize = 2 * 1024 * 1024; // 2MB
+
+            if (!in_array($file['type'], $allowed)) {
+                $error = 'Format gambar tidak didukung. Gunakan JPG, PNG, GIF, atau WebP.';
+            } elseif ($file['size'] > $maxSize) {
+                $error = 'Gambar terlalu besar (max 2MB).';
             } else {
-                $stmt = $pdo->prepare("INSERT INTO produk (nama_produk, id_kategori, deskripsi, harga, stok) VALUES (:nama, :kat, :desk, :harga, :stok)");
-                $stmt->execute([':nama' => $nama, ':kat' => $kategori, ':desk' => $deskripsi, ':harga' => $harga, ':stok' => $stok]);
-                $success = 'Produk ditambahkan.';
+                try {
+                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                    $newFilename = 'product_' . time() . '_' . uniqid() . '.' . strtolower($ext);
+                    if (move_uploaded_file($file['tmp_name'], $uploadsDir . '/' . $newFilename)) {
+                        $gambar = $newFilename;
+                    } else {
+                        $error = 'Gagal mengunggah gambar.';
+                    }
+                } catch (Exception $e) {
+                    $error = 'Kesalahan upload: ' . $e->getMessage();
+                }
             }
-        } catch (Exception $e) {
-            $error = 'Terjadi kesalahan: ' . $e->getMessage();
+        }
+
+        if (empty($error)) {
+            try {
+                if ($id > 0) {
+                    // If new image uploaded, delete old one
+                    if ($gambar) {
+                        $stmt = $pdo->prepare("SELECT gambar FROM produk WHERE id_produk = :id");
+                        $stmt->execute([':id' => $id]);
+                        $oldProduct = $stmt->fetch();
+                        if ($oldProduct && !empty($oldProduct['gambar'])) {
+                            $oldPath = $uploadsDir . '/' . $oldProduct['gambar'];
+                            if (file_exists($oldPath)) unlink($oldPath);
+                        }
+                        $stmt = $pdo->prepare("UPDATE produk SET nama_produk=:nama, id_kategori=:kat, deskripsi=:desk, harga=:harga, stok=:stok, gambar=:gambar WHERE id_produk=:id");
+                        $stmt->execute([':nama' => $nama, ':kat' => $kategori, ':desk' => $deskripsi, ':harga' => $harga, ':stok' => $stok, ':gambar' => $gambar, ':id' => $id]);
+                    } else {
+                        $stmt = $pdo->prepare("UPDATE produk SET nama_produk=:nama, id_kategori=:kat, deskripsi=:desk, harga=:harga, stok=:stok WHERE id_produk=:id");
+                        $stmt->execute([':nama' => $nama, ':kat' => $kategori, ':desk' => $deskripsi, ':harga' => $harga, ':stok' => $stok, ':id' => $id]);
+                    }
+                    $success = 'Produk diperbarui.';
+                } else {
+                    if (!$gambar) {
+                        $stmt = $pdo->prepare("INSERT INTO produk (nama_produk, id_kategori, deskripsi, harga, stok) VALUES (:nama, :kat, :desk, :harga, :stok)");
+                        $stmt->execute([':nama' => $nama, ':kat' => $kategori, ':desk' => $deskripsi, ':harga' => $harga, ':stok' => $stok]);
+                    } else {
+                        $stmt = $pdo->prepare("INSERT INTO produk (nama_produk, id_kategori, deskripsi, harga, stok, gambar) VALUES (:nama, :kat, :desk, :harga, :stok, :gambar)");
+                        $stmt->execute([':nama' => $nama, ':kat' => $kategori, ':desk' => $deskripsi, ':harga' => $harga, ':stok' => $stok, ':gambar' => $gambar]);
+                    }
+                    $success = 'Produk ditambahkan.';
+                }
+            } catch (Exception $e) {
+                $error = 'Terjadi kesalahan: ' . $e->getMessage();
+            }
         }
     }
 }
 
 // Fetch all products
-$stmt = $pdo->query("SELECT p.id_produk, p.nama_produk, k.nama_kategori, p.harga, p.stok FROM produk p JOIN kategori_produk k ON p.id_kategori = k.id_kategori ORDER BY p.nama_produk");
+$stmt = $pdo->query("SELECT p.id_produk, p.nama_produk, k.nama_kategori, p.harga, p.stok, p.gambar FROM produk p JOIN kategori_produk k ON p.id_kategori = k.id_kategori ORDER BY p.nama_produk");
 $products = $stmt->fetchAll();
 
 // Fetch categories for dropdown
@@ -76,6 +138,8 @@ if ($editId > 0) {
     .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; }
     .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group input[type="file"] { padding: 4px; }
+    .image-preview { max-width: 200px; margin-top: 10px; border-radius: 4px; }
     .form-buttons { display: flex; gap: 10px; }
     .form-buttons button { padding: 10px 20px; background: #1f6feb; color: white; border: none; border-radius: 4px; cursor: pointer; }
     .form-buttons a { padding: 10px 20px; background: #6b7280; color: white; text-decoration: none; border-radius: 4px; }
@@ -86,7 +150,7 @@ if ($editId > 0) {
     table th { background: #f8fafc; font-weight: 600; }
     .action-link { color: #1f6feb; text-decoration: none; margin-right: 10px; }
     .delete-link { color: #c84f2c; }
-    .btn-add { display: inline-block; padding: 8px 16px; background: #1f6feb; color: white; text-decoration: none; border-radius: 4px; margin-bottom: 15px; }
+    .product-img { max-width: 60px; height: auto; border-radius: 4px; }
   </style>
 </head>
 <body>
@@ -94,8 +158,9 @@ if ($editId > 0) {
     <div class="container">
       <h1 class="brand">MeyDa Collection - Admin</h1>
       <nav class="nav">
-        <a href="dashboard.php">Dashboard</a>
         <a href="products.php">Produk</a>
+        <a href="categories.php">Kategori</a>
+        <a href="dashboard.php">Dashboard</a>
         <a href="reports.php">Laporan</a>
         <a href="transactions.php">Transaksi</a>
       </nav>
@@ -106,24 +171,24 @@ if ($editId > 0) {
     <h2><?php echo $editId > 0 ? 'Edit Produk' : 'Kelola Produk'; ?></h2>
 
     <?php if (!empty($error)): ?>
-      <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
+      <div class="error-msg"><?php echo h($error); ?></div>
     <?php endif; ?>
 
     <?php if (!empty($success)): ?>
-      <div class="success-msg"><?php echo htmlspecialchars($success); ?></div>
+      <div class="success-msg"><?php echo h($success); ?></div>
     <?php endif; ?>
 
     <?php if (isAdmin()): ?>
       <div class="form-container">
         <h3><?php echo $editId > 0 ? 'Edit' : 'Tambah'; ?> Produk</h3>
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
           <?php if ($editId > 0): ?>
             <input type="hidden" name="id" value="<?php echo $editId; ?>">
           <?php endif; ?>
 
           <div class="form-group">
             <label for="nama">Nama Produk *</label>
-            <input type="text" id="nama" name="nama" value="<?php echo $editData ? htmlspecialchars($editData['nama_produk']) : ''; ?>" required>
+            <input type="text" id="nama" name="nama" value="<?php echo $editData ? h($editData['nama_produk']) : ''; ?>" required>
           </div>
 
           <div class="form-group">
@@ -132,7 +197,7 @@ if ($editId > 0) {
               <option value="">-- Pilih Kategori --</option>
               <?php foreach ($categories as $cat): ?>
                 <option value="<?php echo $cat['id_kategori']; ?>" <?php echo ($editData && $editData['id_kategori'] == $cat['id_kategori']) ? 'selected' : ''; ?>>
-                  <?php echo htmlspecialchars($cat['nama_kategori']); ?>
+                  <?php echo h($cat['nama_kategori']); ?>
                 </option>
               <?php endforeach; ?>
             </select>
@@ -140,7 +205,7 @@ if ($editId > 0) {
 
           <div class="form-group">
             <label for="deskripsi">Deskripsi</label>
-            <textarea id="deskripsi" name="deskripsi"><?php echo $editData ? htmlspecialchars($editData['deskripsi']) : ''; ?></textarea>
+            <textarea id="deskripsi" name="deskripsi"><?php echo $editData ? h($editData['deskripsi']) : ''; ?></textarea>
           </div>
 
           <div class="form-group">
@@ -151,6 +216,15 @@ if ($editId > 0) {
           <div class="form-group">
             <label for="stok">Stok *</label>
             <input type="number" id="stok" name="stok" value="<?php echo $editData ? $editData['stok'] : ''; ?>" min="0" required>
+          </div>
+
+          <div class="form-group">
+            <label for="gambar">Gambar Produk (JPG, PNG, GIF, WebP - Max 2MB)</label>
+            <input type="file" id="gambar" name="gambar" accept="image/*">
+            <?php if ($editData && !empty($editData['gambar'])): ?>
+              <p style="font-size: 13px; color: #6b7280;">Gambar saat ini:</p>
+              <img src="../uploads/<?php echo h($editData['gambar']); ?>" alt="Product" class="image-preview">
+            <?php endif; ?>
           </div>
 
           <div class="form-buttons">
@@ -170,6 +244,7 @@ if ($editId > 0) {
       <table>
         <thead>
           <tr>
+            <th>Gambar</th>
             <th>Nama</th>
             <th>Kategori</th>
             <th>Harga</th>
@@ -182,8 +257,15 @@ if ($editId > 0) {
         <tbody>
           <?php foreach ($products as $p): ?>
             <tr>
-              <td><?php echo htmlspecialchars($p['nama_produk']); ?></td>
-              <td><?php echo htmlspecialchars($p['nama_kategori']); ?></td>
+              <td>
+                <?php if (!empty($p['gambar'])): ?>
+                  <img src="../uploads/<?php echo h($p['gambar']); ?>" alt="Product" class="product-img">
+                <?php else: ?>
+                  <span style="color: #6b7280; font-size: 13px;">Tidak ada gambar</span>
+                <?php endif; ?>
+              </td>
+              <td><?php echo h($p['nama_produk']); ?></td>
+              <td><?php echo h($p['nama_kategori']); ?></td>
               <td>Rp <?php echo number_format($p['harga'], 0, ',', '.'); ?></td>
               <td><?php echo $p['stok']; ?></td>
               <?php if (isAdmin()): ?>

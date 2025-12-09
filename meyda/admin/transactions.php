@@ -56,6 +56,7 @@ if ($viewId > 0) {
       <nav class="nav">
         <a href="dashboard.php">Dashboard</a>
         <a href="products.php">Produk</a>
+        <a href="categories.php">Kategori</a>
         <a href="reports.php">Laporan</a>
         <a href="transactions.php">Transaksi</a>
       </nav>

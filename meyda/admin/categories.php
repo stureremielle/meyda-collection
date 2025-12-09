@@ -1,0 +1,245 @@
+<?php
+// admin/categories.php - Category management (add, edit, delete)
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../auth.php';
+
+// Ensure staff/admin only
+requireLogin('staff');
+
+$pdo = getPDO();
+$error = null;
+$success = null;
+
+// Handle delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    $id = intval($_POST['id'] ?? 0);
+    try {
+        // Check if category has products
+        $stmt = $pdo->prepare("SELECT COUNT(*) as cnt FROM produk WHERE id_kategori = :id");
+        $stmt->execute([':id' => $id]);
+        if ($stmt->fetch()['cnt'] > 0) {
+            $error = 'Tidak bisa menghapus kategori yang memiliki produk.';
+        } else {
+            $stmt = $pdo->prepare("DELETE FROM kategori_produk WHERE id_kategori = :id");
+            $stmt->execute([':id' => $id]);
+            $success = 'Kategori berhasil dihapus.';
+        }
+    } catch (Exception $e) {
+        $error = 'Error: ' . $e->getMessage();
+    }
+}
+
+// Handle add/edit
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array($_POST['action'], ['add', 'edit'])) {
+    $name = trim($_POST['nama_kategori'] ?? '');
+    $desc = trim($_POST['deskripsi'] ?? '');
+    
+    if (empty($name)) {
+        $error = 'Nama kategori harus diisi.';
+    } else {
+        try {
+            if ($_POST['action'] === 'add') {
+                $stmt = $pdo->prepare("INSERT INTO kategori_produk (nama_kategori, deskripsi) VALUES (:nama, :desc)");
+                $stmt->execute([':nama' => $name, ':desc' => $desc]);
+                $success = 'Kategori berhasil ditambahkan.';
+            } else {
+                $id = intval($_POST['id'] ?? 0);
+                $stmt = $pdo->prepare("UPDATE kategori_produk SET nama_kategori = :nama, deskripsi = :desc WHERE id_kategori = :id");
+                $stmt->execute([':nama' => $name, ':desc' => $desc, ':id' => $id]);
+                $success = 'Kategori berhasil diperbarui.';
+            }
+        } catch (Exception $e) {
+            $error = 'Error: ' . $e->getMessage();
+        }
+    }
+}
+
+// Get all categories
+$stmt = $pdo->query("SELECT * FROM kategori_produk ORDER BY nama_kategori");
+$categories = $stmt->fetchAll();
+
+// Get category to edit (if any)
+$edit = null;
+if (isset($_GET['edit'])) {
+    $id = intval($_GET['edit']);
+    $stmt = $pdo->prepare("SELECT * FROM kategori_produk WHERE id_kategori = :id");
+    $stmt->execute([':id' => $id]);
+    $edit = $stmt->fetch();
+}
+?>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kelola Kategori - MeyDa Admin</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-nav">
+        <a href="products.php">Produk</a>
+        <a href="categories.php" class="active">Kategori</a>
+        <a href="transactions.php">Transaksi</a>
+        <a href="reports.php">Laporan</a>
+        <a href="dashboard.php">Dashboard</a>
+        <a href="../index.php?action=logout">Logout</a>
+      </div>
+    </header>
+
+    <main>
+      <h1>Kelola Kategori</h1>
+
+      <?php if ($error): ?>
+        <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+      <?php endif; ?>
+      <?php if ($success): ?>
+        <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+      <?php endif; ?>
+
+      <!-- Form Add/Edit -->
+      <div class="form-section">
+        <h2><?php echo $edit ? 'Edit Kategori' : 'Tambah Kategori'; ?></h2>
+        <form method="post">
+          <input type="hidden" name="action" value="<?php echo $edit ? 'edit' : 'add'; ?>">
+          <?php if ($edit): ?>
+            <input type="hidden" name="id" value="<?php echo $edit['id_kategori']; ?>">
+          <?php endif; ?>
+
+          <div class="form-group">
+            <label>Nama Kategori</label>
+            <input type="text" name="nama_kategori" value="<?php echo $edit ? htmlspecialchars($edit['nama_kategori']) : ''; ?>" required>
+          </div>
+
+          <div class="form-group">
+            <label>Deskripsi (opsional)</label>
+            <textarea name="deskripsi"><?php echo $edit ? htmlspecialchars($edit['deskripsi'] ?? '') : ''; ?></textarea>
+          </div>
+
+          <button type="submit"><?php echo $edit ? 'Update' : 'Tambah'; ?> Kategori</button>
+          <?php if ($edit): ?>
+            <a href="categories.php" class="btn-secondary">Batal</a>
+          <?php endif; ?>
+        </form>
+      </div>
+
+      <!-- Category List -->
+      <div class="section">
+        <h2>Daftar Kategori</h2>
+        <table class="table">
+          <tr>
+            <th>Nama Kategori</th>
+            <th>Deskripsi</th>
+            <th>Produk</th>
+            <th>Aksi</th>
+          </tr>
+          <?php foreach ($categories as $c): ?>
+            <?php
+              $stmt = $pdo->prepare("SELECT COUNT(*) as cnt FROM produk WHERE id_kategori = :id");
+              $stmt->execute([':id' => $c['id_kategori']]);
+              $productCount = $stmt->fetch()['cnt'];
+            ?>
+            <tr>
+              <td><?php echo htmlspecialchars($c['nama_kategori']); ?></td>
+              <td><?php echo htmlspecialchars($c['deskripsi'] ?? '-'); ?></td>
+              <td><?php echo $productCount; ?></td>
+              <td>
+                <a href="?edit=<?php echo $c['id_kategori']; ?>">Edit</a>
+                <?php if ($productCount == 0): ?>
+                  <form method="post" style="display:inline;">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" value="<?php echo $c['id_kategori']; ?>">
+                    <button type="submit" onclick="return confirm('Yakin?')">Hapus</button>
+                  </form>
+                <?php else: ?>
+                  <span style="color:var(--muted)">Tidak bisa hapus</span>
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </table>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; 2025 MeyDa Collection. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <style>
+    .form-section {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    button, .btn-secondary {
+      background: #1f6feb;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    button:hover, .btn-secondary:hover {
+      background: #0860ca;
+    }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    table th, table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    table th {
+      background: #f5f5f5;
+      font-weight: 500;
+    }
+    .alert {
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+    }
+  </style>
+</body>
+</html>

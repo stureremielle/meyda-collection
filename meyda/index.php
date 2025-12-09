@@ -16,7 +16,7 @@ if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!isset($_SESSION['cart'][$id])) $_SESSION['cart'][$id] = 0;
         $_SESSION['cart'][$id] += $qty;
     }
-    header('Location: index.php'); exit;
+    header('Location: index.php?action=cart'); exit;
 }
 
 if ($action === 'remove') {
@@ -136,7 +136,7 @@ if (!empty($_SESSION['cart'])) {
             <a href="account.php">Hi, <?php echo htmlspecialchars($_SESSION['customer_name']); ?></a>
             <a href="auth.php?action=logout">Logout</a>
           <?php elseif (isStaff()): ?>
-            <a href="admin/dashboard.php">Admin</a>
+            <a href="admin/products.php">Admin</a>
             <a href="auth.php?action=logout">Logout</a>
           <?php endif; ?>
         <?php else: ?>
@@ -192,7 +192,11 @@ if (!empty($_SESSION['cart'])) {
       <section class="products-grid" aria-label="Featured products">
         <?php foreach ($products as $p): ?>
           <article class="product-card">
-            <div class="product-img">IMG</div>
+            <?php if (!empty($p['gambar'])): ?>
+              <img src="uploads/<?php echo h($p['gambar']); ?>" alt="<?php echo h($p['nama_produk']); ?>" class="product-img-real">
+            <?php else: ?>
+              <div class="product-img">IMG</div>
+            <?php endif; ?>
             <h3><?php echo h($p['nama_produk']); ?></h3>
             <p class="muted"><?php echo h($p['nama_kategori']); ?></p>
             <p class="desc"><?php echo h($p['deskripsi']); ?></p>
