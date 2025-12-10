@@ -84,7 +84,7 @@ if (isset($_GET['edit'])) {
     .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #404040; border-radius: 8px; font-family: inherit; background: #1a1a1a; color: #ffffff; }
     .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #ff6d00; box-shadow: 0 0 0 2px rgba(255,109,0,0.1); }
     .form-group textarea { min-height: 80px; resize: vertical; }
-    button, .btn-secondary { background: #ff6d00; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; margin-right: 10px; font-weight: 500; transition: all 0.2s; font-family: 'Poppins', inherit; }
+    button, .btn-secondary { background: #ff6d00; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; margin-right: 10px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; }
     button:hover, .btn-secondary:hover { background: #e55d00; transform: translateY(-1px); }
     .btn-secondary { background: #404040; }
     .btn-secondary:hover { background: #505050; }
@@ -92,11 +92,12 @@ if (isset($_GET['edit'])) {
     table th, table td { padding: 16px; text-align: left; border-bottom: 1px solid #404040; color: #ffffff; }
     table th { background: #1a1a1a; font-weight: 600; }
     .action-cell { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .action-btn { background: #ff6d00; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Poppins', inherit; }
+    .action-btn { background: #ff6d00; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Futura', inherit; }
     .action-btn:hover { background: #e55d00; transform: translateY(-1px); }
     .action-btn-danger { background: #c84f2c; }
     .action-btn-danger:hover { background: #a83a1f; }
     .action-disabled { color: #888888; font-size: 13px; }
+    .delete-form { display: inline; margin: 0; padding: 0; }
     .alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; }
     .alert-error { background: #4a2a2a; color: #ff9999; border: 1px solid #662a2a; }
     .alert-success { background: #2a4a3a; color: #99ff99; border: 1px solid #2a6a4a; }
@@ -167,7 +168,7 @@ if (isset($_GET['edit'])) {
                 <div class="action-cell">
                   <a href="?edit=<?php echo $c['id_kategori']; ?>" class="action-btn">Edit</a>
                   <?php if ($productCount == 0): ?>
-                    <form method="post" style="display:inline; margin:0; padding:0;">
+                    <form method="post" class="delete-form">
                       <input type="hidden" name="action" value="delete">
                       <input type="hidden" name="id" value="<?php echo $c['id_kategori']; ?>">
                       <button type="submit" class="action-btn action-btn-danger" onclick="return confirm('Yakin?')">Hapus</button>
