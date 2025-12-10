@@ -159,7 +159,7 @@ if ($editId > 0) {
     .form-group textarea { resize: vertical; min-height: 80px; }
     .form-group input[type="file"] { padding: 4px; }
     .image-preview { max-width: 200px; margin-top: 10px; border-radius: 8px; }
-    .form-buttons { display:flex; flex-direction:row; justify-content:flex-end; align-items:center; gap:12px; margin-top:12px; padding: 0 10px; }
+    .form-buttons { display:flex; flex-direction:row; justify-content:flex-end; align-items:center; gap:12px; margin-top:12px; padding: 0; }
     .form-buttons button, .form-buttons .cancel-button { width: 120px; text-align: center; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; height: 40px; display: flex; align-items: center; justify-content: center; line-height: 1; min-width: 100px; text-decoration: none; }
     .form-buttons button { background: #ff6d00; color: white; cursor: pointer; }
     .form-buttons button:hover { background: #e55d00; transform: translateY(-1px); }
@@ -250,7 +250,6 @@ if ($editId > 0) {
           <div class="form-buttons">
               <?php if ($editId > 0): ?>
                   <button type="submit">Update</button>
-                  <a href="products.php" class="cancel-button">Batal</a>
               <?php else: ?>
                   <button type="submit">Tambah</button>
               <?php endif; ?>
