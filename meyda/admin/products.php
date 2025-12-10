@@ -149,7 +149,7 @@ if ($editId > 0) {
       font-weight: 700;
     }
     * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
-    .form-container { max-width: 600px; margin: 20px 0; padding: 20px; border: 1px solid #404040; border-radius: 8px; background: #252525; }
+    main.container { max-width: 1200px; margin: 0 auto; padding: 20px 12px; width: 100%; }
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #ffffff; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #404040; border-radius: 8px; font-family: 'Futura', inherit; background: #1a1a1a; color: #ffffff; }

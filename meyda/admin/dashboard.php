@@ -44,7 +44,7 @@ $stats['total_products'] = $stmtProducts->fetch()['cnt'];
     * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
     html, body { height: 100%; }
     body { display: flex; flex-direction: column; }
-    main.container { flex: 1; }
+    main.container { flex: 1; max-width: 1200px; margin: 0 auto; padding: 20px 12px; width: 100%; }
     .admin-header { background: #f8fafc; border-bottom: 1px solid #eef2f6; padding: 15px 0; margin-bottom: 20px; }
     .admin-nav { display: flex; gap: 15px; margin-top: 10px; }
     .admin-nav a { color: #ff6d00; text-decoration: none; padding: 8px 12px; border-radius: 4px; transition: all 0.2s; }

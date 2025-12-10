@@ -50,6 +50,10 @@ button, input, textarea, select {
   background:var(--md-sys-color-surface);
 }
 
+.site-header .container{
+  padding: 0 12px;
+}
+
 .brand{
   margin:0;
   display:inline-block;
@@ -211,6 +215,10 @@ button:disabled{
   text-align:center;
   color:var(--muted);
   font-size:13px;
+}
+
+.site-footer .container {
+  padding: 0 12px;
 }
 
 .alert{

@@ -91,14 +91,14 @@ if (isset($_GET['edit'])) {
     table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #252525; }
     table th, table td { padding: 16px; text-align: left; border-bottom: 1px solid #404040; color: #ffffff; }
     table th { background: #1a1a1a; font-weight: 600; }
-    .action-cell { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .action-btn { background: #ff6d00; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Futura', inherit; white-space: nowrap; }
+    .action-cell { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
+    .action-btn { background: #ff6d00; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Futura', inherit; white-space: nowrap; flex-shrink: 0; }
     .action-btn:hover { background: #e55d00; transform: translateY(-1px); }
     .action-btn-danger { background: #c84f2c; }
     .action-btn-danger:hover { background: #a83a1f; }
     .action-disabled { color: #888888; font-size: 13px; }
-    .delete-form { display: inline; margin: 0; padding: 0; }
-    .delete-form button { white-space: nowrap; }
+    .delete-form { display: inline-block; margin: 0; padding: 0; flex-shrink: 0; }
+    .delete-form button { white-space: nowrap; width: auto; display: inline-block; padding: 6px 12px; margin: 0; }
     .alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; }
     .alert-error { background: #4a2a2a; color: #ff9999; border: 1px solid #662a2a; }
     .alert-success { background: #2a4a3a; color: #99ff99; border: 1px solid #2a6a4a; }
