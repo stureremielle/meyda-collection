@@ -230,8 +230,7 @@ if (!empty($_SESSION['cart'])) {
             <a href="#products" class="shop-button">Shop it Now</a>
           </div>
           <div class="banner-image">
-            <!-- Add your person image here -->
-            <!-- Example: <img src="path/to/your/person-image.jpg" alt="Person wearing clothing"> -->
+          <img src="assets/model.png" alt="Person wearing clothing">
           </div>
         </div>
       </section>
