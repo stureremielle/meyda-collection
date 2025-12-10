@@ -358,7 +358,7 @@ table.cart th{
 }
 
 .banner-title {
-  font-size: 64px;
+  font-size: 72px;
   font-family: 'OGG', 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial;
   font-weight: 700;
   margin: 0 0 24px 0;
@@ -490,6 +490,7 @@ table.cart th{
   
   .banner-title {
     font-size: 42px;
+    font-family: 'OGG', 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial;
   }
 }
 
