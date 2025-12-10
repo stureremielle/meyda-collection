@@ -16,9 +16,19 @@ if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!isset($_SESSION['cart'][$id])) $_SESSION['cart'][$id] = 0;
         $_SESSION['cart'][$id] += $qty;
     }
-  // ensure session data is written before redirect and stay on the storefront
-  if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
-  header('Location: index.php'); exit;
+    
+    // Check if this is an AJAX request
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        // For AJAX requests, just return JSON response
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'cart_count' => array_sum($_SESSION['cart'] ?? [])]);
+        exit;
+    } else {
+        // For regular form submissions, redirect as before
+        if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
+        header('Location: index.php'); 
+        exit;
+    }
 }
 
 if ($action === 'remove') {
@@ -112,6 +122,13 @@ SQL;
             $error = 'Terjadi kesalahan saat checkout: ' . $e->getMessage();
         }
     }
+}
+
+// Handle cart count API request
+if ($action === 'cart_count') {
+    header('Content-Type: application/json');
+    echo json_encode(['count' => array_sum($_SESSION['cart'] ?? [])]);
+    exit;
 }
 
 $stmt = $pdo->query("SELECT p.id_produk, p.nama_produk, p.deskripsi, p.harga, p.stok, p.gambar, k.nama_kategori FROM produk p JOIN kategori_produk k ON p.id_kategori = k.id_kategori ORDER BY p.created_at LIMIT 12");
@@ -251,11 +268,11 @@ if (!empty($_SESSION['cart'])) {
             <p class="muted"><?php echo h($p['nama_kategori']); ?></p>
             <p class="desc"><?php echo h($p['deskripsi']); ?></p>
             <p class="price">Rp <?php echo number_format($p['harga'],0,',','.'); ?></p>
-            <form method="post" action="index.php">
+            <form class="add-to-cart-form" method="post" action="index.php" onsubmit="addToCart(event, <?php echo (int)$p['id_produk']; ?>)">
               <input type="hidden" name="action" value="add">
               <input type="hidden" name="id" value="<?php echo (int)$p['id_produk']; ?>">
               <label style="display:none"><input type="number" name="qty" value="1" min="1"></label>
-              <button type="submit"<?php echo $p['stok']<=0 ? ' disabled' : ''; ?>><?php echo $p['stok']>0 ? 'Tambah ke Keranjang' : 'Habis'; ?></button>
+              <button type="submit" class="add-to-cart-btn"<?php echo $p['stok']<=0 ? ' disabled' : ''; ?>><?php echo $p['stok']>0 ? 'Tambah ke Keranjang' : 'Habis'; ?></button>
             </form>
           </article>
         <?php endforeach; ?>
@@ -301,6 +318,96 @@ if (!empty($_SESSION['cart'])) {
         });
       });
     });
+
+    // Function to add item to cart via AJAX
+    async function addToCart(event, productId) {
+      event.preventDefault(); // Prevent the default form submission
+      
+      // Find the form element
+      const form = event.target.closest('form.add-to-cart-form');
+      const formData = new FormData(form);
+      
+      // Add header to indicate AJAX request
+      const headers = {
+        'X-Requested-With': 'XMLHttpRequest'
+      };
+      
+      try {
+        const response = await fetch('index.php', {
+          method: 'POST',
+          body: formData,
+          headers: headers
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Update the cart count in the navigation
+          updateCartCount();
+          
+          // Optional: Show a success message
+          showNotification('Item ditambahkan ke keranjang!');
+        } else {
+          console.error('Error adding item to cart');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Function to update the cart count in the navigation
+    function updateCartCount() {
+      // We need to fetch the updated cart count from the server
+      fetch('index.php?action=cart_count')
+        .then(response => response.json())
+        .then(data => {
+          const cartLink = document.querySelector('a[href="index.php?action=cart"]');
+          if (cartLink) {
+            // Extract the text content before the cart count and append the new count
+            cartLink.innerHTML = 'cart (' + data.count + ')';
+          }
+        })
+        .catch(error => console.error('Error updating cart count:', error));
+    }
+
+    // Function to show a notification
+    function showNotification(message) {
+      // Remove any existing notifications
+      const existingNotifications = document.querySelectorAll('.notification');
+      existingNotifications.forEach(notification => notification.remove());
+      
+      // Create a notification element
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Fade in
+      setTimeout(() => {
+        notification.style.opacity = '1';
+      }, 10);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
+      }, 3000);
+    }
   </script>
 </body>
 </html>
