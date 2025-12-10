@@ -51,18 +51,7 @@ if ($viewId > 0) {
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <h1 class="brand">MeyDa Collection - Admin</h1>
-      <nav class="nav">
-        <a href="dashboard.php">Dashboard</a>
-        <a href="products.php">Produk</a>
-        <a href="categories.php">Kategori</a>
-        <a href="reports.php">Laporan</a>
-        <a href="transactions.php">Transaksi</a>
-      </nav>
-    </div>
-  </header>
+  <?php include __DIR__ . '/_header.php'; ?>
 
   <main class="container">
     <h2>Transaksi</h2>

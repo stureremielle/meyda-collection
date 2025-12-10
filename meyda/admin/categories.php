@@ -77,19 +77,7 @@ if (isset($_GET['edit'])) {
 </head>
 <body>
   <div class="container">
-    <header class="site-header">
-      <div class="container">
-        <h1 class="brand">MeyDa Collection - Admin</h1>
-        <nav class="nav">
-          <a href="dashboard.php">Dashboard</a>
-          <a href="products.php">Produk</a>
-          <a href="categories.php" class="active">Kategori</a>
-          <a href="reports.php">Laporan</a>
-          <a href="transactions.php">Transaksi</a>
-          <a href="../index.php?action=logout" class="btn logout-btn" onclick="return confirm('Logout?')">Logout</a>
-        </nav>
-      </div>
-    </header>
+    <?php include __DIR__ . '/_header.php'; ?>
 
     <main>
       <h1>Kelola Kategori</h1>
