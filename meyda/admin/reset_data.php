@@ -102,6 +102,8 @@ $detailCount = $pdo->query("SELECT COUNT(*) FROM detail_transaksi")->fetchColumn
       border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
       margin-left: 10px;
       transition: background 0.3s;
     }
