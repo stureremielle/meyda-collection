@@ -133,18 +133,34 @@ if ($editId > 0) {
   <title>Kelola Produk - MeyDa Collection</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/Futura Book font.ttf') format('truetype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/futura medium bt.ttf') format('truetype');
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/Futura Bold font.ttf') format('truetype');
+      font-weight: 700;
+    }
+    * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
     .form-container { max-width: 600px; margin: 20px 0; padding: 20px; border: 1px solid #404040; border-radius: 8px; background: #252525; }
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #ffffff; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #404040; border-radius: 8px; font-family: inherit; background: #1a1a1a; color: #ffffff; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #404040; border-radius: 8px; font-family: 'Futura', inherit; background: #1a1a1a; color: #ffffff; }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #ff6d00; box-shadow: 0 0 0 2px rgba(255,109,0,0.1); }
     .form-group textarea { resize: vertical; min-height: 80px; }
     .form-group input[type="file"] { padding: 4px; }
     .image-preview { max-width: 200px; margin-top: 10px; border-radius: 8px; }
     .form-buttons { display: flex; gap: 10px; }
-    .form-buttons button { padding: 10px 20px; background: #ff6d00; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+    .form-buttons button { padding: 10px 20px; background: #ff6d00; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; }
     .form-buttons button:hover { background: #e55d00; transform: translateY(-1px); }
-    .form-buttons a { padding: 10px 20px; background: #404040; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.2s; }
+    .form-buttons a { padding: 10px 20px; background: #404040; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; }
     .form-buttons a:hover { background: #505050; }
     .error-msg { color: #ff9999; background: #4a2a2a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #662a2a; }
     .success-msg { color: #99ff99; background: #2a4a3a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2a6a4a; }

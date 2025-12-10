@@ -26,6 +26,22 @@ $stats['total_products'] = $stmtProducts->fetch()['cnt'];
   <title>Admin Dashboard - MeyDa Collection</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/Futura Book font.ttf') format('truetype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/futura medium bt.ttf') format('truetype');
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/Futura Bold font.ttf') format('truetype');
+      font-weight: 700;
+    }
+    * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
     html, body { height: 100%; }
     body { display: flex; flex-direction: column; }
     main.container { flex: 1; }
@@ -39,7 +55,7 @@ $stats['total_products'] = $stmtProducts->fetch()['cnt'];
     .stat-card .value { font-size: 28px; font-weight: 600; color: #ff6d00; }
     .section { margin-bottom: 30px; }
     .section h2 { margin-top: 0; color: #ffffff; }
-    .btn { display: inline-block; padding: 10px 16px; background: #ff6d00; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.2s; }
+    .btn { display: inline-block; padding: 10px 16px; background: #ff6d00; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; }
     .btn:hover { background: #e55d00; transform: translateY(-1px); }
   </style>
 </head>

@@ -15,23 +15,23 @@
 
 @font-face {
   font-family: 'Futura';
-  src: url('../fonts/futura/Futura Book font.ttf') format('truetype');
+  src: url('./fonts/futura/Futura Book font.ttf') format('truetype');
   font-weight: 400;
 }
 
 @font-face {
   font-family: 'Futura';
-  src: url('../fonts/futura/Futura Medium Italic font.ttf') format('truetype');
+  src: url('./fonts/futura/futura medium bt.ttf') format('truetype');
   font-weight: 500;
 }
 
 @font-face {
   font-family: 'Futura';
-  src: url('../fonts/futura/Futura Bold font.ttf') format('truetype');
+  src: url('./fonts/futura/Futura Bold font.ttf') format('truetype');
   font-weight: 700;
 }
 
-*{box-sizing:border-box}
+*{box-sizing:border-box; font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial;}
 
 body{
   font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial;
@@ -40,7 +40,9 @@ body{
   background: var(--md-sys-color-surface);
 }
 
-.container{max-width:1200px;margin:0 auto;padding:12px}
+button, input, textarea, select {
+  font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial;
+}
 
 .site-header{
   border-bottom:1px solid var(--md-sys-color-outline);

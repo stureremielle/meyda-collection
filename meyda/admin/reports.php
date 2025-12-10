@@ -24,6 +24,22 @@ $months = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', '
   <title>Laporan Penjualan - MeyDa Collection</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/Futura Book font.ttf') format('truetype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/futura medium bt.ttf') format('truetype');
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/Futura Bold font.ttf') format('truetype');
+      font-weight: 700;
+    }
+    * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
     html, body { height: 100%; }
     body { display: flex; flex-direction: column; }
     main.container { flex: 1; max-width: 1200px; margin: 0 auto; padding: 12px; width: 100%; }

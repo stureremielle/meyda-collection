@@ -39,6 +39,22 @@ if ($viewId > 0) {
   <title>Transaksi - MeyDa Collection</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/Futura Book font.ttf') format('truetype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/futura medium bt.ttf') format('truetype');
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'Futura';
+      src: url('../fonts/futura/Futura Bold font.ttf') format('truetype');
+      font-weight: 700;
+    }
+    * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #252525; }
     table th, table td { padding: 10px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
     table th { background: #1a1a1a; font-weight: 600; }
