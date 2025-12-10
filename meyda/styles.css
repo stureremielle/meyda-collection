@@ -524,14 +524,6 @@ table.cart th{
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Container for main content with padding */
-.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-/* Responsive container padding for mobile */
-@media (max-width: 768px) {
-  .container { padding: 0 16px; }
-}
-
 /* Auth (login/register) centered layout — apply per-page with class `auth-center` on main */
 body.auth-page { display: flex; flex-direction: column; min-height: 100vh; }
 body.auth-page main.auth-center { flex: 1; display:flex; align-items:center; justify-content:center; padding:40px 16px; }
