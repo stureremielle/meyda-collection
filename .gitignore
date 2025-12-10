@@ -1,1 +1,5 @@
-Nothing should be ignored based on the provided file changes, as they only contain PHP source files in the admin directory.
+# Examples-Only: PHP project with minimal artifacts
+# No compiled files, dependency directories, or temp files detected in changes
+# Only preserving source/config files as per policy
+
+# Keep this .gitignore minimal since only source files were detected
