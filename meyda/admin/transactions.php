@@ -71,7 +71,10 @@ if ($viewId > 0) {
   <?php include __DIR__ . '/_header.php'; ?>
 
   <main class="container">
-    <h2>Transaksi</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2>Transaksi</h2>
+      <a href="reset_data.php" class="btn-reset">Reset Data</a>
+    </div>
 
     <?php if ($viewId > 0 && !empty($transDetail)): ?>
       <div class="detail-section">

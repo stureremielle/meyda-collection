@@ -83,6 +83,10 @@ $stats['total_products'] = $stmtProducts->fetch()['cnt'];
         <div class="value" style="color: #c84f2c;"><?php echo (int)$stats['low_stock']; ?></div>
       </div>
     </div>
+    
+    <div style="margin: 20px 0; text-align: center;">
+      <a href="reset_data.php" class="btn-reset">Reset Data Transaksi & Laporan</a>
+    </div>
   </main>
 
   <footer class="site-footer">
