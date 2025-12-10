@@ -26,6 +26,9 @@ $stats['total_products'] = $stmtProducts->fetch()['cnt'];
   <title>Admin Dashboard - MeyDa Collection</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; }
+    main.container { flex: 1; }
     .admin-header { background: #f8fafc; border-bottom: 1px solid #eef2f6; padding: 15px 0; margin-bottom: 20px; }
     .admin-nav { display: flex; gap: 15px; margin-top: 10px; }
     .admin-nav a { color: #ff6d00; text-decoration: none; padding: 8px 12px; border-radius: 4px; transition: all 0.2s; }
@@ -38,19 +41,12 @@ $stats['total_products'] = $stmtProducts->fetch()['cnt'];
     .section h2 { margin-top: 0; color: #ffffff; }
     .btn { display: inline-block; padding: 10px 16px; background: #ff6d00; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.2s; }
     .btn:hover { background: #e55d00; transform: translateY(-1px); }
-    .logout-btn { background: #8b1e1e; float: right; }
-    .logout-btn:hover { background: #6b1515; }
   </style>
 </head>
 <body>
   <?php include __DIR__ . '/_header.php'; ?>
 
   <main class="container">
-    <div style="padding: 15px 0; border-bottom: 1px solid #eef2f6; margin-bottom: 20px;">
-      <p>Logged in as: <strong><?php echo htmlspecialchars($_SESSION['staff_name']); ?></strong> (<?php echo htmlspecialchars($_SESSION['staff_role']); ?>)</p>
-      <a href="../auth.php?action=logout" class="btn logout-btn" onclick="return confirm('Logout?')">Logout</a>
-    </div>
-
     <h2>Dashboard</h2>
 
     <div class="stats-grid">
@@ -70,15 +66,6 @@ $stats['total_products'] = $stmtProducts->fetch()['cnt'];
         <h3>Stok Rendah (&le;5)</h3>
         <div class="value" style="color: #c84f2c;"><?php echo (int)$stats['low_stock']; ?></div>
       </div>
-    </div>
-
-    <div class="section">
-      <h3>Manajemen</h3>
-      <p>
-        <a href="products.php" class="btn">Kelola Produk</a>
-        <a href="reports.php" class="btn">Lihat Laporan</a>
-        <a href="transactions.php" class="btn">Lihat Transaksi</a>
-      </p>
     </div>
   </main>
 
