@@ -160,12 +160,11 @@ if ($editId > 0) {
     .form-group input[type="file"] { padding: 4px; }
     .image-preview { max-width: 200px; margin-top: 10px; border-radius: 8px; }
     .form-buttons { display:flex; flex-direction:row; justify-content:center; align-items:center; gap:12px; margin-top:12px; }
-    .form-buttons button, .form-buttons a { width: 120px; text-align: center;}
-    .form-buttons button, .form-buttons a { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; height: 40px; display: flex; align-items: center; justify-content: center; line-height: 1; min-width: 100px; text-decoration: none; }
+    .form-buttons button, .form-buttons .cancel-button { width: 120px; text-align: center; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; height: 40px; display: flex; align-items: center; justify-content: center; line-height: 1; min-width: 100px; text-decoration: none; }
     .form-buttons button { background: #ff6d00; color: white; cursor: pointer; }
     .form-buttons button:hover { background: #e55d00; transform: translateY(-1px); }
-    .form-buttons a { background: #404040; color: white; }
-    .form-buttons a:hover { background: #505050; transform: translateY(-1px); }
+    .form-buttons .cancel-button { background: #404040; color: white; }
+    .form-buttons .cancel-button:hover { background: #505050; transform: translateY(-1px); }
     .error-msg { color: #ff9999; background: #4a2a2a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #662a2a; }
     .success-msg { color: #99ff99; background: #2a4a3a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2a6a4a; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #252525; }
@@ -250,9 +249,11 @@ if ($editId > 0) {
               <?php endif; ?>
           </div>
           <div class="form-buttons">
-              <button type="submit"><?php echo $editId > 0 ? 'Update' : 'Tambah'; ?></button>
               <?php if ($editId > 0): ?>
-              <a href="products.php" class="cancel-button">Batal</a>
+                  <button type="submit">Update</button>
+                  <a href="products.php" class="cancel-button">Batal</a>
+              <?php else: ?>
+                  <button type="submit">Tambah</button>
               <?php endif; ?>
           </div>
 
