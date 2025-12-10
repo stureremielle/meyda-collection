@@ -238,7 +238,7 @@ if ($editId > 0) {
             <input type="number" id="stok" name="stok" value="<?php echo $editData ? $editData['stok'] : ''; ?>" min="0" required>
           </div>
           <div class="form-group">
-              <label for="gambar">Gambar Produk (JPG, PNG, GIF, WebP - Max 2MB)</label>
+              <label for="gambar">Gambar Produk (JPG, PNG, GIF, WebP - Max 2MB) - Ukuran optimal: 280x200px (lebar x tinggi) untuk tampilan terbaik</label>
               <input type="file" id="gambar" name="gambar" accept="image/*">
 
               <?php if ($editData && !empty($editData['gambar'])): ?>
@@ -251,7 +251,9 @@ if ($editId > 0) {
           </div>
           <div class="form-buttons">
               <button type="submit"><?php echo $editId > 0 ? 'Update' : 'Tambah'; ?></button>
+              <?php if ($editId > 0): ?>
               <a href="products.php" class="cancel-button">Batal</a>
+              <?php endif; ?>
           </div>
 
         </form>
