@@ -509,6 +509,23 @@ table.cart th{
 .site-footer .container { display:flex; justify-content:space-between; align-items:center; }
 .site-footer .footer-left { color:var(--muted); }
 .site-footer .footer-right a { color:var(--muted); text-decoration:none; }
+  /* Button styles */
+  .btn-reset {
+    background: #ff3d00;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+  
+  .btn-reset:hover {
+    background: #cc3000;
+  }
+  
 
 /* Notification styles */
 .notification {
