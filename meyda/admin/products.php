@@ -17,19 +17,39 @@ function h($s){ return htmlspecialchars($s, ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8');
 // Handle delete
 if ((isset($_GET['delete']) || (isset($_POST['action']) && $_POST['action'] === 'delete')) && isAdmin()) {
     $id = (int)($_GET['delete'] ?? $_POST['id'] ?? 0);
+    $force_delete = isset($_GET['force']) || (isset($_POST['force']) && $_POST['force'] === '1');
+    
     if ($id > 0) {
         try {
-            // Delete product image if exists
-            $stmt = $pdo->prepare("SELECT gambar FROM produk WHERE id_produk = :id");
-            $stmt->execute([':id' => $id]);
-            $product = $stmt->fetch();
-            if ($product && !empty($product['gambar'])) {
-                $imgPath = $uploadsDir . '/' . $product['gambar'];
-                if (file_exists($imgPath)) unlink($imgPath);
+            // Check if product is referenced in any transaction details
+            $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM detail_transaksi WHERE id_produk = :id");
+            $checkStmt->execute([':id' => $id]);
+            $count = $checkStmt->fetchColumn();
+            
+            if ($count > 0 && !$force_delete) {
+                // Product is referenced and force delete not specified
+                $error = 'Tidak bisa menghapus: Produk sudah digunakan dalam transaksi sebelumnya. Gunakan fitur "hapus paksa" jika tetap ingin menghapusnya.';
+            } else {
+                if ($count > 0 && $force_delete) {
+                    // Force delete - remove related records in detail_transaksi first
+                    $stmt = $pdo->prepare("DELETE FROM detail_transaksi WHERE id_produk = :id");
+                    $stmt->execute([':id' => $id]);
+                }
+                
+                // Delete product image if exists
+                $stmt = $pdo->prepare("SELECT gambar FROM produk WHERE id_produk = :id");
+                $stmt->execute([':id' => $id]);
+                $product = $stmt->fetch();
+                if ($product && !empty($product['gambar'])) {
+                    $imgPath = $uploadsDir . '/' . $product['gambar'];
+                    if (file_exists($imgPath)) unlink($imgPath);
+                }
+                
+                // Delete the product
+                $stmt = $pdo->prepare("DELETE FROM produk WHERE id_produk = :id");
+                $stmt->execute([':id' => $id]);
+                $success = 'Produk dihapus.';
             }
-            $stmt = $pdo->prepare("DELETE FROM produk WHERE id_produk = :id");
-            $stmt->execute([':id' => $id]);
-            $success = 'Produk dihapus.';
         } catch (Exception $e) {
             $error = 'Tidak bisa menghapus: ' . $e->getMessage();
         }
@@ -294,10 +314,16 @@ if ($editId > 0) {
                 <td>
                   <div class="action-cell">
                     <a href="products.php?edit=<?php echo $p['id_produk']; ?>" class="action-btn">Edit</a>
-                    <form method="post" class="delete-form">
+                    <form method="post" class="delete-form" style="margin-right: 5px;">
                       <input type="hidden" name="action" value="delete">
                       <input type="hidden" name="id" value="<?php echo $p['id_produk']; ?>">
                       <button type="submit" class="action-btn action-btn-danger" onclick="return confirm('Hapus produk ini?')">Hapus</button>
+                    </form>
+                    <form method="post" class="delete-form">
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="id" value="<?php echo $p['id_produk']; ?>">
+                      <input type="hidden" name="force" value="1">
+                      <button type="submit" class="action-btn action-btn-danger" onclick="return confirm('Produk ini pernah digunakan dalam transaksi. Yakin ingin hapus paksa?')">Hapus Paksa</button>
                     </form>
                   </div>
                 </td>
