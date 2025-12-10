@@ -138,10 +138,12 @@ if (isset($_GET['edit'])) {
             <textarea name="deskripsi"><?php echo $edit ? htmlspecialchars($edit['deskripsi'] ?? '') : ''; ?></textarea>
           </div>
 
+          <div style="display: flex; flex-direction: row; justify-content: flex-end; gap: 10px; margin-top: 10px;">
           <button type="submit"><?php echo $edit ? 'Update' : 'Tambah'; ?> Kategori</button>
           <?php if ($edit): ?>
             <a href="categories.php" class="btn-secondary">Batal</a>
           <?php endif; ?>
+        </div>
         </form>
       </div>
 

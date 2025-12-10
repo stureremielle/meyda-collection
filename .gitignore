@@ -1,1 +1,1 @@
-Nothing should be ignored based on the provided file changes. The modified file 'meyda/admin/products.php' is a source code file that should be tracked in version control.
+Nothing should be ignored based on the provided file changes, as they only contain PHP source files in the admin directory.
