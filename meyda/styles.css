@@ -176,16 +176,16 @@ button{
   padding:12px 24px;
   border-radius:12px;
   cursor:pointer;
-  box-shadow:var(--elevation-2);
-  font-weight:600;
+  font-weight:500;
   margin:0 16px 16px 16px;
   width:calc(100% - 32px);
   transition:all 0.2s;
+  font-family: 'Futura', inherit;
 }
 
 button:hover{
+  background:#e55d00;
   transform:translateY(-1px);
-  box-shadow:0 6px 14px rgba(255,109,0,0.3);
 }
 
 button:disabled{
