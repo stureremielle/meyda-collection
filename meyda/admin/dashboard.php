@@ -33,7 +33,7 @@ $stats['total_products'] = $stmtProducts->fetch()['cnt'];
     .admin-nav { display: flex; gap: 15px; margin-top: 10px; }
     .admin-nav a { color: #ff6d00; text-decoration: none; padding: 8px 12px; border-radius: 4px; transition: all 0.2s; }
     .admin-nav a:hover { background: #404040; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
     .stat-card { background: #252525; border: 1px solid #404040; padding: 15px; border-radius: 8px; }
     .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: #a0a0a0; }
     .stat-card .value { font-size: 28px; font-weight: 600; color: #ff6d00; }
