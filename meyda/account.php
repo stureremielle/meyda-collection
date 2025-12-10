@@ -39,15 +39,37 @@ if ($viewId > 0) {
   <title>Akun Saya - MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
   <style>
+    /* Override global container for account page to prevent conflicts */
+    main.account-container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 0 24px; 
+    }
+    
+    @media (max-width: 768px) {
+      main.account-container { 
+        padding: 0 16px; 
+      }
+    }
+    
+    /* Additional account-specific styling */
+    .account-content {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 20px;
+      border: 1px solid var(--md-sys-color-outline);
+    }
+    
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    table th, table td { padding: 10px; border-bottom: 1px solid #eef2f6; text-align: left; }
-    table th { background: #f8fafc; font-weight: 600; }
-    .status-paid { color: #11644a; background: #f4fffb; padding: 4px 8px; border-radius: 3px; }
-    .status-pending { color: #8b5e00; background: #fffbec; padding: 4px 8px; border-radius: 3px; }
-    .status-cancelled { color: #8b1e1e; background: #fff4f4; padding: 4px 8px; border-radius: 3px; }
-    .action-link { color: #1f6feb; text-decoration: none; }
-    .detail-section { margin-top: 30px; padding: 20px; border: 1px solid #eef2f6; border-radius: 6px; background: #f8fafc; }
-    .profile-card { padding: 20px; border: 1px solid #eef2f6; border-radius: 6px; background: #f8fafc; margin-bottom: 20px; }
+    table th, table td { padding: 10px; border-bottom: 1px solid var(--md-sys-color-outline); text-align: left; }
+    table th { background: var(--md-sys-color-surface-variant); font-weight: 600; }
+    .status-paid { color: #4ade80; background: #1a3620; padding: 4px 8px; border-radius: 3px; }
+    .status-pending { color: #fbbf24; background: #362c1a; padding: 4px 8px; border-radius: 3px; }
+    .status-cancelled { color: #f87171; background: #361a1a; padding: 4px 8px; border-radius: 3px; }
+    .action-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .detail-section { margin-top: 30px; padding: 20px; border: 1px solid var(--md-sys-color-outline); border-radius: 8px; background: var(--md-sys-color-surface-variant); }
+    .profile-card { padding: 20px; border: 1px solid var(--md-sys-color-outline); border-radius: 8px; background: var(--md-sys-color-surface-variant); margin-bottom: 20px; }
   </style>
 </head>
 <body>
@@ -63,14 +85,15 @@ if ($viewId > 0) {
     </div>
   </header>
 
-  <main class="container">
+  <main class="account-container">
     <h2>Akun Saya</h2>
 
-    <div class="profile-card">
-      <h3>Informasi Profil</h3>
-      <p><strong>Nama:</strong> <?php echo htmlspecialchars($_SESSION['customer_name']); ?></p>
-      <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['customer_email']); ?></p>
-    </div>
+    <div class="account-content">
+      <div class="profile-card">
+        <h3>Informasi Profil</h3>
+        <p><strong>Nama:</strong> <?php echo htmlspecialchars($_SESSION['customer_name']); ?></p>
+        <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['customer_email']); ?></p>
+      </div>
 
     <?php if ($viewId > 0 && !empty($transDetail)): ?>
       <div class="detail-section">
@@ -138,6 +161,7 @@ if ($viewId > 0) {
         </table>
       <?php endif; ?>
     <?php endif; ?>
+    </div> <!-- Close account-content div -->
   </main>
 
   <footer class="site-footer">

@@ -1,34 +1,28 @@
+```
 # Compiled and build artifacts
 *.pyc
 __pycache__/
-*.o
-*.obj
-*.class
-*.exe
-*.dll
-*.so
-*.a
-*.out
 
 # Dependencies
-node_modules/
-venv/
 .venv/
-.env
-.env.local
-*.env.*
+venv/
+node_modules/
 
 # Logs and temp files
 *.log
 *.tmp
 *.swp
-*.swo
+
+# Environment
+.env
+.env.local
+*.env.*
 
 # Editors
 .vscode/
 .idea/
 
-# System files
+# OS
 .DS_Store
 Thumbs.db
 
@@ -37,7 +31,63 @@ coverage/
 htmlcov/
 .coverage
 
-# Compressed files
+# Python specific
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Web specific
+*.min.js
+*.min.css
+.sass-cache/
+
+# Backup files
+*~
+\#*\#
+*.bak
+*.swp
+*.swo
+
+# IDE specific
+.vs/
+*.sublime-project
+*.sublime-workspace
+nbproject/
+*.fdb_latexmk
+*.aux
+*.bbl
+*.blg
+*.idx
+*.ilg
+*.ind
+*.lof
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.cb
+*.cb2
+*~
+
+# Security
+.secret
+*.key
+*.pem
+id_rsa
+id_rsa.pub
+
+# Database
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Compression
 *.zip
 *.gz
 *.tar
@@ -60,3 +110,12 @@ htmlcov/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+coverage.xml
+nosetests.xml
+```
