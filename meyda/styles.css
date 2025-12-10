@@ -237,3 +237,33 @@ table.cart th{
 .link:hover{
   opacity:0.8;
 }
+
+/* Shared header/nav/footer styles for admin and public pages */
+.site-header .container { display:flex; align-items:center; justify-content:space-between; }
+.site-header .nav { float:none; display:flex; gap:16px; align-items:center; }
+.site-header .nav a { color:var(--md-sys-color-on-surface); text-decoration:none; padding:8px 12px; border-radius:6px; transition:all .15s; }
+.site-header .nav a:hover { background:var(--card); }
+.site-header .brand { font-size:20px; }
+
+/* Active nav variation (pages can add .active) */
+.nav a.active { background:var(--accent); color:var(--md-sys-color-on-primary); font-weight:600; }
+
+/* Logout button style used in admin header */
+.logout-btn { background:#8b1e1e; color:#fff; padding:8px 12px; border-radius:8px; text-decoration:none; }
+.logout-btn:hover { background:#6b1515; }
+
+/* Footer layout: left and right aligned */
+.site-footer .container { display:flex; justify-content:space-between; align-items:center; }
+.site-footer .footer-left { color:var(--muted); }
+.site-footer .footer-right a { color:var(--muted); text-decoration:none; }
+
+/* Auth (login/register) centered layout — apply per-page with class `auth-center` on main */
+.auth-center { display:flex; align-items:center; justify-content:center; min-height: calc(100vh - 200px); }
+.login-card { background:var(--card); border:1px solid var(--md-sys-color-outline); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.6); overflow:hidden; width:420px; max-width:92%; }
+.login-tabs a { color:var(--muted); }
+.login-tabs a.active { color:var(--accent); border-bottom-color:var(--accent); }
+.login-form input { background:#0f0f0f; color:var(--md-sys-color-on-surface); border:1px solid var(--md-sys-color-outline); }
+.login-form input::placeholder { color:#6b7280; }
+.login-form .btn-primary { display:block; width:100%; padding:12px; background:var(--accent); color:var(--md-sys-color-on-primary); border-radius:12px; border:none; font-weight:600; }
+.login-form .btn-primary:hover { background:#e55d00; }
+

@@ -42,22 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Login - MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    .login-container { max-width: 420px; margin: 48px auto; padding: 0; border-radius: 12px; background: transparent; }
-    .login-card { background: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline); border-radius: 12px; box-shadow: var(--elevation-1); overflow: hidden }
-    .login-tabs { display: flex; gap: 8px; margin: 0; }
-    .login-tabs a { flex: 1; padding: 12px; text-align: center; cursor: pointer; text-decoration: none; color: var(--muted); border-bottom: 2px solid transparent }
-    .login-tabs a.active { color: var(--accent); border-bottom-color: var(--accent); font-weight:600 }
-    .login-form { padding: 20px; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color:var(--muted); }
-    .form-group input { width: 100%; padding: 12px; border: 1px solid var(--md-sys-color-outline); border-radius: 10px; background: var(--md-sys-color-surface); }
-    .form-group button { width: 100%; padding: 12px; background: var(--accent); color: var(--md-sys-color-on-primary); border: none; border-radius: 12px; cursor: pointer; font-weight:600 }
-    .form-group button:hover { transform: translateY(-1px) }
-    .error-msg { color: #8b1e1e; background: #fff4f4; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
-    .register-link { text-align: center; margin-top: 12px; }
-    .register-link a { color: var(--accent); text-decoration: none; font-weight:600 }
-  </style>
 </head>
 <body>
   <header class="site-header">
@@ -69,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </header>
 
-  <main class="container">
+  <main class="container auth-center">
     <div class="login-container">
       <div class="login-card">
         <div class="login-tabs">
@@ -93,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <input type="password" id="password" name="password" required>
             </div>
             <div class="form-group">
-              <button type="submit">Login</button>
+              <button type="submit" class="btn-primary">Login</button>
             </div>
             <div class="register-link">
               Belum punya akun? <a href="register.php">Daftar di sini</a>
@@ -108,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <input type="password" id="password" name="password" required>
             </div>
             <div class="form-group">
-              <button type="submit">Login</button>
+              <button type="submit" class="btn-primary">Login</button>
             </div>
           <?php endif; ?>
         </form>
@@ -117,7 +101,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </main>
 
   <footer class="site-footer">
-    <div class="container"><small>&copy; MeyDa Collection</small></div>
+    <div class="container">
+      <div class="footer-left"><small>&copy; MeyDa Collection</small></div>
+      <div class="footer-right"><a href="index.php">Home</a></div>
+    </div>
   </footer>
 </body>
 </html>
