@@ -159,7 +159,8 @@ if ($editId > 0) {
     .form-group textarea { resize: vertical; min-height: 80px; }
     .form-group input[type="file"] { padding: 4px; }
     .image-preview { max-width: 200px; margin-top: 10px; border-radius: 8px; }
-    .form-buttons { display: flex; gap: 10px; align-items: center; justify-content: flex-start; flex-wrap: nowrap; margin-top: 20px; width: 100%; }
+    .form-buttons { display:flex; flex-direction:row; justify-content:center; align-items:center; gap:12px; margin-top:12px; }
+    .form-buttons button, .form-buttons a { width: 120px; text-align: center;}
     .form-buttons button, .form-buttons a { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; height: 40px; display: flex; align-items: center; justify-content: center; line-height: 1; min-width: 100px; text-decoration: none; }
     .form-buttons button { background: #ff6d00; color: white; cursor: pointer; }
     .form-buttons button:hover { background: #e55d00; transform: translateY(-1px); }
@@ -179,6 +180,8 @@ if ($editId > 0) {
     .delete-form button { background: #c84f2c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Futura', inherit; white-space: nowrap; flex-shrink: 0; width: auto; }
     .delete-form button:hover { background: #a83a1f; transform: translateY(-1px); }
     .product-img { max-width: 60px; height: auto; border-radius: 4px; }
+    .image-section { display: flex; flex-direction: column; align-items: center; gap: 12px;}
+
   </style>
 </head>
 <body>
@@ -234,22 +237,23 @@ if ($editId > 0) {
             <label for="stok">Stok *</label>
             <input type="number" id="stok" name="stok" value="<?php echo $editData ? $editData['stok'] : ''; ?>" min="0" required>
           </div>
-
           <div class="form-group">
-            <label for="gambar">Gambar Produk (JPG, PNG, GIF, WebP - Max 2MB)</label>
-            <input type="file" id="gambar" name="gambar" accept="image/*">
-            <?php if ($editData && !empty($editData['gambar'])): ?>
-              <p style="font-size: 13px; color: #6b7280;">Gambar saat ini:</p>
-              <img src="../uploads/<?php echo h($editData['gambar']); ?>" alt="Product" class="image-preview">
-            <?php endif; ?>
+              <label for="gambar">Gambar Produk (JPG, PNG, GIF, WebP - Max 2MB)</label>
+              <input type="file" id="gambar" name="gambar" accept="image/*">
+
+              <?php if ($editData && !empty($editData['gambar'])): ?>
+                  <div class="image-section">
+                      <p style="font-size: 13px; color: #6b7280;">Gambar saat ini:</p>
+                      <img src="../uploads/<?php echo h($editData['gambar']); ?>" 
+                          alt="Product" class="image-preview">
+                  </div>
+              <?php endif; ?>
+          </div>
+          <div class="form-buttons">
+              <button type="submit"><?php echo $editId > 0 ? 'Update' : 'Tambah'; ?></button>
+              <a href="products.php" class="cancel-button">Batal</a>
           </div>
 
-          <div class="form-buttons">
-            <button type="submit"><?php echo $editId > 0 ? 'Update' : 'Tambah'; ?></button>
-            <?php if ($editId > 0): ?>
-              <a href="products.php">Batal</a>
-            <?php endif; ?>
-          </div>
         </form>
       </div>
     <?php endif; ?>
