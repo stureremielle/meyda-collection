@@ -55,7 +55,8 @@ if ($viewId > 0) {
       font-weight: 700;
     }
     * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
-    main.container { max-width: 1200px; margin: 0 auto; padding: 20px 12px; width: 100%; }
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    main.container { max-width: 1200px; margin: 0 auto; padding: 20px 12px; width: 100%; flex: 1; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #252525; }
     table th, table td { padding: 16px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
     table th { background: #1a1a1a; font-weight: 600; }
