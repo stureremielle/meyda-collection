@@ -147,7 +147,7 @@ if (!empty($_SESSION['cart'])) {
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header sticky-header">
+  <header class="site-header transparent-nav">
     <div class="container header-container">
       <h1 class="brand">meyda</h1>
       <nav class="nav">
@@ -206,7 +206,7 @@ if (!empty($_SESSION['cart'])) {
       <?php endif; ?>
     <?php else: ?>
       <!-- Main Banner Section -->
-      <section class="main-banner">
+      <section class="main-banner full-screen-banner">
         <div class="banner-content">
           <div class="banner-text">
             <h2 class="banner-title">MAKE YOUR LOOK MORE <span class="highlight">SIGMA</span></h2>
@@ -219,10 +219,12 @@ if (!empty($_SESSION['cart'])) {
         </div>
       </section>
       
+      <!-- Divider Line -->
+      <div class="divider-line"></div>
+      
       <!-- Category Filter Section -->
-      <section class="category-filter">
+      <section class="category-filter no-card-filter">
         <div class="filter-container">
-          <h3>Filter by Category</h3>
           <select id="categoryFilter" onchange="filterProducts()">
             <option value="all">All Categories</option>
             <?php 
