@@ -280,16 +280,17 @@ table.cart th{
 .logout-btn { background:#c84f2c; color:#fff; padding:8px 12px; border-radius:8px; text-decoration:none; }
 .logout-btn:hover { background:#a83a1f; }
 
-/* Sticky header */
-.sticky-header {
+/* Transparent navigation with blur effect */
+.transparent-nav {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: var(--card);
+  background: rgba(42, 42, 42, 0.8);
+  backdrop-filter: blur(10px);
   border-radius: 12px;
   margin: 12px;
   box-shadow: var(--elevation-1);
-  padding: 12px 0;
+  padding: 16px 0;
 }
 
 .header-container {
@@ -297,6 +298,19 @@ table.cart th{
   justify-content: space-between;
   align-items: center;
   padding: 0 12px;
+}
+
+/* Full screen banner */
+.full-screen-banner {
+  margin: 24px 12px;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--elevation-1);
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Main Banner Styles */
@@ -313,6 +327,9 @@ table.cart th{
   align-items: center;
   justify-content: space-between;
   gap: 32px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .banner-text {
@@ -362,6 +379,15 @@ table.cart th{
   border-radius: 12px;
 }
 
+/* Divider line */
+.divider-line {
+  width: 100px;
+  height: 4px;
+  background: var(--md-sys-color-primary);
+  margin: 30px auto;
+  border-radius: 2px;
+}
+
 /* Category Filter Styles */
 .category-filter {
   margin: 24px 12px;
@@ -371,10 +397,18 @@ table.cart th{
   box-shadow: var(--elevation-1);
 }
 
+.no-card-filter {
+  background: transparent;
+  box-shadow: none;
+  padding: 16px 0 24px 0;
+  margin: 12px 0;
+}
+
 .filter-container {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  align-items: center;
 }
 
 .filter-container h3 {
