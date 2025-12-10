@@ -147,23 +147,22 @@ if (!empty($_SESSION['cart'])) {
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <h1 class="brand">MeyDa Collection</h1>
+  <header class="site-header sticky-header">
+    <div class="container header-container">
+      <h1 class="brand">meyda</h1>
       <nav class="nav">
-        <a href="index.php">Home</a>
-        <a href="index.php?action=cart">Cart (<?php echo array_sum($_SESSION['cart'] ?? []); ?>)</a>
+        <a href="index.php">home</a>
+        <a href="index.php?action=cart">cart (<?php echo array_sum($_SESSION['cart'] ?? []); ?>)</a>
         <?php if (isLoggedIn()): ?>
           <?php if (isCustomer()): ?>
             <a href="account.php">Hi, <?php echo htmlspecialchars($_SESSION['customer_name']); ?></a>
-            <a href="auth.php?action=logout">Logout</a>
+            <a href="auth.php?action=logout">logout</a>
           <?php elseif (isStaff()): ?>
-            <a href="admin/products.php">Admin</a>
-            <a href="auth.php?action=logout">Logout</a>
+            <a href="admin/products.php">admin</a>
+            <a href="auth.php?action=logout">logout</a>
           <?php endif; ?>
         <?php else: ?>
-          <a href="login.php?mode=customer">Login</a>
-          <a href="register.php">Register</a>
+          <a href="login.php?mode=customer">login</a>
         <?php endif; ?>
       </nav>
     </div>
@@ -206,14 +205,41 @@ if (!empty($_SESSION['cart'])) {
         </form>
       <?php endif; ?>
     <?php else: ?>
-      <section class="hero">
-        <h2>Simple, quality clothing</h2>
-        <p>Minimal design, trusted service.</p>
+      <!-- Main Banner Section -->
+      <section class="main-banner">
+        <div class="banner-content">
+          <div class="banner-text">
+            <h2 class="banner-title">MAKE YOUR LOOK MORE <span class="highlight">SIGMA</span></h2>
+            <a href="#products" class="shop-button">Shop it Now</a>
+          </div>
+          <div class="banner-image">
+            <!-- Add your person image here -->
+            <!-- Example: <img src="path/to/your/person-image.jpg" alt="Person wearing clothing"> -->
+          </div>
+        </div>
       </section>
-
-      <section class="products-grid" aria-label="Featured products">
+      
+      <!-- Category Filter Section -->
+      <section class="category-filter">
+        <div class="filter-container">
+          <h3>Filter by Category</h3>
+          <select id="categoryFilter" onchange="filterProducts()">
+            <option value="all">All Categories</option>
+            <?php 
+              // Get unique categories
+              $catStmt = $pdo->query("SELECT DISTINCT k.nama_kategori FROM kategori_produk k JOIN produk p ON k.id_kategori = p.id_kategori WHERE p.stok > 0");
+              $categories = $catStmt->fetchAll();
+              foreach ($categories as $category): 
+            ?>
+              <option value="<?php echo h($category['nama_kategori']); ?>"><?php echo h($category['nama_kategori']); ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+      </section>
+      
+      <section class="products-grid" id="products" aria-label="Featured products">
         <?php foreach ($products as $p): ?>
-          <article class="product-card">
+          <article class="product-card" data-category="<?php echo h($p['nama_kategori']); ?>">
             <?php if (!empty($p['gambar'])): ?>
               <img src="uploads/<?php echo h($p['gambar']); ?>" alt="<?php echo h($p['nama_produk']); ?>" class="product-img-real">
             <?php else: ?>
@@ -238,5 +264,41 @@ if (!empty($_SESSION['cart'])) {
   <footer class="site-footer">
     <div class="container"><small>&copy; MeyDa Collection</small></div>
   </footer>
+  
+  <script>
+    function filterProducts() {
+      const selectedCategory = document.getElementById('categoryFilter').value;
+      const productCards = document.querySelectorAll('.product-card');
+      
+      productCards.forEach(card => {
+        const cardCategory = card.getAttribute('data-category');
+        
+        if (selectedCategory === 'all' || cardCategory === selectedCategory) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    
+    // Update the Shop it Now button to smoothly scroll to products
+    document.addEventListener('DOMContentLoaded', function() {
+      const shopButtons = document.querySelectorAll('.shop-button');
+      shopButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>

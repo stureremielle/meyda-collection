@@ -1,5 +1,71 @@
-# Examples-Only: PHP project with minimal artifacts
-# No compiled files, dependency directories, or temp files detected in changes
-# Only preserving source/config files as per policy
+```
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
 
-# Keep this .gitignore minimal since only source files were detected
+# Dependencies
+.venv/
+venv/
+node_modules/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Distribution and build directories
+dist/
+build/
+target/
+
+# Python specific
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
+
+# Web specific
+*.min.js
+*.min.css
+.sass-cache/
+.npm/
+bower_components/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Icon?
+```
