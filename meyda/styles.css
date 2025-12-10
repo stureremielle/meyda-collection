@@ -510,6 +510,20 @@ table.cart th{
 .site-footer .footer-left { color:var(--muted); }
 .site-footer .footer-right a { color:var(--muted); text-decoration:none; }
 
+/* Notification styles */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
 /* Auth (login/register) centered layout — apply per-page with class `auth-center` on main */
 body.auth-page { display: flex; flex-direction: column; min-height: 100vh; }
 body.auth-page main.auth-center { flex: 1; display:flex; align-items:center; justify-content:center; padding:40px 16px; }
