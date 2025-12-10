@@ -56,7 +56,8 @@ if ($viewId > 0) {
     }
     * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
     main.container { max-width: 1200px; margin: 0 auto; padding: 20px 12px; width: 100%; }
-    table th, table td { padding: 10px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #252525; }
+    table th, table td { padding: 16px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
     table th { background: #1a1a1a; font-weight: 600; }
     .status-paid { color: #99ff99; background: #2a4a3a; padding: 4px 8px; border-radius: 3px; }
     .status-pending { color: #ffcc99; background: #4a3a2a; padding: 4px 8px; border-radius: 3px; }

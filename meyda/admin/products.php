@@ -15,27 +15,29 @@ if (!is_dir($uploadsDir)) {
 function h($s){ return htmlspecialchars($s, ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8'); }
 
 // Handle delete
-if (isset($_GET['delete']) && isAdmin()) {
-    $id = (int)$_GET['delete'];
-    try {
-        // Delete product image if exists
-        $stmt = $pdo->prepare("SELECT gambar FROM produk WHERE id_produk = :id");
-        $stmt->execute([':id' => $id]);
-        $product = $stmt->fetch();
-        if ($product && !empty($product['gambar'])) {
-            $imgPath = $uploadsDir . '/' . $product['gambar'];
-            if (file_exists($imgPath)) unlink($imgPath);
+if ((isset($_GET['delete']) || (isset($_POST['action']) && $_POST['action'] === 'delete')) && isAdmin()) {
+    $id = (int)($_GET['delete'] ?? $_POST['id'] ?? 0);
+    if ($id > 0) {
+        try {
+            // Delete product image if exists
+            $stmt = $pdo->prepare("SELECT gambar FROM produk WHERE id_produk = :id");
+            $stmt->execute([':id' => $id]);
+            $product = $stmt->fetch();
+            if ($product && !empty($product['gambar'])) {
+                $imgPath = $uploadsDir . '/' . $product['gambar'];
+                if (file_exists($imgPath)) unlink($imgPath);
+            }
+            $stmt = $pdo->prepare("DELETE FROM produk WHERE id_produk = :id");
+            $stmt->execute([':id' => $id]);
+            $success = 'Produk dihapus.';
+        } catch (Exception $e) {
+            $error = 'Tidak bisa menghapus: ' . $e->getMessage();
         }
-        $stmt = $pdo->prepare("DELETE FROM produk WHERE id_produk = :id");
-        $stmt->execute([':id' => $id]);
-        $success = 'Produk dihapus.';
-    } catch (Exception $e) {
-        $error = 'Tidak bisa menghapus: ' . $e->getMessage();
     }
 }
 
 // Handle add/edit with image upload
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isAdmin()) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama']) && isAdmin()) {
     $id = (int)($_POST['id'] ?? 0);
     $nama = trim($_POST['nama'] ?? '');
     $kategori = (int)($_POST['kategori'] ?? 0);
@@ -150,7 +152,7 @@ if ($editId > 0) {
     }
     * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
     main.container { max-width: 1200px; margin: 0 auto; padding: 20px 12px; width: 100%; }
-    .form-group { margin-bottom: 15px; }
+    .form-container { max-width: 100%; margin: 20px 0; padding: 20px; border: 1px solid #404040; border-radius: 8px; background: #252525; width: 100%; }
     .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #ffffff; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #404040; border-radius: 8px; font-family: 'Futura', inherit; background: #1a1a1a; color: #ffffff; }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #ff6d00; box-shadow: 0 0 0 2px rgba(255,109,0,0.1); }
@@ -165,11 +167,16 @@ if ($editId > 0) {
     .error-msg { color: #ff9999; background: #4a2a2a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #662a2a; }
     .success-msg { color: #99ff99; background: #2a4a3a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2a6a4a; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #252525; }
-    table th, table td { padding: 10px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
+    table th, table td { padding: 16px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
     table th { background: #1a1a1a; font-weight: 600; }
-    .action-link { color: #ff6d00; text-decoration: none; margin-right: 10px; transition: opacity 0.2s; }
-    .action-link:hover { opacity: 0.8; }
-    .delete-link { color: #ff6666; }
+    .action-cell { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
+    .action-btn { background: #ff6d00; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Futura', inherit; white-space: nowrap; flex-shrink: 0; }
+    .action-btn:hover { background: #e55d00; transform: translateY(-1px); }
+    .action-btn-danger { background: #c84f2c; }
+    .action-btn-danger:hover { background: #a83a1f; }
+    .delete-form { display: inline-block; margin: 0; padding: 0; flex-shrink: 0; }
+    .delete-form button { background: #c84f2c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Futura', inherit; white-space: nowrap; flex-shrink: 0; width: auto; }
+    .delete-form button:hover { background: #a83a1f; transform: translateY(-1px); }
     .product-img { max-width: 60px; height: auto; border-radius: 4px; }
   </style>
 </head>
@@ -279,8 +286,14 @@ if ($editId > 0) {
               <td><?php echo $p['stok']; ?></td>
               <?php if (isAdmin()): ?>
                 <td>
-                  <a href="products.php?edit=<?php echo $p['id_produk']; ?>" class="action-link">Edit</a>
-                  <a href="products.php?delete=<?php echo $p['id_produk']; ?>" class="action-link delete-link" onclick="return confirm('Hapus produk ini?')">Hapus</a>
+                  <div class="action-cell">
+                    <a href="products.php?edit=<?php echo $p['id_produk']; ?>" class="action-btn">Edit</a>
+                    <form method="post" class="delete-form">
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="id" value="<?php echo $p['id_produk']; ?>">
+                      <button type="submit" class="action-btn action-btn-danger" onclick="return confirm('Hapus produk ini?')">Hapus</button>
+                    </form>
+                  </div>
                 </td>
               <?php endif; ?>
             </tr>
