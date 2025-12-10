@@ -159,10 +159,11 @@ if ($editId > 0) {
     .form-group textarea { resize: vertical; min-height: 80px; }
     .form-group input[type="file"] { padding: 4px; }
     .image-preview { max-width: 200px; margin-top: 10px; border-radius: 8px; }
-    .form-buttons { display: flex; gap: 10px; align-items: center; justify-content: flex-start; flex-wrap: nowrap; }
-    .form-buttons button { padding: 10px 20px; background: #ff6d00; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; height: 40px; display: flex; align-items: center; justify-content: center; line-height: 1; min-width: 100px; }
+    .form-buttons { display: flex; gap: 10px; align-items: center; justify-content: flex-start; flex-wrap: nowrap; margin-top: 20px; width: 100%; }
+    .form-buttons button, .form-buttons a { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; height: 40px; display: flex; align-items: center; justify-content: center; line-height: 1; min-width: 100px; text-decoration: none; }
+    .form-buttons button { background: #ff6d00; color: white; cursor: pointer; }
     .form-buttons button:hover { background: #e55d00; transform: translateY(-1px); }
-    .form-buttons a { padding: 10px 20px; background: #404040; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; height: 40px; display: flex; align-items: center; justify-content: center; line-height: 1; min-width: 100px; }
+    .form-buttons a { background: #404040; color: white; }
     .form-buttons a:hover { background: #505050; transform: translateY(-1px); }
     .error-msg { color: #ff9999; background: #4a2a2a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #662a2a; }
     .success-msg { color: #99ff99; background: #2a4a3a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2a6a4a; }
