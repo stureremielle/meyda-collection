@@ -13,10 +13,12 @@
   --elevation-2: 0 4px 8px rgba(0,0,0,0.4);
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
 *{box-sizing:border-box}
 
 body{
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial;
+  font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial;
   margin: 0;
   color: var(--md-sys-color-on-surface);
   background: var(--md-sys-color-surface);
@@ -249,8 +251,8 @@ table.cart th{
 .nav a.active { background:var(--accent); color:var(--md-sys-color-on-primary); font-weight:600; }
 
 /* Logout button style used in admin header */
-.logout-btn { background:#8b1e1e; color:#fff; padding:8px 12px; border-radius:8px; text-decoration:none; }
-.logout-btn:hover { background:#6b1515; }
+.logout-btn { background:#c84f2c; color:#fff; padding:8px 12px; border-radius:8px; text-decoration:none; }
+.logout-btn:hover { background:#a83a1f; }
 
 /* Footer layout: left and right aligned */
 .site-footer .container { display:flex; justify-content:space-between; align-items:center; }

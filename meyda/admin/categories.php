@@ -74,25 +74,53 @@ if (isset($_GET['edit'])) {
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Kelola Kategori - MeyDa Admin</title>
   <link rel="stylesheet" href="../styles.css">
+  <style>
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; }
+    main.container { flex: 1; max-width: 1200px; margin: 0 auto; padding: 12px; width: 100%; }
+    .form-section { background: #252525; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #404040; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #ffffff; }
+    .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #404040; border-radius: 8px; font-family: inherit; background: #1a1a1a; color: #ffffff; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #ff6d00; box-shadow: 0 0 0 2px rgba(255,109,0,0.1); }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    button, .btn-secondary { background: #ff6d00; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; margin-right: 10px; font-weight: 500; transition: all 0.2s; font-family: 'Poppins', inherit; }
+    button:hover, .btn-secondary:hover { background: #e55d00; transform: translateY(-1px); }
+    .btn-secondary { background: #404040; }
+    .btn-secondary:hover { background: #505050; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #252525; }
+    table th, table td { padding: 16px; text-align: left; border-bottom: 1px solid #404040; color: #ffffff; }
+    table th { background: #1a1a1a; font-weight: 600; }
+    .action-cell { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .action-btn { background: #ff6d00; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Poppins', inherit; }
+    .action-btn:hover { background: #e55d00; transform: translateY(-1px); }
+    .action-btn-danger { background: #c84f2c; }
+    .action-btn-danger:hover { background: #a83a1f; }
+    .action-disabled { color: #888888; font-size: 13px; }
+    .alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+    .alert-error { background: #4a2a2a; color: #ff9999; border: 1px solid #662a2a; }
+    .alert-success { background: #2a4a3a; color: #99ff99; border: 1px solid #2a6a4a; }
+    .section { margin-bottom: 30px; }
+    .section h2 { margin-top: 0; color: #ffffff; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <?php include __DIR__ . '/_header.php'; ?>
+  <?php include __DIR__ . '/_header.php'; ?>
 
-    <main>
-      <h1>Kelola Kategori</h1>
+  <main class="container">
+    <h2>Kelola Kategori</h2>
 
-      <?php if ($error): ?>
-        <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
-      <?php endif; ?>
-      <?php if ($success): ?>
-        <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
-      <?php endif; ?>
+    <?php if ($error): ?>
+      <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
+    <?php if ($success): ?>
+      <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+    <?php endif; ?>
 
-      <!-- Form Add/Edit -->
-      <div class="form-section">
-        <h2><?php echo $edit ? 'Edit Kategori' : 'Tambah Kategori'; ?></h2>
-        <form method="post">
+    <!-- Form Add/Edit -->
+    <div class="form-section">
+      <h2><?php echo $edit ? 'Edit Kategori' : 'Tambah Kategori'; ?></h2>
+      <form method="post">
           <input type="hidden" name="action" value="<?php echo $edit ? 'edit' : 'add'; ?>">
           <?php if ($edit): ?>
             <input type="hidden" name="id" value="<?php echo $edit['id_kategori']; ?>">
@@ -153,163 +181,11 @@ if (isset($_GET['edit'])) {
           <?php endforeach; ?>
         </table>
       </div>
-    </main>
+  </main>
 
-    <footer class="footer">
-      <p>&copy; 2025 MeyDa Collection. All rights reserved.</p>
-    </footer>
-  </div>
+  <footer class="site-footer">
+    <div class="container"><small>&copy; MeyDa Collection Admin</small></div>
+  </footer>
 
-  <style>
-    .nav { display: flex; gap: 15px; margin-top: 10px; }
-    .nav a { color: #ff6d00; text-decoration: none; padding: 8px 12px; border-radius: 4px; transition: all 0.2s; }
-    .nav a:hover { background: #404040; }
-    .header-nav {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-    .header-nav a {
-      color: #ffffff;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .header-nav a:hover {
-      background: #ff6d00;
-      color: #ffffff;
-      transform: translateY(-1px);
-    }
-    .header-nav a.active {
-      color: #ff6d00;
-      font-weight: 600;
-      border-bottom: 2px solid #ff6d00;
-    }
-    .form-section {
-      background: #252525;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border: 1px solid #404040;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: #ffffff;
-    }
-    .form-group input, .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #404040;
-      border-radius: 8px;
-      font-family: inherit;
-      background: #1a1a1a;
-      color: #ffffff;
-    }
-    .form-group input:focus, .form-group textarea:focus {
-      outline: none;
-      border-color: #ff6d00;
-      box-shadow: 0 0 0 2px rgba(255,109,0,0.1);
-    }
-    .form-group textarea {
-      min-height: 80px;
-      resize: vertical;
-    }
-    button, .btn-secondary {
-      background: #ff6d00;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      margin-right: 10px;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    button:hover, .btn-secondary:hover {
-      background: #e55d00;
-      transform: translateY(-1px);
-    }
-    .btn-secondary {
-      background: #404040;
-    }
-    .btn-secondary:hover {
-      background: #505050;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-      background: #252525;
-    }
-    table th, table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #404040;
-      color: #ffffff;
-    }
-    table th {
-      background: #1a1a1a;
-      font-weight: 600;
-    }
-    .action-cell {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .action-btn {
-      background: #ff6d00;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      font-size: 13px;
-      transition: all 0.2s;
-    }
-    .action-btn:hover {
-      background: #e55d00;
-      transform: translateY(-1px);
-    }
-    .action-btn-danger {
-      background: #d32f2f;
-    }
-    .action-btn-danger:hover {
-      background: #b71c1c;
-    }
-    .action-disabled {
-      color: #888888;
-      font-size: 13px;
-    }
-    .alert {
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-    .alert-error {
-      background: #4a2a2a;
-      color: #ff9999;
-      border: 1px solid #662a2a;
-    }
-    .alert-success {
-      background: #2a4a3a;
-      color: #99ff99;
-      border: 1px solid #2a6a4a;
-    }
-  </style>
 </body>
 </html>
