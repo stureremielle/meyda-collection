@@ -12,7 +12,7 @@
       <a href="categories.php" class="<?php echo $cur === 'categories.php' ? 'active' : ''; ?>">Kategori</a>
       <a href="reports.php" class="<?php echo $cur === 'reports.php' ? 'active' : ''; ?>">Laporan</a>
       <a href="transactions.php" class="<?php echo $cur === 'transactions.php' ? 'active' : ''; ?>">Transaksi</a>
-      <a href="../index.php?action=logout" class="btn logout-btn" onclick="return confirm('Logout?')">Logout</a>
+      <a href="../auth.php?action=logout" class="btn logout-btn" onclick="return confirm('Logout?')">Logout</a>
     </nav>
   </div>
   <!-- Styles are centralized in styles.css -->

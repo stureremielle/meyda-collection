@@ -113,7 +113,7 @@ function logout() {
         $_SESSION['carts'][$cartOwner] = $_SESSION['cart'];
     }
 
-    // Remove auth keys
+    // Remove all authentication-related keys
     unset($_SESSION['user_type']);
     unset($_SESSION['customer_id']);
     unset($_SESSION['customer_name']);
@@ -127,7 +127,26 @@ function logout() {
     $_SESSION['cart'] = [];
 
     // Regenerate session id to avoid session fixation
-    if (function_exists('session_regenerate_id')) session_regenerate_id(true);
+    if (function_exists('session_regenerate_id')) {
+        session_regenerate_id(true);
+    }
+
+    // Additional security measures
+    // Unset all session variables
+    $_SESSION = array();
+
+    // Delete the session cookie if it exists
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+    }
+
+    // Start a fresh session
+    session_destroy();
+    session_start();
 
     header('Location: index.php');
     exit;
