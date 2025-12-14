@@ -44,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <h2>Login Customer</h2>
         </div>
 
-        <div class="login-form">
         <?php if (!empty($error)): ?>
           <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
 
+        <div class="login-form">
         <form method="post">
           <div class="form-group">
             <label for="email">Email</label>
@@ -65,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Belum punya akun? <a href="register.php">Daftar di sini</a>
           </div>
         </form>
+        </div>
       </div>
     </div>
   </main>
