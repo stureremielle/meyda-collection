@@ -193,7 +193,6 @@ if (!empty($_SESSION['cart'])) {
       <div class="alert alert-success"><?php echo h($success); ?></div>
     <?php endif; ?>
 
-    <?php else: ?>
       <!-- Main Banner Section -->
       <section class="main-banner full-screen-banner">
         <div class="banner-content">
@@ -248,7 +247,6 @@ if (!empty($_SESSION['cart'])) {
           </article>
         <?php endforeach; ?>
       </section>
-    <?php endif; ?>
   </main>
 
   <footer class="site-footer">
