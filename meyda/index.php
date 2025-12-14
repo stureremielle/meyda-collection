@@ -16,7 +16,7 @@ if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!isset($_SESSION['cart'][$id])) $_SESSION['cart'][$id] = 0;
         $_SESSION['cart'][$id] += $qty;
     }
-    
+
     // Check if this is an AJAX request
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
         // For AJAX requests, just return JSON response
@@ -26,7 +26,7 @@ if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // For regular form submissions, redirect as before
         if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
-        header('Location: index.php'); 
+        header('Location: index.php');
         exit;
     }
 }
@@ -206,27 +206,27 @@ if (!empty($_SESSION['cart'])) {
           </div>
         </div>
       </section>
-      
+
       <!-- Divider Line -->
       <div class="divider-line"></div>
-      
+
       <!-- Category Filter Section -->
       <section class="category-filter no-card-filter">
         <div class="filter-container">
           <select id="categoryFilter" onchange="filterProducts()">
             <option value="all">All Categories</option>
-            <?php 
+            <?php
               // Get unique categories
               $catStmt = $pdo->query("SELECT DISTINCT k.nama_kategori FROM kategori_produk k JOIN produk p ON k.id_kategori = p.id_kategori WHERE p.stok > 0");
               $categories = $catStmt->fetchAll();
-              foreach ($categories as $category): 
+              foreach ($categories as $category):
             ?>
               <option value="<?php echo h($category['nama_kategori']); ?>"><?php echo h($category['nama_kategori']); ?></option>
             <?php endforeach; ?>
           </select>
         </div>
       </section>
-      
+
       <section class="products-grid" id="products" aria-label="Featured products">
         <?php foreach ($products as $p): ?>
           <article class="product-card" data-category="<?php echo h($p['nama_kategori']); ?>">
@@ -254,15 +254,15 @@ if (!empty($_SESSION['cart'])) {
   <footer class="site-footer">
     <div class="container"><small>&copy; MeyDa Collection</small></div>
   </footer>
-  
+
   <script>
     function filterProducts() {
       const selectedCategory = document.getElementById('categoryFilter').value;
       const productCards = document.querySelectorAll('.product-card');
-      
+
       productCards.forEach(card => {
         const cardCategory = card.getAttribute('data-category');
-        
+
         if (selectedCategory === 'all' || cardCategory === selectedCategory) {
           card.style.display = 'flex';
         } else {
@@ -270,7 +270,7 @@ if (!empty($_SESSION['cart'])) {
         }
       });
     }
-    
+
     // Update the Shop it Now button to smoothly scroll to products
     document.addEventListener('DOMContentLoaded', function() {
       const shopButtons = document.querySelectorAll('.shop-button');
@@ -279,7 +279,7 @@ if (!empty($_SESSION['cart'])) {
           e.preventDefault();
           const targetId = this.getAttribute('href');
           const targetElement = document.querySelector(targetId);
-          
+
           if (targetElement) {
             targetElement.scrollIntoView({
               behavior: 'smooth',
@@ -293,29 +293,29 @@ if (!empty($_SESSION['cart'])) {
     // Function to add item to cart via AJAX
     async function addToCart(event, productId) {
       event.preventDefault(); // Prevent the default form submission
-      
+
       // Find the form element
       const form = event.target.closest('form.add-to-cart-form');
       const formData = new FormData(form);
-      
+
       // Add header to indicate AJAX request
       const headers = {
         'X-Requested-With': 'XMLHttpRequest'
       };
-      
+
       try {
         const response = await fetch('index.php', {
           method: 'POST',
           body: formData,
           headers: headers
         });
-        
+
         if (response.ok) {
           const data = await response.json();
-          
+
           // Update the cart count in the navigation
           updateCartCount();
-          
+
           // Optional: Show a success message
           showNotification('Item ditambahkan ke keranjang!');
         } else {
@@ -346,7 +346,7 @@ if (!empty($_SESSION['cart'])) {
       // Remove any existing notifications
       const existingNotifications = document.querySelectorAll('.notification');
       existingNotifications.forEach(notification => notification.remove());
-      
+
       // Create a notification element
       const notification = document.createElement('div');
       notification.className = 'notification';
@@ -363,14 +363,14 @@ if (!empty($_SESSION['cart'])) {
         opacity: 0;
         transition: opacity 0.3s ease-in-out;
       `;
-      
+
       document.body.appendChild(notification);
-      
+
       // Fade in
       setTimeout(() => {
         notification.style.opacity = '1';
       }, 10);
-      
+
       // Remove after 3 seconds
       setTimeout(() => {
         notification.style.opacity = '0';
