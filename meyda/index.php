@@ -162,6 +162,7 @@ if (!empty($_SESSION['cart'])) {
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../cart-styles.css">
 </head>
 <body>
   <header class="site-header transparent-nav">
@@ -194,33 +195,44 @@ if (!empty($_SESSION['cart'])) {
     <?php endif; ?>
 
     <?php if ($action === 'cart'): ?>
-      <h2>Keranjang</h2>
-      <?php if (empty($cart_items)): ?>
-        <p>Keranjang kosong.</p>
-      <?php else: ?>
-        <table class="cart">
-          <thead><tr><th>Produk</th><th>Qty</th><th>Harga</th><th>Subtotal</th><th></th></tr></thead>
-          <tbody>
-            <?php foreach($cart_items as $it): ?>
-              <tr>
-                <td><?php echo h($it['nama']); ?></td>
-                <td><?php echo (int)$it['qty']; ?></td>
-                <td>Rp <?php echo number_format($it['harga'],0,',','.'); ?></td>
-                <td>Rp <?php echo number_format($it['subtotal'],0,',','.'); ?></td>
-                <td><a href="index.php?action=remove&id=<?php echo (int)$it['id']; ?>" class="link">Hapus</a></td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-          <tfoot>
-            <tr><td colspan="3"><strong>Total</strong></td><td><strong>Rp <?php echo number_format($cart_total,0,',','.'); ?></strong></td><td></td></tr>
-          </tfoot>
-        </table>
+      <div class="cart-container">
+        <div class="cart-header">
+          <h2>Keranjang</h2>
+        </div>
+        <?php if (empty($cart_items)): ?>
+          <p>Keranjang kosong.</p>
+        <?php else: ?>
+          <div class="cart-items">
+          <?php foreach($cart_items as $it): ?>
+            <div class="cart-item-card">
+              <div class="cart-item-details">
+                <h3 class="cart-item-name"><?php echo h($it['nama']); ?></h3>
+                <p class="cart-item-price">Rp <?php echo number_format($it['harga'],0,',','.'); ?></p>
+                <div class="cart-item-quantity">
+                  <span>Qty: <?php echo (int)$it['qty']; ?></span>
+                  <span class="cart-item-subtotal">Rp <?php echo number_format($it['subtotal'],0,',','.'); ?></span>
+                </div>
+              </div>
+              <a href="index.php?action=remove&id=<?php echo (int)$it['id']; ?>" class="remove-btn">Hapus</a>
+            </div>
+          <?php endforeach; ?>
+          </div>
 
-        <form method="post" action="index.php?action=checkout">
-          <input type="hidden" name="action" value="checkout">
-          <button type="submit">Checkout</button>
-        </form>
-      <?php endif; ?>
+          <div class="cart-summary">
+            <div class="summary-row total-row">
+              <span><strong>Total</strong></span>
+              <span><strong>Rp <?php echo number_format($cart_total,0,',','.'); ?></strong></span>
+            </div>
+          </div>
+
+          <div class="checkout-container">
+            <form method="post" action="index.php?action=checkout">
+              <input type="hidden" name="action" value="checkout">
+              <button type="submit" class="checkout-btn">Checkout</button>
+            </form>
+          </div>
+        <?php endif; ?>
+      </div>
     <?php else: ?>
       <!-- Main Banner Section -->
       <section class="main-banner full-screen-banner">
