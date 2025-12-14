@@ -83,6 +83,69 @@ if (count($recent_attempts) >= $max_attempts) {
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Admin Login - MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Admin login specific styles */
+    .login-card {
+      background: var(--card);
+      border: 1px solid var(--md-sys-color-outline);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      overflow: hidden;
+      padding: 32px;
+      box-sizing: border-box;
+    }
+    
+    .login-card-title {
+      text-align: center;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+    
+    .login-card-title h2 {
+      margin: 0;
+      font-size: 24px;
+      color: var(--md-sys-color-on-surface);
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .login-form {
+      padding: 20px 0 0 0;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 14px;
+      background: #0f0f0f;
+      color: var(--md-sys-color-on-surface);
+      border: 1px solid var(--md-sys-color-outline);
+      border-radius: 10px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    
+    .form-group input::placeholder {
+      color: #6b7280;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,109,0,0.2);
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
