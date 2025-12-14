@@ -1,1 +1,48 @@
-(empty)
+```
+# Logs and temp files
+*.log
+server.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+dist/
+build/
+target/
+.gradle/
+
+# Compiled files
+*.pyc
+*.class
+*.o
+*.exe
+*.dll
+*.so
+*.a
+*.obj
+*.out
+
+# System files
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+```
