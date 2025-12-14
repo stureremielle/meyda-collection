@@ -137,7 +137,7 @@ if (!empty($_SESSION['cart'])) {
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Keranjang - MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="../cart-styles.css">
+  <link rel="stylesheet" href="cart-styles.css">
 </head>
 <body>
   <header class="site-header transparent-nav">
