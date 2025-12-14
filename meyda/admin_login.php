@@ -97,12 +97,15 @@ if (count($recent_attempts) >= $max_attempts) {
   <main class="container auth-center">
     <div class="login-container">
       <div class="login-card">
-        <h2>Admin Login</h2>
+        <div class="login-card-title">
+          <h2>Admin Login</h2>
+        </div>
 
         <?php if (!empty($error)): ?>
           <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
 
+        <div class="login-form">
         <form method="post">
           <div class="form-group">
             <label for="username">Username</label>
@@ -116,6 +119,7 @@ if (count($recent_attempts) >= $max_attempts) {
             <button type="submit" class="btn-primary">Login</button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   </main>
