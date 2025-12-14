@@ -3,39 +3,17 @@ require_once __DIR__ . '/auth.php';
 $pdo = getPDO();
 
 // Simple router via "action"
-$action = $_POST['action'] ?? $_GET['action'] ?? 'home';
+$action = $_POST['action'] ?? $_GET['action'] ?? 'view';
 
 function h($s){ return htmlspecialchars($s, ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8'); }
 
 if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
 
-if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = (int)($_POST['id'] ?? 0);
-    $qty = max(1, (int)($_POST['qty'] ?? 1));
-    if ($id > 0) {
-        if (!isset($_SESSION['cart'][$id])) $_SESSION['cart'][$id] = 0;
-        $_SESSION['cart'][$id] += $qty;
-    }
-    
-    // Check if this is an AJAX request
-    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-        // For AJAX requests, just return JSON response
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'cart_count' => array_sum($_SESSION['cart'] ?? [])]);
-        exit;
-    } else {
-        // For regular form submissions, redirect as before
-        if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
-        header('Location: index.php'); 
-        exit;
-    }
-}
-
 if ($action === 'remove') {
     $id = (int)($_GET['id'] ?? 0);
     if ($id > 0 && isset($_SESSION['cart'][$id])) unset($_SESSION['cart'][$id]);
     if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
-    header('Location: index.php?action=cart'); exit;
+    header('Location: cart.php'); exit;
 }
 
 if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -131,9 +109,6 @@ if ($action === 'cart_count') {
     exit;
 }
 
-$stmt = $pdo->query("SELECT p.id_produk, p.nama_produk, p.deskripsi, p.harga, p.stok, p.gambar, k.nama_kategori FROM produk p JOIN kategori_produk k ON p.id_kategori = k.id_kategori ORDER BY p.created_at LIMIT 12");
-$products = $stmt->fetchAll();
-
 $cart_items = [];
 $cart_total = 0.0;
 if (!empty($_SESSION['cart'])) {
@@ -160,8 +135,9 @@ if (!empty($_SESSION['cart'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>MeyDa Collection</title>
+  <title>Keranjang - MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../cart-styles.css">
 </head>
 <body>
   <header class="site-header transparent-nav">
@@ -193,62 +169,44 @@ if (!empty($_SESSION['cart'])) {
       <div class="alert alert-success"><?php echo h($success); ?></div>
     <?php endif; ?>
 
-    <?php else: ?>
-      <!-- Main Banner Section -->
-      <section class="main-banner full-screen-banner">
-        <div class="banner-content">
-          <div class="banner-text">
-            <h2 class="banner-title">MAKE YOUR LOOK MORE <span class="highlight">SIGMA</span></h2>
-            <a href="#products" class="shop-button">Shop it Now</a>
+    <div class="cart-container">
+      <div class="cart-header">
+        <h2>Keranjang</h2>
+      </div>
+      <?php if (empty($cart_items)): ?>
+        <p>Keranjang kosong.</p>
+      <?php else: ?>
+        <div class="cart-items">
+        <?php foreach($cart_items as $it): ?>
+          <div class="cart-item-card">
+            <div class="cart-item-details">
+              <h3 class="cart-item-name"><?php echo h($it['nama']); ?></h3>
+              <p class="cart-item-price">Rp <?php echo number_format($it['harga'],0,',','.'); ?></p>
+              <div class="cart-item-quantity">
+                <span>Qty: <?php echo (int)$it['qty']; ?></span>
+                <span class="cart-item-subtotal">Rp <?php echo number_format($it['subtotal'],0,',','.'); ?></span>
+              </div>
+            </div>
+            <a href="cart.php?action=remove&id=<?php echo (int)$it['id']; ?>" class="remove-btn">Hapus</a>
           </div>
-          <div class="banner-image">
-          <img src="assets/model.png" alt="Person wearing clothing">
-          </div>
-        </div>
-      </section>
-      
-      <!-- Divider Line -->
-      <div class="divider-line"></div>
-      
-      <!-- Category Filter Section -->
-      <section class="category-filter no-card-filter">
-        <div class="filter-container">
-          <select id="categoryFilter" onchange="filterProducts()">
-            <option value="all">All Categories</option>
-            <?php 
-              // Get unique categories
-              $catStmt = $pdo->query("SELECT DISTINCT k.nama_kategori FROM kategori_produk k JOIN produk p ON k.id_kategori = p.id_kategori WHERE p.stok > 0");
-              $categories = $catStmt->fetchAll();
-              foreach ($categories as $category): 
-            ?>
-              <option value="<?php echo h($category['nama_kategori']); ?>"><?php echo h($category['nama_kategori']); ?></option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-      </section>
-      
-      <section class="products-grid" id="products" aria-label="Featured products">
-        <?php foreach ($products as $p): ?>
-          <article class="product-card" data-category="<?php echo h($p['nama_kategori']); ?>">
-            <?php if (!empty($p['gambar'])): ?>
-              <img src="uploads/<?php echo h($p['gambar']); ?>" alt="<?php echo h($p['nama_produk']); ?>" class="product-img-real">
-            <?php else: ?>
-              <div class="product-img">IMG</div>
-            <?php endif; ?>
-            <h3><?php echo h($p['nama_produk']); ?></h3>
-            <p class="muted"><?php echo h($p['nama_kategori']); ?></p>
-            <p class="desc"><?php echo h($p['deskripsi']); ?></p>
-            <p class="price">Rp <?php echo number_format($p['harga'],0,',','.'); ?></p>
-            <form class="add-to-cart-form" method="post" action="index.php" onsubmit="addToCart(event, <?php echo (int)$p['id_produk']; ?>)">
-              <input type="hidden" name="action" value="add">
-              <input type="hidden" name="id" value="<?php echo (int)$p['id_produk']; ?>">
-              <label style="display:none"><input type="number" name="qty" value="1" min="1"></label>
-              <button type="submit" class="add-to-cart-btn"<?php echo $p['stok']<=0 ? ' disabled' : ''; ?>><?php echo $p['stok']>0 ? 'Tambah ke Keranjang' : 'Habis'; ?></button>
-            </form>
-          </article>
         <?php endforeach; ?>
-      </section>
-    <?php endif; ?>
+        </div>
+
+        <div class="cart-summary">
+          <div class="summary-row total-row">
+            <span><strong>Total</strong></span>
+            <span><strong>Rp <?php echo number_format($cart_total,0,',','.'); ?></strong></span>
+          </div>
+        </div>
+
+        <div class="checkout-container">
+          <form method="post" action="cart.php?action=checkout">
+            <input type="hidden" name="action" value="checkout">
+            <button type="submit" class="checkout-btn">Checkout</button>
+          </form>
+        </div>
+      <?php endif; ?>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -256,83 +214,13 @@ if (!empty($_SESSION['cart'])) {
   </footer>
   
   <script>
-    function filterProducts() {
-      const selectedCategory = document.getElementById('categoryFilter').value;
-      const productCards = document.querySelectorAll('.product-card');
-      
-      productCards.forEach(card => {
-        const cardCategory = card.getAttribute('data-category');
-        
-        if (selectedCategory === 'all' || cardCategory === selectedCategory) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-    
-    // Update the Shop it Now button to smoothly scroll to products
-    document.addEventListener('DOMContentLoaded', function() {
-      const shopButtons = document.querySelectorAll('.shop-button');
-      shopButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-          e.preventDefault();
-          const targetId = this.getAttribute('href');
-          const targetElement = document.querySelector(targetId);
-          
-          if (targetElement) {
-            targetElement.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        });
-      });
-    });
-
-    // Function to add item to cart via AJAX
-    async function addToCart(event, productId) {
-      event.preventDefault(); // Prevent the default form submission
-      
-      // Find the form element
-      const form = event.target.closest('form.add-to-cart-form');
-      const formData = new FormData(form);
-      
-      // Add header to indicate AJAX request
-      const headers = {
-        'X-Requested-With': 'XMLHttpRequest'
-      };
-      
-      try {
-        const response = await fetch('index.php', {
-          method: 'POST',
-          body: formData,
-          headers: headers
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          
-          // Update the cart count in the navigation
-          updateCartCount();
-          
-          // Optional: Show a success message
-          showNotification('Item ditambahkan ke keranjang!');
-        } else {
-          console.error('Error adding item to cart');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }
-
     // Function to update the cart count in the navigation
     function updateCartCount() {
       // We need to fetch the updated cart count from the server
       fetch('index.php?action=cart_count')
         .then(response => response.json())
         .then(data => {
-          const cartLink = document.querySelector('a[href="index.php?action=cart"]');
+          const cartLink = document.querySelector('a[href="cart.php"]');
           if (cartLink) {
             // Extract the text content before the cart count and append the new count
             cartLink.innerHTML = 'cart (' + data.count + ')';
@@ -345,38 +233,36 @@ if (!empty($_SESSION['cart'])) {
     function showNotification(message) {
       // Remove any existing notifications
       const existingNotifications = document.querySelectorAll('.notification');
-      existingNotifications.forEach(notification => notification.remove());
-      
-      // Create a notification element
+      existingNotifications.forEach(notification => {
+        notification.remove();
+      });
+
+      // Create notification element
       const notification = document.createElement('div');
       notification.className = 'notification';
       notification.textContent = message;
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #4CAF50;
-        color: white;
-        padding: 15px;
-        border-radius: 5px;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
-      `;
       
+      // Style the notification
+      Object.assign(notification.style, {
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        backgroundColor: '#4CAF50',
+        color: 'white',
+        padding: '15px 20px',
+        borderRadius: '5px',
+        zIndex: '1000',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+        fontFamily: 'inherit',
+        fontSize: '14px'
+      });
+      
+      // Add to body
       document.body.appendChild(notification);
       
-      // Fade in
+      // Auto-remove after 3 seconds
       setTimeout(() => {
-        notification.style.opacity = '1';
-      }, 10);
-      
-      // Remove after 3 seconds
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-          notification.remove();
-        }, 300);
+        notification.remove();
       }, 3000);
     }
   </script>
