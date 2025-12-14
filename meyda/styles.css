@@ -67,6 +67,20 @@ body{
   margin: 0;
   color: var(--md-sys-color-on-surface);
   background: var(--md-sys-color-surface);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+}
+
+main.container {
+  flex: 1;
 }
 
 button, input, textarea, select {
@@ -80,7 +94,8 @@ button, input, textarea, select {
 }
 
 .site-header .container{
-  padding: 0 12px;
+  padding: 0 24px;
+  display:flex; align-items:center; justify-content:space-between;
 }
 
 .brand{
@@ -241,15 +256,13 @@ button:disabled{
 .site-footer{
   border-top:1px solid var(--md-sys-color-outline);
   padding:24px 0;
-  margin-top:48px;
   text-align:center;
   color:var(--muted);
   font-size:13px;
+  margin-top: auto;
 }
 
-.site-footer .container {
-  padding: 0 12px;
-}
+
 
 .alert{
   padding:12px;
@@ -269,22 +282,7 @@ button:disabled{
   border:1px solid #2a6a4a;
 }
 
-table.cart{
-  width:100%;
-  border-collapse:collapse;
-  background:var(--card);
-}
 
-table.cart th, table.cart td{
-  padding:12px;
-  border-bottom:1px solid var(--md-sys-color-outline);
-  text-align:left;
-}
-
-table.cart th{
-  background:var(--md-sys-color-surface-variant);
-  font-weight:600;
-}
 
 .link{
   color:var(--accent);
@@ -297,7 +295,6 @@ table.cart th{
 }
 
 /* Shared header/nav/footer styles for admin and public pages */
-.site-header .container { display:flex; align-items:center; justify-content:space-between; }
 .site-header .nav { float:none; display:flex; gap:16px; align-items:center; }
 .site-header .nav a { color:var(--md-sys-color-on-surface); text-decoration:none; padding:8px 12px; border-radius:6px; transition:all .15s; }
 .site-header .nav a:hover { background:var(--card); }
@@ -506,7 +503,7 @@ table.cart th{
 }
 
 /* Footer layout: left and right aligned */
-.site-footer .container { display:flex; justify-content:space-between; align-items:center; }
+.site-footer .container { display:flex; justify-content:space-between; align-items:center; padding: 0 24px; }
 .site-footer .footer-left { color:var(--muted); }
 .site-footer .footer-right a { color:var(--muted); text-decoration:none; }
   /* Button styles */
