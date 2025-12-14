@@ -1,19 +1,22 @@
-# Compiled and build artifacts
-*.pyc
-__pycache__/
-*.o
-*.obj
-*.class
-*.exe
-*.dll
-*.so
-*.a
-*.out
+```
+# Logs and temp files
+*.log
+server.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
 
 # Dependencies
 node_modules/
 venv/
 .venv/
+<<<<<<< HEAD
 .env
 .env.local
 .env.*
@@ -38,11 +41,41 @@ htmlcov/
 .coverage
 
 # Build directories
+=======
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+>>>>>>> parent of b9b8bb6 (Merge pull request #22 from stureremielle/qwen-code-b1593ac9-4fb5-4d39-a389-c8a74927d24f)
 dist/
 build/
 target/
 .gradle/
 
+<<<<<<< HEAD
 # Python specific
 .mypy_cache/
 .pytest_cache/
+=======
+# Compiled files
+*.pyc
+*.class
+*.o
+*.exe
+*.dll
+*.so
+*.a
+*.obj
+*.out
+
+# System files
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+```
+>>>>>>> parent of b9b8bb6 (Merge pull request #22 from stureremielle/qwen-code-b1593ac9-4fb5-4d39-a389-c8a74927d24f)
