@@ -73,8 +73,6 @@ body{
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 0 12px;
   width: 100%;
 }
@@ -354,8 +352,7 @@ button:disabled{
   justify-content: space-between;
   gap: 32px;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 0 0 auto;
+  padding: 0 24px;
 }
 
 .banner-text {
