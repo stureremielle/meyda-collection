@@ -242,7 +242,7 @@ if (!empty($_SESSION['cart'])) {
               <input type="hidden" name="action" value="add">
               <input type="hidden" name="id" value="<?php echo (int)$p['id_produk']; ?>">
               <label style="display:none"><input type="number" name="qty" value="1" min="1"></label>
-              <button type="submit" class="add-to-cart-btn"<?php echo $p['stok']<=0 ? ' disabled' : ''; ?>><?php echo $p['stok']>0 ? 'Tambah ke Keranjang' : 'Habis'; ?></button>
+              <button type="submit" class="add-to-cart-btn no-text"<?php echo $p['stok']<=0 ? ' disabled' : ''; ?> aria-label="<?php echo $p['stok']>0 ? 'Tambah ke Keranjang' : 'Habis'; ?>"></button>
             </form>
           </article>
         <?php endforeach; ?>
