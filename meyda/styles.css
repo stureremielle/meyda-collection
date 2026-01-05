@@ -238,8 +238,8 @@ button:disabled{
 /* Add to Cart button specific styles */
 .add-to-cart-form {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  bottom: 16px;
+  right: 16px;
   width: auto;
   display: flex;
   justify-content: flex-end;
@@ -264,6 +264,7 @@ button:disabled{
   width: 40px;
   height: 40px;
   min-width: 40px;
+  position: relative;
 }
 
 .add-to-cart-btn:hover {
@@ -278,8 +279,12 @@ button:disabled{
 
 /* Add shopping cart icon */
 .add-to-cart-btn::before {
-  content: "🛒"; /* Shopping cart emoji as icon */
+  content: "🛒"; /* Shopping cart Unicode character */
   font-size: 18px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .add-to-cart-btn.no-text::after {
