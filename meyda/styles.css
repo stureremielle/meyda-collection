@@ -194,7 +194,7 @@ select {
 .product-card {
     width: 280px;
     background: var(--card);
-    padding: 0 0 56px 0; /* Add bottom padding to make space for the positioned button */
+    padding: 0;
     border: 1px solid var(--md-sys-color-outline);
     border-radius: 16px;
     display: flex;
@@ -215,7 +215,7 @@ select {
 
 .product-img {
     width: 100%;
-    height: 280px;
+    height: 200px;
     background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
     color: var(--muted);
     display: flex;
@@ -228,7 +228,7 @@ select {
 
 .product-img-real {
     width: 100%;
-    height: 280px;
+    height: 200px;
     object-fit: cover;
     margin: 8px 8px 0 8px; /* Add top margin to create space for the positioned button */
     border-radius: 0;
@@ -277,8 +277,8 @@ button:disabled {
 /* Add to Cart button specific styles */
 .add-to-cart-form {
     position: absolute;
-    bottom: 12px;  /* Match the bottom margin of the price text */
-    right: 16px;   /* Match the right margin of the price text */
+    bottom: 16px;
+    right: 16px;
     width: auto;
     display: flex;
     justify-content: flex-end;
@@ -322,7 +322,7 @@ button:disabled {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-10%, -10%);
+    transform: translate(-50%, -50%);
     width: 20px;
     height: 20px;
 }
@@ -355,7 +355,10 @@ button:disabled {
     text-align: left; /* Left align description */
 }
 
-
+/* Product card container to position button in top-right corner */
+.product-card {
+    position: relative;
+}
 
 .site-footer {
     border-top: 1px solid var(--md-sys-color-outline);
