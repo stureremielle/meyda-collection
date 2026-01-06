@@ -335,8 +335,4 @@ if ($editId > 0) {
     <?php endif; ?>
   </main>
 
-  <footer class="site-footer">
-    <div class="container"><small>&copy; MeyDa Collection Admin</small></div>
-  </footer>
-</body>
-</html>
+  <?php include __DIR__ . '/_footer.php'; ?>

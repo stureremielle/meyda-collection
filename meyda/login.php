@@ -70,10 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-left"><small>&copy; MeyDa Collection</small></div>
-    </div>
-  </footer>
+  <?php include __DIR__ . '/_footer.php'; ?>
 </body>
 </html>
