@@ -206,6 +206,7 @@ select {
         transform 0.3s,
         box-shadow 0.3s;
     position: relative;
+    padding-bottom: 60px; /* Add space at bottom for the add-to-cart button */
 }
 
 .product-card .product-img,
@@ -280,8 +281,8 @@ button:disabled {
 /* Add to Cart button specific styles */
 .add-to-cart-form {
     position: absolute;
-    bottom: 12px; /* Match the bottom margin of the price text */
-    right: 16px; /* Match the horizontal margin of the price text */
+    bottom: 16px; /* Match the bottom margin of the description text */
+    right: 16px; /* Match the horizontal margin of the description text */
     width: auto;
     display: flex;
     justify-content: flex-end;
@@ -291,10 +292,10 @@ button:disabled {
 }
 
 .add-to-cart-btn {
-    background: transparent;
-    color: var(--md-sys-color-on-surface); /* Match the text color */
-    border: 2px solid var(--md-sys-color-on-surface); /* Border matching text color */
-    padding: 6px; /* Adjusted padding */
+    background: var(--accent); /* Orange color like price tags */
+    color: var(--md-sys-color-on-surface); /* Text color for the icon */
+    border: none;
+    padding: 8px; /* Adjusted padding */
     border-radius: 8px; /* Smaller border radius */
     cursor: pointer;
     font-weight: 500;
@@ -310,8 +311,8 @@ button:disabled {
 }
 
 .add-to-cart-btn:hover {
-    background: var(--md-sys-color-on-surface);
-    color: var(--card); /* Inverse colors on hover */
+    background: #e55d00; /* Darker orange on hover */
+    transform: scale(1.05);
 }
 
 .add-to-cart-btn:disabled {
