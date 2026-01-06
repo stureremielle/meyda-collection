@@ -162,6 +162,7 @@ if (!empty($_SESSION['cart'])) {
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="product-card.css">
 </head>
 <body>
   <header class="site-header transparent-nav">
