@@ -281,8 +281,8 @@ button:disabled {
 /* Add to Cart button specific styles */
 .add-to-cart-form {
     position: absolute;
-    bottom: 16px; /* Match the bottom margin of the description text */
-    right: 16px; /* Match the horizontal margin of the description text */
+    bottom: 8px; /* Match the bottom margin of the description text */
+    right: 8px; /* Match the horizontal margin of the description text */
     width: auto;
     display: flex;
     justify-content: flex-end;
