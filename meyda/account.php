@@ -164,8 +164,6 @@ if ($viewId > 0) {
     </div> <!-- Close account-content div -->
   </main>
 
-  <footer class="site-footer">
-    <div class="container"><small>&copy; MeyDa Collection</small></div>
-  </footer>
+  <?php include __DIR__ . '/_footer.php'; ?>
 </body>
 </html>

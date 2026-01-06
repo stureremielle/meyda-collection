@@ -250,9 +250,7 @@ if (!empty($_SESSION['cart'])) {
       </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container"><small>&copy; MeyDa Collection</small></div>
-  </footer>
+  <?php include __DIR__ . '/_footer.php'; ?>
 
   <script>
     function filterProducts() {

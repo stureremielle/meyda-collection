@@ -209,10 +209,8 @@ if (!empty($_SESSION['cart'])) {
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container"><small>&copy; MeyDa Collection</small></div>
-  </footer>
-  
+  <?php include __DIR__ . '/_footer.php'; ?>
+
   <script>
     // Function to update the cart count in the navigation
     function updateCartCount() {
