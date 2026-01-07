@@ -504,6 +504,7 @@ button:disabled {
     min-width: auto;
     min-height: auto;
     position: relative;
+    transform: scale(1.2);
     top: 0; /* Remove the upward shift */
 }
 
@@ -707,12 +708,12 @@ button:disabled {
         grid-template-columns: 1fr;
         gap: 30px;
     }
-    
+
     .footer-bottom {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .footer-bottom .footer-right {
         width: 100%;
         justify-content: space-between;
