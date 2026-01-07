@@ -72,8 +72,8 @@
 /* Add to Cart button specific styles */
 .add-to-cart-form {
     position: absolute;
-    bottom: 16px; /* Match the bottom margin of the description text */
-    right: 16px; /* Match the horizontal margin of the description text */
+    bottom: 4px; /* Match the bottom margin of the description text */
+    right: 4px; /* Match the horizontal margin of the description text */
     width: auto;
     display: flex;
     justify-content: flex-end;
@@ -118,8 +118,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
 }
 
 .add-to-cart-btn.no-text::after {
