@@ -92,10 +92,13 @@ body {
 .container {
     padding: 0 12px;
     width: 100%;
+    max-width: 1400px; /* Add max-width to prevent content from getting too wide */
+    margin: 0 auto; /* Center the container */
 }
 
 main.container {
     flex: 1;
+    padding: 0 12px; /* Ensure main content has consistent padding */
 }
 
 button,
@@ -123,6 +126,8 @@ select {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    max-width: 1400px; /* Match the main container max-width */
+    margin: 0 auto;
 }
 
 .brand {
@@ -416,11 +421,11 @@ button:disabled {
     box-shadow: var(--elevation-1);
     max-width: 1920px; /* 16:9 aspect ratio at full HD */
     width: 100%;
-    aspect-ratio: 16 / 9;
+    max-height: 50vh; /* Limit height on very large screens */
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: visible; /* Allow the full image to be visible */
+    overflow: hidden; /* Ensure content stays within bounds */
 }
 
 .banner-content {
@@ -440,7 +445,7 @@ button:disabled {
 }
 
 .banner-title {
-    font-size: 72px;
+    font-size: clamp(2rem, 8vw, 4.5rem); /* Responsive font size that scales with viewport */
     font-family:
         "OGG",
         "Futura",
@@ -504,8 +509,9 @@ button:disabled {
     min-width: auto;
     min-height: auto;
     position: relative;
-    transform: scale(1.2);
-    top: 0; /* Remove the upward shift */
+    /* Remove the scale that was causing overflow */
+    max-width: 100%;
+    max-height: 100%;
 }
 
 /* Divider line */
@@ -524,6 +530,8 @@ button:disabled {
     background: var(--card);
     border-radius: 12px;
     box-shadow: var(--elevation-1);
+    max-width: 1400px; /* Match container max-width */
+    margin: 24px auto;
 }
 
 .no-card-filter {
@@ -531,6 +539,8 @@ button:disabled {
     box-shadow: none;
     padding: 16px 0 24px 0;
     margin: 12px 0;
+    max-width: 1400px; /* Match container max-width */
+    margin: 12px auto;
 }
 
 .filter-container {
@@ -572,6 +582,16 @@ button:disabled {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    .container {
+        padding: 0 16px;
+        max-width: 100%; /* Full width on mobile */
+    }
+    
+    .site-header .container {
+        padding: 0 16px;
+        max-width: 100%; /* Full width on mobile */
+    }
+
     .banner-content {
         flex-direction: column;
         text-align: center;
@@ -585,7 +605,8 @@ button:disabled {
         order: 1;
         justify-content: center;
         margin-bottom: 24px;
-        height: 60%; /* Reduce height on mobile */
+        height: auto; /* Allow natural height on mobile */
+        max-height: 30vh; /* Limit height on mobile */
     }
 
     .sticky-header {
@@ -601,10 +622,11 @@ button:disabled {
         padding: 24px 16px;
         margin: 12px 0;
         border-radius: 0;
+        max-height: none; /* Remove height limit on mobile */
     }
 
     .banner-title {
-        font-size: 42px;
+        font-size: clamp(1.8rem, 8vw, 2.625rem); /* Adjusted for mobile */
         font-family:
             "OGG",
             "Futura",
@@ -614,6 +636,17 @@ button:disabled {
             Roboto,
             "Google Sans",
             Arial;
+    }
+    
+    /* Adjust category filter on mobile */
+    .category-filter {
+        margin: 24px 16px;
+        padding: 16px;
+    }
+    
+    .no-card-filter {
+        margin: 12px 16px;
+        padding: 16px 0 24px 0;
     }
 }
 
