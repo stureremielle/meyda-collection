@@ -93,8 +93,7 @@ body {
 .container {
     padding: 0 12px;
     width: 100%;
-    max-width: 1400px; /* Add max-width to prevent content from getting too wide */
-    margin: 0 auto; /* Center the container */
+    margin: 0; /* Full width without centering */
 }
 
 main.container {
@@ -127,8 +126,8 @@ select {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 1400px; /* Match the main container max-width */
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
 }
 
 .brand {
@@ -531,8 +530,8 @@ button:disabled {
     background: var(--card);
     border-radius: 12px;
     box-shadow: var(--elevation-1);
-    max-width: 1400px; /* Match container max-width */
-    margin: 24px auto;
+    width: 100%;
+    margin: 24px 0;
 }
 
 .no-card-filter {
@@ -540,8 +539,7 @@ button:disabled {
     box-shadow: none;
     padding: 16px 0 24px 0;
     margin: 12px 0;
-    max-width: 1400px; /* Match container max-width */
-    margin: 12px auto;
+    width: 100%;
 }
 
 .filter-container {
@@ -662,8 +660,8 @@ button:disabled {
 }
 
 .site-footer .container {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
     padding: 0 20px;
 }
 
