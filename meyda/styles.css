@@ -11,6 +11,7 @@
     --card: #252525;
     --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
     --elevation-2: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --product-image-height: 240px; /* Adjustable product image height */
 }
 
 @font-face {
