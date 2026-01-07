@@ -497,12 +497,14 @@ button:disabled {
 
 .banner-image img {
     width: 100%;
-    height: 120%; /* Make image larger to show only top part */
+    height: 150%; /* Make image even larger to show only top part */
     object-fit: cover;
     object-position: top center; /* Focus on top part of image */
     border-radius: 12px;
     min-width: auto;
     min-height: auto;
+    position: relative;
+    top: -20%; /* Shift the image up to show even more of the top */
 }
 
 /* Divider line */
