@@ -195,19 +195,30 @@ if (!empty($_SESSION['cart'])) {
     <?php endif; ?>
 
       <!-- Hero Section with Card Wrapper -->
-      <section class="hero">
-        <div class="hero-content">
-          <div class="hero-text">
-            <h2 class="banner-title">MAKE YOUR LOOK MORE <span class="highlight">SIGMA</span></h2>
-            <p>Discover our latest collection of premium fashion items designed to elevate your style.</p>
-            <a href="#products" class="hero-cta">Shop it Now</a>
+      <section class="hero-card">
+        <div class="hero-card-content">
+          <!-- Top Left Text -->
+          <div class="hero-top-left-text">
+            Discover our latest collection of premium fashion items designed to elevate your style.
           </div>
-          <div class="hero-image">
-            <img src="assets/model.png" alt="Person wearing clothing">
+          
+          <!-- Bottom Left Text -->
+          <div class="hero-bottom-left-text">
+            MAKE YOUR LOOK MORE SIGMA
           </div>
-          <div class="hero-arrows">
-            <button class="arrow-btn prev-arrow" aria-label="Previous slide">←</button>
-            <button class="arrow-btn next-arrow" aria-label="Next slide">→</button>
+          
+          <!-- Bottom Right Pill Button -->
+          <a href="#products" class="hero-cta-pill">Shop Now</a>
+          
+          <!-- Top Right Image Switch Buttons -->
+          <div class="hero-switch-buttons">
+            <button class="image-switch-btn prev-btn" aria-label="Previous image">←</button>
+            <button class="image-switch-btn next-btn" aria-label="Next image">→</button>
+          </div>
+          
+          <!-- Background Image -->
+          <div class="hero-background-image" id="heroBackground">
+            <img src="assets/model.png" alt="Hero background">
           </div>
         </div>
       </section>
@@ -384,6 +395,7 @@ if (!empty($_SESSION['cart'])) {
 
     // Hero carousel functionality
     document.addEventListener('DOMContentLoaded', function() {
+      // Old hero arrows (not used anymore)
       const prevArrow = document.querySelector('.prev-arrow');
       const nextArrow = document.querySelector('.next-arrow');
       
@@ -398,6 +410,84 @@ if (!empty($_SESSION['cart'])) {
           console.log('Next slide');
         });
       }
+
+      // New hero image switching functionality
+      let currentImageIndex = 0;
+      let heroImages = [];
+
+      // Load hero images from the hero_images folder
+      function loadHeroImages() {
+        // Create a temporary XMLHttpRequest to fetch the list of images
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'get_hero_images.php', true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+              heroImages = JSON.parse(xhr.responseText);
+              if (heroImages.length > 0) {
+                updateHeroBackground();
+              }
+            } catch (e) {
+              console.log('No hero images found, using default');
+              heroImages = ['assets/model.png'];
+              updateHeroBackground();
+            }
+          } else if (xhr.readyState === 4) {
+            // If the get_hero_images.php endpoint doesn't exist, use default
+            heroImages = ['assets/model.png'];
+            updateHeroBackground();
+          }
+        };
+        xhr.send();
+      }
+
+      // Update the hero background image
+      function updateHeroBackground() {
+        if (heroImages.length > 0) {
+          const heroBg = document.getElementById('heroBackground');
+          if (heroBg) {
+            // Update the image source
+            heroBg.innerHTML = '<img src="' + heroImages[currentImageIndex] + '" alt="Hero background">';
+          }
+        }
+      }
+
+      // Next image function
+      function nextImage() {
+        if (heroImages.length > 0) {
+          currentImageIndex = (currentImageIndex + 1) % heroImages.length;
+          updateHeroBackground();
+        }
+      }
+
+      // Previous image function
+      function prevImage() {
+        if (heroImages.length > 0) {
+          currentImageIndex = (currentImageIndex - 1 + heroImages.length) % heroImages.length;
+          updateHeroBackground();
+        }
+      }
+
+      // Add event listeners to the new image switch buttons
+      const prevBtn = document.querySelector('.prev-btn');
+      const nextBtn = document.querySelector('.next-btn');
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          prevImage();
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          nextImage();
+        });
+      }
+
+      // Initialize the hero images
+      loadHeroImages();
     });
   </script>
 </body>
