@@ -1,1 +1,56 @@
-Nothing should be ignored based on the provided file changes. The only modified file is `meyda/styles.css`, which is a source code file and should not be added to .gitignore.
+```
+# Image files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.webm
+
+# Text files that might be temporary
+*.tmp
+*.swp
+*.swo
+
+# Log files
+*.log
+
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
+```
