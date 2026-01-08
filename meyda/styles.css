@@ -11,7 +11,7 @@
     --card: #252525;
     --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
     --elevation-2: 0 4px 8px rgba(0, 0, 0, 0.4);
-    --product-image-height: 240px; /* Adjustable product image height */
+    --product-image-height: 2000px; /* Adjustable product image height */
 }
 
 @font-face {
@@ -445,7 +445,11 @@ button:disabled {
 }
 
 .banner-title {
-    font-size: clamp(2rem, 8vw, 4.5rem); /* Responsive font size that scales with viewport */
+    font-size: clamp(
+        2rem,
+        8vw,
+        4.5rem
+    ); /* Responsive font size that scales with viewport */
     font-family:
         "OGG",
         "Futura",
@@ -585,7 +589,7 @@ button:disabled {
         padding: 0 16px;
         max-width: 100%; /* Full width on mobile */
     }
-    
+
     .site-header .container {
         padding: 0 16px;
         max-width: 100%; /* Full width on mobile */
@@ -636,13 +640,13 @@ button:disabled {
             "Google Sans",
             Arial;
     }
-    
+
     /* Adjust category filter on mobile */
     .category-filter {
         margin: 24px 16px;
         padding: 16px;
     }
-    
+
     .no-card-filter {
         margin: 12px 16px;
         padding: 16px 0 24px 0;
