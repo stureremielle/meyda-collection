@@ -197,6 +197,11 @@ if (!empty($_SESSION['cart'])) {
       <!-- Hero Section with Card Wrapper -->
       <section class="hero-card">
         <div class="hero-card-content">
+          <!-- Background Image -->
+          <div class="hero-background-image" id="heroBackground">
+            <img src="hero_images/1.jpg" alt="Hero background" id="heroImage">
+          </div>
+          
           <!-- Top Left Text -->
           <div class="hero-top-left-text">
             Discover our latest collection of premium fashion items designed to elevate your style.
@@ -209,8 +214,8 @@ if (!empty($_SESSION['cart'])) {
           
           <!-- Bottom Right Pill Button and Icon Button -->
           <div class="hero-cta-container">
-            <a href="#products" class="hero-cta-pill">Shop Now</a>
-            <a href="#products" class="hero-cta-icon" aria-label="Shop now">
+            <a href="#products" class="hero-cta-pill combined-shop-button">Shop Now</a>
+            <a href="#products" class="hero-cta-icon combined-shop-button" aria-label="Shop now">
               <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZjlmNWY1IiBkPSJtMTYgOC40bC04LjkgOC45cS0uMjc1LjI3NS0uNy4yNzV0LS43LS4yNzV0LS4yNzUtLjd0LjI3NS0uN0wxNC42IDdIN3EtLjQyNSAwLS43MTItLjI4OFQ2IDZ0LjI4OC0uNzEyVDcgNWgxMHEuNDI1IDAgLjcxMy4yODhUMTggNnYxMHEwIC40MjUtLjI4OC43MTNUMTcgMTd0LS43MTItLjI4OFQxNiAxNnoiLz48L3N2Zz4=" alt="Arrow icon">
             </a>
           </div>
@@ -223,11 +228,6 @@ if (!empty($_SESSION['cart'])) {
             <button class="image-switch-btn next-btn" aria-label="Next image">
               <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZjlmNWY1IiBkPSJNMTYuMTUgMTNINXEtLjQyNSAwLS43MTItLjI4OFQ0IDEydC4yODgtLjcxMlQ1IDExaDExLjE1TDEzLjMgOC4xNXEtLjMtLjMtLjI4OC0uN3QuMjg4LS43cS4zLS4zLjcxMy0uMzEydC43MTIuMjg3TDE5LjMgMTEuM3EuMTUuMTUuMjEzLjMyNXQuMDYyLjM3NXQtLjA2Mi4zNzV0LS4yMTMuMzI1bC00LjU3NSA0LjU3NXEtLjMuMy0uNzEyLjI4OHQtLjcxMy0uMzEzcS0uMjc1LS4zLS4yODgtLjd0LjI4OC0uN3oiLz48L3N2Zz4=" alt="Next">
             </button>
-          </div>
-          
-          <!-- Background Image -->
-          <div class="hero-background-image" id="heroBackground">
-            <img src="assets/model.png" alt="Hero background">
           </div>
         </div>
       </section>
@@ -402,101 +402,69 @@ if (!empty($_SESSION['cart'])) {
       }, 3000);
     }
 
-    // Hero carousel functionality
+    // Hero image cycling functionality
     document.addEventListener('DOMContentLoaded', function() {
-      // Old hero arrows (not used anymore)
-      const prevArrow = document.querySelector('.prev-arrow');
-      const nextArrow = document.querySelector('.next-arrow');
+      const heroImage = document.getElementById('heroImage');
+      let currentImageIndex = 1;
+      const totalImages = 3; // Based on the files in hero_images folder
       
-      if (prevArrow && nextArrow) {
-        prevArrow.addEventListener('click', function() {
-          // In a real implementation, this would go to the previous slide
-          console.log('Previous slide');
-        });
-        
-        nextArrow.addEventListener('click', function() {
-          // In a real implementation, this would go to the next slide
-          console.log('Next slide');
-        });
+      // Function to update the displayed image
+      function updateHeroImage(index) {
+        heroImage.src = `hero_images/${index}.jpg`;
+        heroImage.alt = `Hero background ${index}`;
       }
-
-      // New hero image switching functionality
-      let currentImageIndex = 0;
-      let heroImages = [];
-
-      // Load hero images from the hero_images folder
-      function loadHeroImages() {
-        // Create a temporary XMLHttpRequest to fetch the list of images
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'get_hero_images.php', true);
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4 && xhr.status === 200) {
-            try {
-              heroImages = JSON.parse(xhr.responseText);
-              if (heroImages.length > 0) {
-                updateHeroBackground();
-              }
-            } catch (e) {
-              console.log('No hero images found, using default');
-              heroImages = ['assets/model.png'];
-              updateHeroBackground();
-            }
-          } else if (xhr.readyState === 4) {
-            // If the get_hero_images.php endpoint doesn't exist, use default
-            heroImages = ['assets/model.png'];
-            updateHeroBackground();
-          }
-        };
-        xhr.send();
-      }
-
-      // Update the hero background image
-      function updateHeroBackground() {
-        if (heroImages.length > 0) {
-          const heroBg = document.getElementById('heroBackground');
-          if (heroBg) {
-            // Update the image source
-            heroBg.innerHTML = '<img src="' + heroImages[currentImageIndex] + '" alt="Hero background">';
-          }
-        }
-      }
-
-      // Next image function
+      
+      // Function to go to next image
       function nextImage() {
-        if (heroImages.length > 0) {
-          currentImageIndex = (currentImageIndex + 1) % heroImages.length;
-          updateHeroBackground();
-        }
+        currentImageIndex = currentImageIndex % totalImages + 1;
+        updateHeroImage(currentImageIndex);
       }
-
-      // Previous image function
+      
+      // Function to go to previous image
       function prevImage() {
-        if (heroImages.length > 0) {
-          currentImageIndex = (currentImageIndex - 1 + heroImages.length) % heroImages.length;
-          updateHeroBackground();
-        }
+        currentImageIndex = currentImageIndex === 1 ? totalImages : currentImageIndex - 1;
+        updateHeroImage(currentImageIndex);
       }
-
-      // Add event listeners to the new image switch buttons
+      
+      // Set up automatic cycling every 5 seconds
+      let heroInterval = setInterval(nextImage, 5000);
+      
+      // Add event listeners to the navigation buttons
       const prevBtn = document.querySelector('.prev-btn');
       const nextBtn = document.querySelector('.next-btn');
-
+      
       if (prevBtn) {
         prevBtn.addEventListener('click', function(e) {
           e.preventDefault();
+          e.stopPropagation();
+          clearInterval(heroInterval); // Stop automatic cycling
           prevImage();
+          heroInterval = setInterval(nextImage, 5000); // Restart the cycle
         });
       }
-
+      
       if (nextBtn) {
         nextBtn.addEventListener('click', function(e) {
           e.preventDefault();
+          e.stopPropagation();
+          clearInterval(heroInterval); // Stop automatic cycling
           nextImage();
+          heroInterval = setInterval(nextImage, 5000); // Restart the cycle
         });
       }
-
-      // Initialize the hero images
-      loadHeroImages();
+      
+      // Add keyboard navigation support
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
+          clearInterval(heroInterval); // Stop automatic cycling
+          prevImage();
+          heroInterval = setInterval(nextImage, 5000); // Restart the cycle
+        } else if (e.key === 'ArrowRight') {
+          clearInterval(heroInterval); // Stop automatic cycling
+          nextImage();
+          heroInterval = setInterval(nextImage, 5000); // Restart the cycle
+        }
+      });
     });
   </script>
 </body>
