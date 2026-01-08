@@ -1,26 +1,43 @@
 ```
-# Image files
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.bmp
-*.webm
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+dist/
+build/
+*.class
+*.so
+*.dll
+*.exe
+*.out
+*.a
 
-# Text files that might be temporary
+# Dependencies
+.venv/
+venv/
+node_modules/
+target/
+.gradle/
+.mypy_cache/
+.pytest_cache/
+.julia/
+zig*/
+
+# Logs and temp files
+*.log
 *.tmp
 *.swp
 *.swo
+*.bak
+*.cache
 
-# Log files
-*.log
-
-# Environment files
+# Environment
 .env
 .env.local
-*.env.*
+.env.*
 
-# Editor/IDE files
+# Editors
 .vscode/
 .idea/
 *.swp
@@ -29,6 +46,11 @@
 # System files
 .DS_Store
 Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
 
 # Compressed files
 *.zip
