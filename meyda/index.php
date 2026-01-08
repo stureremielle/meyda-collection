@@ -194,15 +194,20 @@ if (!empty($_SESSION['cart'])) {
       <div class="alert alert-success"><?php echo h($success); ?></div>
     <?php endif; ?>
 
-      <!-- Main Banner Section -->
-      <section class="main-banner full-screen-banner">
-        <div class="banner-content">
-          <div class="banner-text">
+      <!-- Hero Section with Card Wrapper -->
+      <section class="hero">
+        <div class="hero-content">
+          <div class="hero-text">
             <h2 class="banner-title">MAKE YOUR LOOK MORE <span class="highlight">SIGMA</span></h2>
-            <a href="#products" class="shop-button">Shop it Now</a>
+            <p>Discover our latest collection of premium fashion items designed to elevate your style.</p>
+            <a href="#products" class="hero-cta">Shop it Now</a>
           </div>
-          <div class="banner-image">
-          <img src="assets/model.png" alt="Person wearing clothing">
+          <div class="hero-image">
+            <img src="assets/model.png" alt="Person wearing clothing">
+          </div>
+          <div class="hero-arrows">
+            <button class="arrow-btn prev-arrow" aria-label="Previous slide">←</button>
+            <button class="arrow-btn next-arrow" aria-label="Next slide">→</button>
           </div>
         </div>
       </section>
@@ -376,6 +381,24 @@ if (!empty($_SESSION['cart'])) {
         }, 300);
       }, 3000);
     }
+
+    // Hero carousel functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const prevArrow = document.querySelector('.prev-arrow');
+      const nextArrow = document.querySelector('.next-arrow');
+      
+      if (prevArrow && nextArrow) {
+        prevArrow.addEventListener('click', function() {
+          // In a real implementation, this would go to the previous slide
+          console.log('Previous slide');
+        });
+        
+        nextArrow.addEventListener('click', function() {
+          // In a real implementation, this would go to the next slide
+          console.log('Next slide');
+        });
+      }
+    });
   </script>
 </body>
 </html>

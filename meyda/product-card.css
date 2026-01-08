@@ -38,6 +38,7 @@
     overflow: hidden; /* Ensure image stays within bounds */
     max-width: 100%; /* Prevent overflow on zoom */
     max-height: var(--product-image-height, 240px); /* Prevent overflow on zoom */
+    aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
 }
 
 .product-card:hover {
