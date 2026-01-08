@@ -299,7 +299,7 @@ select {
     width: 46px; /* Match the height of the pill button */
     height: 46px;
     background: var(--md-sys-color-primary);
-    border-radius: 30px; /* Circular shape */
+    border-radius: 50%; /* Circular shape */
     margin-left: -2px; /* Overlap slightly with pill button */
     padding: 8px;
     transition: all 0.3s;
@@ -307,6 +307,17 @@ select {
 
 .hero-cta-icon:hover {
     background: #e55d00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 109, 0, 0.3);
+}
+
+/* Combined shop button styling - both buttons act as one unit */
+.combined-shop-button {
+    transition: all 0.3s ease;
+}
+
+.combined-shop-button:hover {
+    background: #e55d00 !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 109, 0, 0.3);
 }
