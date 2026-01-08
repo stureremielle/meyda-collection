@@ -19,7 +19,7 @@ body {
     box-sizing: border-box;
 }
 
-.banner-container {
+.hero-card {
     position: relative;
     width: 100%;
     max-width: 1200px;
@@ -34,7 +34,7 @@ body {
 }
 
 /* Background images should be loaded from the hero_images folder via JavaScript */
-.banner-container::before {
+.hero-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -45,42 +45,36 @@ body {
     z-index: 1;
 }
 
-.tagline.top-left {
+.top-left-text {
     position: absolute;
     top: 30px;
     left: 30px;
     color: white;
-    font-size: 14px;
+    font-size: 16px;
     z-index: 2;
     max-width: 40%;
 }
 
-.main-text.bottom-right {
+.bottom-left-text {
     position: absolute;
     bottom: 30px;
-    right: 30px;
+    left: 30px;
     color: white;
-    font-size: 48px;
+    font-size: 24px;
     font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
     z-index: 2;
-    text-align: right;
-    max-width: 40%;
 }
 
-.carousel-controls {
+.image-switcher {
     position: absolute;
-    right: 30px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 20px;
+    right: 20px;
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    gap: 10px;
     z-index: 2;
 }
 
-.nav-btn {
+.switch-btn {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -94,30 +88,32 @@ body {
     transition: all 0.3s ease;
 }
 
-.nav-btn:hover {
+.switch-btn:hover {
     background-color: rgba(255, 255, 255, 0.3);
     transform: scale(1.1);
 }
 
-.cta-button {
+.pill-button {
     position: absolute;
     bottom: 30px;
-    left: 30px;
+    right: 30px;
     background-color: #fff;
     color: #333;
     padding: 12px 24px;
-    border-radius: 50px;
+    border-radius: 50px; /* Pill shape */
     text-decoration: none;
     font-weight: bold;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
     z-index: 2;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    min-width: 120px;
+    text-align: center;
 }
 
-.cta-button:hover {
+.pill-button:hover {
     background-color: #f0f0f0;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
@@ -125,30 +121,28 @@ body {
 
 /* Responsive design */
 @media (max-width: 768px) {
-    .banner-container {
+    .hero-card {
         height: 400px;
     }
     
-    .main-text {
-        font-size: 32px;
-        bottom: 150px;
-    }
-    
-    .tagline {
+    .top-left-text {
         top: 20px;
         left: 20px;
-        font-size: 12px;
+        font-size: 14px;
     }
     
-    .tagline i {
-        font-size: 10px;
+    .bottom-left-text {
+        bottom: 20px;
+        left: 20px;
+        font-size: 20px;
     }
     
-    .carousel-controls {
-        right: 20px;
+    .image-switcher {
+        top: 15px;
+        right: 15px;
     }
     
-    .cta-button {
+    .pill-button {
         bottom: 20px;
         right: 20px;
         padding: 10px 20px;
@@ -157,42 +151,40 @@ body {
 }
 
 @media (max-width: 480px) {
-    .banner-container {
+    .hero-card {
         height: 300px;
         border-radius: 15px;
     }
     
-    .main-text {
-        font-size: 24px;
-        bottom: 120px;
-    }
-    
-    .tagline {
+    .top-left-text {
         top: 15px;
         left: 15px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
+        font-size: 12px;
+        max-width: 60%;
     }
     
-    .tagline i {
-        display: none;
+    .bottom-left-text {
+        bottom: 15px;
+        left: 15px;
+        font-size: 16px;
     }
     
-    .carousel-controls {
-        right: 15px;
-        gap: 10px;
+    .image-switcher {
+        top: 10px;
+        right: 10px;
+        gap: 8px;
     }
     
-    .nav-btn {
+    .switch-btn {
         width: 30px;
         height: 30px;
     }
     
-    .cta-button {
+    .pill-button {
         bottom: 15px;
         right: 15px;
         padding: 8px 16px;
         font-size: 12px;
+        min-width: 100px;
     }
 }
