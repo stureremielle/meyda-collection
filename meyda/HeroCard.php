@@ -46,22 +46,24 @@ function renderHeroCard($options = []) {
             <?php echo htmlspecialchars($options['slogan']); ?>
         </div>
         
+        <!-- Carousel Navigation Arrows - Top Right -->
+        <div class="carousel-arrows-container">
+            <button class="carousel-nav prev" aria-label="Previous image">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 5L9 12L15 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <button class="carousel-nav next" aria-label="Next image">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        
         <!-- CTA Button - Bottom Right -->
         <a href="#products" class="shop-now-button">
             <?php echo htmlspecialchars($options['cta_text']); ?>
         </a>
-        
-        <!-- Carousel Navigation Arrows - Top Right -->
-        <button class="carousel-nav prev" aria-label="Previous image">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 5L9 12L15 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <button class="carousel-nav next" aria-label="Next image">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
     </section>
     
     <script>

@@ -588,7 +588,7 @@ button:disabled {
     box-shadow: var(--elevation-2);
     padding: 12px 24px;
     border: 1px solid var(--md-sys-color-outline);
-    width: 90%; /* Match hero card width */
+    width: 95vw; /* Match hero card width */
     max-width: calc(1200px - 40px); /* Match hero content width with padding */
 }
 
@@ -603,8 +603,8 @@ button:disabled {
 /* Mobile responsive header */
 @media (max-width: 768px) {
     .transparent-nav {
-        width: calc(100% - 20px); /* 100% width minus padding on mobile */
-        max-width: calc(100% - 20px);
+        width: 100vw; /* 100% width minus padding on mobile */
+        max-width: 100vw;
         top: 10px;
         padding: 8px 16px;
     }
@@ -616,27 +616,31 @@ button:disabled {
 
 /* Hero Card Styles */
 .hero-card {
-    width: 90%; /* Allow it to expand to 90-95% of viewport width */
+    width: 95vw; /* Expand to 95% of viewport width on desktop */
     max-width: 1200px;
     height: 70vh;
     position: relative;
     background: var(--card);
     overflow: hidden;
-    margin: 120px auto 0; /* Add top margin to accommodate floating header */
+    margin: 120px auto 100vh; /* Add top margin to accommodate floating header and bottom margin to push separator below fold */
     padding: 0;
     border-radius: 16px;
     box-shadow: var(--elevation-2); /* Add shadow to help blend with background */
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* Mobile responsive hero card */
 @media (max-width: 768px) {
     .hero-card {
-        width: 100%; /* 100% width on mobile */
+        width: 100vw; /* 100% width on mobile */
         height: 60vh;
-        margin: 80px auto 0; /* Adjust top margin */
+        margin: 80px auto 100vh; /* Adjust top margin and add bottom margin to push separator below fold */
         padding: 0;
-        max-width: 100%; /* Full width on mobile */
+        max-width: 100vw; /* Full width on mobile */
         border-radius: 12px;
+        left: 50%;
+        transform: translateX(-50%);
     }
 }
 
@@ -719,11 +723,21 @@ button:disabled {
     padding: 0;
 }
 
-.carousel-nav {
+/* Position carousel arrows container to align with the right edge of the shop now button */
+.carousel-arrows-container {
     position: absolute;
-    top: 2rem;
-    width: 48px;
-    height: 48px;
+    top: 2rem; /* Position at the top */
+    right: 2rem; /* Same right position as where the shop now button would be */
+    display: flex;
+    flex-direction: row; /* Arrows side by side */
+    gap: 12px; /* 12px horizontal gap between arrows */
+    z-index: 3;
+}
+
+.carousel-nav {
+    position: static; /* Let flexbox handle positioning */
+    width: 84px; /* Match the width of the shop now button */
+    height: 40px; /* Match the height of the shop now button */
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -738,7 +752,6 @@ button:disabled {
     z-index: 3;
     padding: 0;
     border: none;
-    margin: 0 6px; /* Add spacing between buttons */
 }
 
 .carousel-nav:hover {
@@ -747,11 +760,11 @@ button:disabled {
 }
 
 .carousel-nav.prev {
-    right: 72px; /* Adjusted to add spacing between buttons */
+    order: 1; /* Place prev button first in the container */
 }
 
 .carousel-nav.next {
-    right: 12px; /* Positioned in the top-right corner */
+    order: 2; /* Place next button second in the container */
 }
 
 /* Full screen banner */
@@ -881,7 +894,7 @@ button:disabled {
     width: 100px;
     height: 4px;
     background: var(--md-sys-color-primary);
-    margin: 100vh auto 30px auto; /* Push below the fold with 100vh top margin */
+    margin: 0 auto 30px auto; /* Positioned right after the hero card */
     border-radius: 2px;
     opacity: 0;
     transform: translateY(20px);
@@ -1013,18 +1026,23 @@ button:disabled {
         font-size: 14px;
     }
     
-    .carousel-nav {
+    .carousel-arrows-container {
         top: 1.5rem;
-        width: 40px;
-        height: 40px;
+        right: 1.5rem;
+        gap: 8px; /* Smaller gap on mobile */
+    }
+    
+    .carousel-nav {
+        width: 60px; /* Match the width of the shop now button on mobile */
+        height: 34px; /* Match the height of the shop now button on mobile */
     }
     
     .carousel-nav.prev {
-        right: 80px;
+        order: 1; /* Place prev button first in the container */
     }
     
     .carousel-nav.next {
-        right: 40px;
+        order: 2; /* Place next button second in the container */
     }
 
     .banner-content {
