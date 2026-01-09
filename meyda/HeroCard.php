@@ -25,58 +25,43 @@ function renderHeroCard($options = []) {
     ob_start();
     ?>
     
-    <section class="hero-card-wrapper">
-        <div class="hero-card">
-            <!-- Hero Image -->
-            <div class="hero-image-container">
-                <img 
-                    src="<?php echo htmlspecialchars($options['image_src']); ?>" 
-                    alt="<?php echo htmlspecialchars($options['image_alt']); ?>"
-                    class="hero-image"
-                    id="heroMainImage"
-                >
-            </div>
-            
-            <!-- Inner container with padding -->
-            <div class="hero-card-inner">
-                <!-- Content overlay -->
-                <div class="hero-content-overlay">
-                    <!-- Headline Text -->
-                    <div class="headline-text">
-                        <?php echo htmlspecialchars($options['headline']); ?>
-                    </div>
-                    
-                    <!-- CTA Button with Direct Adjacent Arrow -->
-                    <div class="cta-container">
-                        <a href="#products" class="shop-now-button">
-                            <?php echo htmlspecialchars($options['cta_text']); ?>
-                        </a>
-                        <a href="#products" class="decorative-arrow" aria-label="Continue">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </a>
-                    </div>
-                    
-                    <!-- Slogan Text (bottom-left aligned) -->
-                    <div class="slogan-text">
-                        <?php echo htmlspecialchars($options['slogan']); ?>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Carousel Navigation Arrows (inside card) -->
-            <button class="carousel-nav prev" aria-label="Previous image">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 5L9 12L15 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <button class="carousel-nav next" aria-label="Next image">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
+    <section class="hero-card">
+        <!-- Hero Image -->
+        <div class="hero-image-container">
+            <img 
+                src="<?php echo htmlspecialchars($options['image_src']); ?>" 
+                alt="<?php echo htmlspecialchars($options['image_alt']); ?>"
+                class="hero-image"
+                id="heroMainImage"
+            >
         </div>
+        
+        <!-- Headline Text - Top Left -->
+        <div class="headline-text">
+            <?php echo htmlspecialchars($options['headline']); ?>
+        </div>
+        
+        <!-- Slogan Text - Bottom Left -->
+        <div class="slogan-text">
+            <?php echo htmlspecialchars($options['slogan']); ?>
+        </div>
+        
+        <!-- CTA Button - Bottom Right -->
+        <a href="#products" class="shop-now-button">
+            <?php echo htmlspecialchars($options['cta_text']); ?>
+        </a>
+        
+        <!-- Carousel Navigation Arrows - Top Right -->
+        <button class="carousel-nav prev" aria-label="Previous image">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5L9 12L15 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <button class="carousel-nav next" aria-label="Next image">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
     </section>
     
     <script>
@@ -94,29 +79,29 @@ function renderHeroCard($options = []) {
                 heroImage.alt = `Hero background ${index + 1}`;
             }
             
-            prevBtn.addEventListener('click', function() {
+            prevBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
                 updateImage(currentImageIndex);
             });
             
-            nextBtn.addEventListener('click', function() {
+            nextBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 currentImageIndex = (currentImageIndex + 1) % images.length;
                 updateImage(currentImageIndex);
             });
             
-            // Smooth scroll for CTA buttons
-            const ctaButtons = document.querySelectorAll('.shop-now-button, .decorative-arrow');
-            ctaButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetElement = document.querySelector('#products');
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
+            // Smooth scroll for CTA button
+            const ctaButton = document.querySelector('.shop-now-button');
+            ctaButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetElement = document.querySelector('#products');
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             });
         });
     </script>
