@@ -91,7 +91,7 @@ body {
     overflow-x: hidden; /* Prevent horizontal scrolling */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    padding-top: 100px; /* Space for floating header */
+    padding-top: 80px; /* Space for floating header */
 }
 
 .container {
@@ -588,21 +588,35 @@ button:disabled {
     box-shadow: var(--elevation-2);
     padding: 12px 24px;
     border: 1px solid var(--md-sys-color-outline);
+    width: 90%; /* Match hero card width */
     max-width: calc(1200px - 40px); /* Match hero content width with padding */
-    width: calc(100% - 40px); /* Maintain horizontal padding */
 }
 
 .header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 12px;
+    padding: 0 16px; /* Add consistent padding */
     width: 100%;
+}
+
+/* Mobile responsive header */
+@media (max-width: 768px) {
+    .transparent-nav {
+        width: calc(100% - 20px); /* 100% width minus padding on mobile */
+        max-width: calc(100% - 20px);
+        top: 10px;
+        padding: 8px 16px;
+    }
+    
+    .header-container {
+        padding: 0 12px;
+    }
 }
 
 /* Hero Card Styles */
 .hero-card {
-    width: 100%;
+    width: 90%; /* Allow it to expand to 90-95% of viewport width */
     max-width: 1200px;
     height: 70vh;
     position: relative;
@@ -610,8 +624,20 @@ button:disabled {
     overflow: hidden;
     margin: 120px auto 0; /* Add top margin to accommodate floating header */
     padding: 0;
-    max-width: 1200px;
     border-radius: 16px;
+    box-shadow: var(--elevation-2); /* Add shadow to help blend with background */
+}
+
+/* Mobile responsive hero card */
+@media (max-width: 768px) {
+    .hero-card {
+        width: 100%; /* 100% width on mobile */
+        height: 60vh;
+        margin: 80px auto 0; /* Adjust top margin */
+        padding: 0;
+        max-width: 100%; /* Full width on mobile */
+        border-radius: 12px;
+    }
 }
 
 .hero-image-container {
@@ -712,7 +738,7 @@ button:disabled {
     z-index: 3;
     padding: 0;
     border: none;
-    margin: 0 4px; /* Add spacing between buttons */
+    margin: 0 6px; /* Add spacing between buttons */
 }
 
 .carousel-nav:hover {
@@ -721,11 +747,11 @@ button:disabled {
 }
 
 .carousel-nav.prev {
-    right: 96px; /* Positioned to the right, next to the next button */
+    right: 72px; /* Adjusted to add spacing between buttons */
 }
 
 .carousel-nav.next {
-    right: 48px; /* Positioned in the top-right corner */
+    right: 12px; /* Positioned in the top-right corner */
 }
 
 /* Full screen banner */
@@ -855,7 +881,7 @@ button:disabled {
     width: 100px;
     height: 4px;
     background: var(--md-sys-color-primary);
-    margin: 80px auto 30px auto; /* Increase top margin to push below the fold */
+    margin: 100vh auto 30px auto; /* Push below the fold with 100vh top margin */
     border-radius: 2px;
     opacity: 0;
     transform: translateY(20px);
@@ -949,12 +975,12 @@ button:disabled {
         box-shadow: var(--elevation-2);
         padding: 8px 16px;
         border: 1px solid var(--md-sys-color-outline);
-        max-width: calc(100% - 40px); /* Adjust for mobile */
-        width: calc(100% - 40px);
+        width: calc(100% - 20px); /* Adjust for mobile */
+        max-width: calc(100% - 20px);
     }
     
     body {
-        padding-top: 80px; /* Adjust space for floating header on mobile */
+        padding-top: 70px; /* Adjust space for floating header on mobile */
     }
 
     /* Adjust hero card for smaller screens */
@@ -963,7 +989,7 @@ button:disabled {
         height: 60vh;
         margin: 80px auto 0; /* Adjust top margin */
         padding: 0;
-        max-width: calc(100% - 20px);
+        max-width: 100%;
         border-radius: 12px;
     }
     

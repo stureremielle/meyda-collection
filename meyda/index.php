@@ -166,7 +166,7 @@ if (!empty($_SESSION['cart'])) {
 </head>
 <body>
   <header class="site-header transparent-nav">
-    <div class="container header-container">
+    <div class="header-container">
       <h1 class="brand">meyda</h1>
       <nav class="nav">
         <a href="index.php">home</a>
@@ -194,35 +194,35 @@ if (!empty($_SESSION['cart'])) {
       <div class="alert alert-success"><?php echo h($success); ?></div>
     <?php endif; ?>
 
-      <?php 
-      // Include the HeroCard component
-      require_once __DIR__ . '/HeroCard.php';
-      echo renderHeroCard([
-          'headline' => 'Discover our latest collection of premium fashion items designed to elevate your style.',
-          'slogan' => 'MAKE YOUR LOOK MORE SIGMA',
-          'cta_text' => 'Shop Now'
-      ]);
-      ?>
+    <?php 
+    // Include the HeroCard component
+    require_once __DIR__ . '/HeroCard.php';
+    echo renderHeroCard([
+        'headline' => 'Discover our latest collection of premium fashion items designed to elevate your style.',
+        'slogan' => 'MAKE YOUR LOOK MORE SIGMA',
+        'cta_text' => 'Shop Now'
+    ]);
+    ?>
 
-      <!-- Divider Line -->
-      <div class="divider-line"></div>
-
-      <!-- Category Filter Section -->
-      <section class="category-filter no-card-filter">
-        <div class="filter-container">
-          <select id="categoryFilter" onchange="filterProducts()">
-            <option value="all">All Categories</option>
-            <?php
-              // Get unique categories
-              $catStmt = $pdo->query("SELECT DISTINCT k.nama_kategori FROM kategori_produk k JOIN produk p ON k.id_kategori = p.id_kategori WHERE p.stok > 0");
-              $categories = $catStmt->fetchAll();
-              foreach ($categories as $category):
-            ?>
-              <option value="<?php echo h($category['nama_kategori']); ?>"><?php echo h($category['nama_kategori']); ?></option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-      </section>
+    <!-- Divider Line -->
+    <div class="divider-line"></div>
+    
+    <!-- Category Filter Section -->
+    <section class="category-filter no-card-filter">
+      <div class="filter-container">
+        <select id="categoryFilter" onchange="filterProducts()">
+          <option value="all">All Categories</option>
+          <?php
+            // Get unique categories
+            $catStmt = $pdo->query("SELECT DISTINCT k.nama_kategori FROM kategori_produk k JOIN produk p ON k.id_kategori = p.id_kategori WHERE p.stok > 0");
+            $categories = $catStmt->fetchAll();
+            foreach ($categories as $category):
+          ?>
+            <option value="<?php echo h($category['nama_kategori']); ?>"><?php echo h($category['nama_kategori']); ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    </section>
 
       <section class="products-grid" id="products" aria-label="Featured products">
         <?php foreach ($products as $p): ?>
