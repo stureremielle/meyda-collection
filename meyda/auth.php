@@ -131,8 +131,7 @@ function logout() {
         session_regenerate_id(true);
     }
 
-    // Additional security measures
-    // Unset all session variables
+    // Destroy all session data
     $_SESSION = array();
 
     // Delete the session cookie if it exists
@@ -144,10 +143,10 @@ function logout() {
         );
     }
 
-    // Start a fresh session
+    // Finally, destroy the session
     session_destroy();
-    session_start();
-
+    
+    // Redirect to home page
     header('Location: index.php');
     exit;
 }
@@ -174,5 +173,22 @@ function requireLogin($type = 'any') {
         http_response_code(403);
         die('Akses hanya untuk admin.');
     }
+}
+
+/**
+ * Generate a CSRF token
+ */
+function generateCSRFToken() {
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Validate a CSRF token
+ */
+function validateCSRFToken($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 ?>
