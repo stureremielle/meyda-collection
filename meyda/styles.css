@@ -199,24 +199,7 @@ select {
     max-width: 600px;
 }
 
-/* Hero Card Styles */
-.hero-card {
-    position: relative;
-    margin: 24px 24px;
-    background: var(--card);
-    border-radius: 16px;
-    padding: 0;
-    box-shadow: var(--elevation-1);
-    max-width: 1920px;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    min-height: 500px;
-    max-height: calc(100vh - 100px); /* Make sure it fits within the viewport with header space */
-}
+
 
 .hero-card-content {
     position: relative;
@@ -616,14 +599,15 @@ button:disabled {
 
 /* Hero Card Styles */
 .hero-card {
-    width: 95vw; /* Expand to 95% of viewport width on desktop */
+    width: calc(100% - 40px); /* Reduce width to account for padding */
     max-width: 1200px;
     height: 70vh;
     position: relative;
     background: var(--card);
     overflow: hidden;
-    margin: 120px auto 100vh; /* Add top margin to accommodate floating header and bottom margin to push separator below fold */
-    padding: 0;
+    margin: 120px auto 40px; /* Add top margin to accommodate floating header and normal bottom margin */
+    padding: 0 20px 0 0; /* Add right padding to prevent kissing edge */
+    box-sizing: border-box; /* Ensure padding doesn't push it over the edge */
     border-radius: 16px;
     box-shadow: var(--elevation-2); /* Add shadow to help blend with background */
     left: 50%;
@@ -633,14 +617,15 @@ button:disabled {
 /* Mobile responsive hero card */
 @media (max-width: 768px) {
     .hero-card {
-        width: 100vw; /* 100% width on mobile */
+        width: calc(100% - 40px); /* Reduce width to account for padding */
         height: 60vh;
-        margin: 80px auto 100vh; /* Adjust top margin and add bottom margin to push separator below fold */
-        padding: 0;
-        max-width: 100vw; /* Full width on mobile */
+        margin: 80px auto 40px; /* Adjust top margin and normal bottom margin */
+        padding: 0 20px 0 0; /* Add right padding to prevent kissing edge */
+        max-width: 1200px; /* Keep max-width consistent */
         border-radius: 12px;
         left: 50%;
         transform: translateX(-50%);
+        box-sizing: border-box; /* Ensure padding doesn't push it over the edge */
     }
 }
 
@@ -998,12 +983,13 @@ button:disabled {
 
     /* Adjust hero card for smaller screens */
     .hero-card {
-        width: 100%;
+        width: calc(100% - 40px); /* Account for padding */
         height: 60vh;
-        margin: 80px auto 0; /* Adjust top margin */
-        padding: 0;
-        max-width: 100%;
+        margin: 80px auto 40px; /* Adjust top margin and add normal bottom margin */
+        padding: 0 20px 0 0; /* Add right padding to prevent kissing edge */
+        max-width: 1200px; /* Keep consistent max-width */
         border-radius: 12px;
+        box-sizing: border-box; /* Ensure padding doesn't push it over the edge */
     }
     
     .headline-text {
