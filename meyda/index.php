@@ -194,43 +194,15 @@ if (!empty($_SESSION['cart'])) {
       <div class="alert alert-success"><?php echo h($success); ?></div>
     <?php endif; ?>
 
-      <!-- Hero Section with Card Wrapper -->
-      <section class="hero-card">
-        <div class="hero-card-content">
-          <!-- Background Image -->
-          <div class="hero-background-image" id="heroBackground">
-            <img src="hero_images/1.jpg" alt="Hero background" id="heroImage">
-          </div>
-          
-          <!-- Top Left Text -->
-          <div class="hero-top-left-text">
-            Discover our latest collection of premium fashion items designed to elevate your style.
-          </div>
-          
-          <!-- Bottom Left Text -->
-          <div class="hero-bottom-left-text">
-            MAKE YOUR LOOK MORE SIGMA
-          </div>
-          
-          <!-- Bottom Right Pill Button and Icon Button -->
-          <div class="hero-cta-container">
-            <a href="#products" class="hero-cta-pill combined-shop-button">Shop Now</a>
-            <a href="#products" class="hero-cta-icon combined-shop-button" aria-label="Shop now">
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZjlmNWY1IiBkPSJtMTYgOC40bC04LjkgOC45cS0uMjc1LjI3NS0uNy4yNzV0LS43LS4yNzV0LS4yNzUtLjd0LjI3NS0uN0wxNC42IDdIN3EtLjQyNSAwLS43MTItLjI4OFQ2IDZ0LjI4OC0uNzEyVDcgNWgxMHEuNDI1IDAgLjcxMy4yODhUMTggNnYxMHEwIC40MjUtLjI4OC43MTNUMTcgMTd0LS43MTItLjI4OFQxNiAxNnoiLz48L3N2Zz4=" alt="Arrow icon">
-            </a>
-          </div>
-          
-          <!-- Top Right Image Switch Buttons -->
-          <div class="hero-switch-buttons">
-            <button class="image-switch-btn prev-btn" aria-label="Previous image">
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZjlmNWY1IiBkPSJtNy44NSAxM2wyLjg1IDIuODVxLjMuMy4yODguN3QtLjI4OC43cS0uMy4zLS43MTIuMzEzdC0uNzEzLS4yODhMNC43IDEyLjdxLS4zLS4zLS4zLS43dC4zLS43bDQuNTc1LTQuNTc1cS4zLS4zLjcxMy0uMjg3dC43MTIuMzEycS4yNzUuMy4yODguN3QtLjI4OC43TDcuODUgMTFIMTlxLjQyNSAwIC43MTMuMjg4VDIwIDEydC0uMjg4LjcxM1QxOSAxM3oiLz48L3N2Zz4=" alt="Previous">
-            </button>
-            <button class="image-switch-btn next-btn" aria-label="Next image">
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZjlmNWY1IiBkPSJNMTYuMTUgMTNINXEtLjQyNSAwLS43MTItLjI4OFQ0IDEydC4yODgtLjcxMlQ1IDExaDExLjE1TDEzLjMgOC4xNXEtLjMtLjMtLjI4OC0uN3QuMjg4LS43cS4zLS4zLjcxMy0uMzEydC43MTIuMjg3TDE5LjMgMTEuM3EuMTUuMTUuMjEzLjMyNXQuMDYyLjM3NXQtLjA2Mi4zNzV0LS4yMTMuMzI1bC00LjU3NSA0LjU3NXEtLjMuMy0uNzEyLjI4OHQtLjcxMy0uMzEzcS0uMjc1LS4zLS4yODgtLjd0LjI4OC0uN3oiLz48L3N2Zz4=" alt="Next">
-            </button>
-          </div>
-        </div>
-      </section>
+      <?php 
+      // Include the HeroCard component
+      require_once __DIR__ . '/HeroCard.php';
+      echo renderHeroCard([
+          'headline' => 'Discover our latest collection of premium fashion items designed to elevate your style.',
+          'slogan' => 'MAKE YOUR LOOK MORE SIGMA',
+          'cta_text' => 'Shop Now'
+      ]);
+      ?>
 
       <!-- Divider Line -->
       <div class="divider-line"></div>
