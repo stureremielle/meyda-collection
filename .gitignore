@@ -7,50 +7,40 @@ __pycache__/
 dist/
 build/
 target/
-*.class
-*.exe
-*.dll
-*.so
-*.a
-*.out
 
 # Dependencies
 .venv/
 venv/
 node_modules/
-.julia/
-.zig-cache/
-zig-cache/
-.gradle/
 .mypy_cache/
 .pytest_cache/
-coverage/
-htmlcov/
-*.egg-info/
+.gradle/
 
 # Logs and temp files
 *.log
 *.tmp
 *.swp
 *.swo
-*.bak
-*.~*
-.DS_Store
-Thumbs.db
 
 # Environment
 .env
 .env.local
-.env.*
-.envrc
+*.env.*
 
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# Archives
+# System files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Compressed files
 *.zip
 *.gz
 *.tar
