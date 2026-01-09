@@ -282,6 +282,21 @@ if (!empty($_SESSION['cart'])) {
           }
         });
       });
+      
+      // Handle divider visibility - make it appear after scrolling down
+      const divider = document.querySelector('.divider-line');
+      if (divider) {
+        // Initially hide the divider until it comes into view
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        }, { threshold: 0.1 });
+        
+        observer.observe(divider);
+      }
     });
 
     // Function to add item to cart via AJAX
