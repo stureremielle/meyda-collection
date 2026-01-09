@@ -1,6 +1,6 @@
 <?php
 // config.php - edit these values for your host
-define('DB_HOST', 'localhost');      // Database host address (not a URL)
+define('DB_HOST', '127.0.0.1');      // Database host address (force TCP/IP connection)
 define('DB_NAME', 'meyda_collection');
 define('DB_USER', 'meyda');     // set to the DB user you create on your server
 define('DB_PASS', 'kraccbacc');     // Change this to a strong password
@@ -23,30 +23,23 @@ function getPDO() {
     static $pdo = null;
     global $pdoOptions;
     if ($pdo === null) {
-        // Normalize DB_HOST: allow users to copy a URL like https://host/ and still work
-        $raw = DB_HOST;
-        $host = null;
+        // Direct approach: use defined constants as-is
+        $host = DB_HOST;
         $port = null;
-
-        // Try parse_url first (handles scheme://host:port/path)
-        $parsed = @parse_url($raw);
-        if ($parsed !== false && isset($parsed['host'])) {
-            $host = $parsed['host'];
-            if (!empty($parsed['port'])) $port = (int)$parsed['port'];
-        } else {
-            // Fallback: strip scheme and trailing slashes
-            $host = preg_replace('#^https?://#i', '', $raw);
-            $host = rtrim($host, '/');
-            // If host contains a colon with port, split it
-            if (strpos($host, ':') !== false) {
-                [$h, $p] = explode(':', $host, 2);
-                $host = $h;
-                if (is_numeric($p)) $port = (int)$p;
-            }
+        
+        // Extract port from host if present
+        $host_parts = explode(':', $host, 2);
+        if (count($host_parts) === 2 && is_numeric($host_parts[1])) {
+            $host = $host_parts[0];
+            $port = (int)$host_parts[1];
         }
 
-        // Build DSN with optional port; charset in DSN avoids init command
-        $dsn = 'mysql:host=' . $host . ($port ? ';port=' . $port : '') . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+        // Build DSN with optional port
+        $dsn = 'mysql:host=' . $host . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+        if ($port) {
+            $dsn .= ';port=' . $port;
+        }
+        
         $pdo = new PDO($dsn, DB_USER, DB_PASS, $pdoOptions);
     }
     return $pdo;
