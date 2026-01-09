@@ -364,7 +364,7 @@ select {
     color: white;
     width: 40px;
     height: 40px;
-    border-radius: 50%; /* Circular shape - this was already correct */
+    border-radius: 8px; /* Square with rounded corners */
     cursor: pointer;
     display: flex;
     align-items: center;

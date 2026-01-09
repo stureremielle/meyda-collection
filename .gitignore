@@ -6,15 +6,12 @@ __pycache__/
 *.obj
 dist/
 build/
-target/
+*.out
 
 # Dependencies
 .venv/
 venv/
 node_modules/
-.mypy_cache/
-.pytest_cache/
-.gradle/
 
 # Logs and temp files
 *.log
@@ -25,20 +22,20 @@ node_modules/
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
 # Editors
 .vscode/
 .idea/
 
-# System files
-.DS_Store
-Thumbs.db
-
 # Coverage
 coverage/
 htmlcov/
 .coverage
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Compressed files
 *.zip

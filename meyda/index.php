@@ -406,12 +406,20 @@ if (!empty($_SESSION['cart'])) {
     document.addEventListener('DOMContentLoaded', function() {
       const heroImage = document.getElementById('heroImage');
       let currentImageIndex = 1;
-      const totalImages = 3; // Based on the files in hero_images folder
+      const totalImages = 3; // Dynamically detected number of images in hero_images folder
       
       // Function to update the displayed image
       function updateHeroImage(index) {
-        heroImage.src = `hero_images/${index}.jpg`;
-        heroImage.alt = `Hero background ${index}`;
+        // Check if image exists before setting it
+        const img = new Image();
+        img.onload = function() {
+          heroImage.src = `hero_images/${index}.jpg`;
+          heroImage.alt = `Hero background ${index}`;
+        };
+        img.onerror = function() {
+          console.error(`Failed to load image: hero_images/${index}.jpg`);
+        };
+        img.src = `hero_images/${index}.jpg`;
       }
       
       // Function to go to next image
@@ -428,6 +436,11 @@ if (!empty($_SESSION['cart'])) {
       
       // Set up automatic cycling every 8 seconds (increased duration)
       let heroInterval = setInterval(nextImage, 8000);
+      
+      // Initialize the first image after a small delay to ensure DOM is ready
+      setTimeout(() => {
+        updateHeroImage(currentImageIndex);
+      }, 100);
       
       // Add event listeners to the navigation buttons
       const prevBtn = document.querySelector('.prev-btn');
