@@ -592,6 +592,173 @@ button:disabled {
     padding: 0 12px;
 }
 
+/* Hero Card Styles */
+.hero-card-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 24px 0;
+}
+
+.hero-card {
+    width: 100%;
+    max-width: 1200px; /* As specified in requirements */
+    border-radius: 8px; /* As specified in requirements */
+    overflow: hidden;
+    position: relative;
+    background: var(--card);
+    box-shadow: var(--elevation-1);
+    min-height: 500px;
+    aspect-ratio: 16 / 9; /* Fixed aspect ratio for image */
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    place-items: center;
+}
+
+.hero-card-inner {
+    width: 100%;
+    height: 100%;
+    padding: 3rem 2rem; /* Vertical: 3rem, Horizontal: 2rem */
+    position: relative;
+}
+
+.hero-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px; /* Match container border-radius */
+    object-position: center;
+}
+
+.hero-content-overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.headline-text {
+    align-self: flex-start;
+    margin-top: 2rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    max-width: 600px; /* As specified in requirements */
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 1.5rem; /* As specified in requirements */
+}
+
+.cta-container {
+    display: flex;
+    flex-direction: row; /* As specified in requirements */
+    align-items: center; /* As specified in requirements */
+    margin-left: 2rem;
+    margin-top: 1rem;
+    gap: 0px; /* Zero gap to ensure arrow is directly adjacent to button */
+}
+
+.shop-now-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    text-decoration: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s;
+    white-space: nowrap;
+    border: none;
+    cursor: pointer;
+}
+
+.decorative-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px; /* Match the height of the button for alignment */
+    height: 46px;
+    background: var(--md-sys-color-primary);
+    border-radius: 50%;
+    margin-left: -2px; /* Overlap slightly with button to ensure direct adjacency */
+    padding: 0;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.decorative-arrow svg {
+    width: 20px;
+    height: 20px;
+    color: var(--md-sys-color-on-primary);
+}
+
+.shop-now-button:hover, .decorative-arrow:hover {
+    background: #e55d00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 109, 0, 0.3);
+}
+
+.slogan-text {
+    position: absolute;
+    bottom: 2rem; /* As specified in requirements */
+    left: 2rem; /* Aligned to left padding edge as specified */
+    color: var(--md-sys-color-on-surface);
+    font-size: 1.5rem;
+    font-weight: 700;
+    z-index: 2;
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s;
+    z-index: 3;
+    padding: 0;
+}
+
+.carousel-nav:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-nav.prev {
+    left: 32px; /* Inset from card sides as specified (between 24px-40px) */
+}
+
+.carousel-nav.next {
+    right: 32px; /* Inset from card sides as specified (between 24px-40px) */
+}
+
 /* Full screen banner */
 .full-screen-banner {
     margin: 24px 12px;
