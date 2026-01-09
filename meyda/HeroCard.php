@@ -75,8 +75,18 @@ function renderHeroCard($options = []) {
             const heroImage = document.getElementById('heroMainImage');
             
             function updateImage(index) {
-                heroImage.src = images[index];
-                heroImage.alt = `Hero background ${index + 1}`;
+                // Add fade out effect
+                heroImage.classList.remove('fade-in');
+                heroImage.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    heroImage.src = images[index];
+                    heroImage.alt = `Hero background ${index + 1}`;
+                    
+                    // Add fade in effect
+                    heroImage.classList.remove('fade-out');
+                    heroImage.classList.add('fade-in');
+                }, 250); // Half of the transition duration
             }
             
             prevBtn.addEventListener('click', function(e) {
