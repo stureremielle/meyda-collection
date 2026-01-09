@@ -39,7 +39,7 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
               if ($fallback) {
                 $idUser = (int)$fallback;
               } else {
-                throw new Exception('Tidak ada akun staff/admin di sistem. Silakan buat akun admin melalui /admin/setup.php terlebih dahulu.');
+                throw new Exception('Tidak ada akun staff/admin di sistem. Silakan hubungi administrator untuk membuat akun admin.');
               }
             }
 
@@ -218,11 +218,12 @@ if (!empty($_SESSION['cart'])) {
       fetch('index.php?action=cart_count')
         .then(response => response.json())
         .then(data => {
-          const cartLink = document.querySelector('a[href="cart.php"]');
-          if (cartLink) {
+          const cartLinks = document.querySelectorAll('a[href*="cart"], a[href*="index.php?action=cart"]');
+          cartLinks.forEach(cartLink => {
             // Extract the text content before the cart count and append the new count
-            cartLink.innerHTML = 'cart (' + data.count + ')';
-          }
+            const baseText = cartLink.textContent.replace(/\s*\([^)]*\)/, '');
+            cartLink.innerHTML = baseText + ' (' + data.count + ')';
+          });
         })
         .catch(error => console.error('Error updating cart count:', error));
     }
@@ -252,15 +253,25 @@ if (!empty($_SESSION['cart'])) {
         zIndex: '1000',
         boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
         fontFamily: 'inherit',
-        fontSize: '14px'
+        fontSize: '14px',
+        opacity: '0',
+        transition: 'opacity 0.3s ease-in-out'
       });
       
       // Add to body
       document.body.appendChild(notification);
       
+      // Fade in
+      setTimeout(() => {
+        notification.style.opacity = '1';
+      }, 10);
+
       // Auto-remove after 3 seconds
       setTimeout(() => {
-        notification.remove();
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
       }, 3000);
     }
   </script>

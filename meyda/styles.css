@@ -11,7 +11,6 @@
     --card: #252525;
     --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
     --elevation-2: 0 4px 8px rgba(0, 0, 0, 0.4);
-    --product-image-height: 2000px; /* Adjustable product image height */
 }
 
 @font-face {
@@ -61,6 +60,7 @@
     font-weight: 700;
 }
 
+/* Performance improvements */
 * {
     box-sizing: border-box;
     font-family:
@@ -89,13 +89,15 @@ body {
     flex-direction: column;
     min-height: 100vh;
     overflow-x: hidden; /* Prevent horizontal scrolling */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
     padding: 0 12px;
     width: 100%;
-    margin: 0; /* Full width without centering */
-    max-width: 100%; /* Ensure it doesn't exceed viewport */
+    margin: 0 auto; /* Center the container */
+    max-width: 1200px; /* Reasonable max width */
 }
 
 main.container {

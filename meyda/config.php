@@ -1,12 +1,17 @@
 <?php
 // config.php - edit these values for your host
-define('DB_HOST', 'https://mysql-meyda.alwaysdata.net/');      // Host or URL provided by host (we sanitize below)
+define('DB_HOST', 'localhost');      // Database host address (not a URL)
 define('DB_NAME', 'meyda_collection');
-define('DB_USER', 'meyda');     // set to the DB user you create on AlwaysData
-define('DB_PASS', 'kraccbacc');
+define('DB_USER', 'meyda');     // set to the DB user you create on your server
+define('DB_PASS', 'kraccbacc');     // Change this to a strong password
 define('DEFAULT_USER_ID', 1);        // id_user used for transactions (admin). Ensure it exists.
 
-putenv('MEYDA_ADMIN_KEY=sikrit_dokumen');
+// Generate a secure key if not already set
+if (!defined('MEYDA_ADMIN_KEY')) {
+    $admin_key = getenv('MEYDA_ADMIN_KEY') ?: bin2hex(random_bytes(32));
+    putenv("MEYDA_ADMIN_KEY=$admin_key");
+    define('MEYDA_ADMIN_KEY', $admin_key);
+}
 
 $pdoOptions = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

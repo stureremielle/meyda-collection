@@ -61,7 +61,7 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
               if ($fallback) {
                 $idUser = (int)$fallback;
               } else {
-                throw new Exception('Tidak ada akun staff/admin di sistem. Silakan buat akun admin melalui /admin/setup.php terlebih dahulu.');
+                throw new Exception('Tidak ada akun staff/admin di sistem. Silakan hubungi administrator untuk membuat akun admin.');
               }
             }
 
@@ -374,83 +374,63 @@ if (!empty($_SESSION['cart'])) {
       }, 3000);
     }
 
-    // Hero image cycling functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const heroImage = document.getElementById('heroImage');
-      let currentImageIndex = 1;
-      const totalImages = 3; // Dynamically detected number of images in hero_images folder
-      
-      // Function to update the displayed image
-      function updateHeroImage(index) {
-        // Check if image exists before setting it
-        const img = new Image();
-        img.onload = function() {
-          heroImage.src = `hero_images/${index}.jpg`;
-          heroImage.alt = `Hero background ${index}`;
-        };
-        img.onerror = function() {
-          console.error(`Failed to load image: hero_images/${index}.jpg`);
-        };
-        img.src = `hero_images/${index}.jpg`;
-      }
-      
-      // Function to go to next image
-      function nextImage() {
-        currentImageIndex = currentImageIndex % totalImages + 1;
-        updateHeroImage(currentImageIndex);
-      }
-      
-      // Function to go to previous image
-      function prevImage() {
-        currentImageIndex = currentImageIndex === 1 ? totalImages : currentImageIndex - 1;
-        updateHeroImage(currentImageIndex);
-      }
-      
-      // Set up automatic cycling every 8 seconds (increased duration)
-      let heroInterval = setInterval(nextImage, 8000);
-      
-      // Initialize the first image after a small delay to ensure DOM is ready
+    // Function to update the cart count in the navigation
+    function updateCartCount() {
+      // We need to fetch the updated cart count from the server
+      fetch('index.php?action=cart_count')
+        .then(response => response.json())
+        .then(data => {
+          const cartLinks = document.querySelectorAll('a[href*="cart"], a[href*="index.php?action=cart"]');
+          cartLinks.forEach(cartLink => {
+            // Extract the text content before the cart count and append the new count
+            const baseText = cartLink.textContent.replace(/\s*\([^)]*\)/, '');
+            cartLink.innerHTML = baseText + ' (' + data.count + ')';
+          });
+        })
+        .catch(error => console.error('Error updating cart count:', error));
+    }
+
+    // Function to show a notification
+    function showNotification(message) {
+      // Remove any existing notifications
+      const existingNotifications = document.querySelectorAll('.notification');
+      existingNotifications.forEach(notification => notification.remove());
+
+      // Create a notification element
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        font-family: inherit;
+        font-size: 14px;
+      `;
+
+      document.body.appendChild(notification);
+
+      // Fade in
       setTimeout(() => {
-        updateHeroImage(currentImageIndex);
-      }, 100);
-      
-      // Add event listeners to the navigation buttons
-      const prevBtn = document.querySelector('.prev-btn');
-      const nextBtn = document.querySelector('.next-btn');
-      
-      if (prevBtn) {
-        prevBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          clearInterval(heroInterval); // Stop automatic cycling
-          prevImage();
-          heroInterval = setInterval(nextImage, 5000); // Restart the cycle
-        });
-      }
-      
-      if (nextBtn) {
-        nextBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          clearInterval(heroInterval); // Stop automatic cycling
-          nextImage();
-          heroInterval = setInterval(nextImage, 5000); // Restart the cycle
-        });
-      }
-      
-      // Add keyboard navigation support
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'ArrowLeft') {
-          clearInterval(heroInterval); // Stop automatic cycling
-          prevImage();
-          heroInterval = setInterval(nextImage, 5000); // Restart the cycle
-        } else if (e.key === 'ArrowRight') {
-          clearInterval(heroInterval); // Stop automatic cycling
-          nextImage();
-          heroInterval = setInterval(nextImage, 5000); // Restart the cycle
-        }
-      });
-    });
+        notification.style.opacity = '1';
+      }, 10);
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
+      }, 3000);
+    }
   </script>
 </body>
 </html>
