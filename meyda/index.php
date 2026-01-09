@@ -426,8 +426,8 @@ if (!empty($_SESSION['cart'])) {
         updateHeroImage(currentImageIndex);
       }
       
-      // Set up automatic cycling every 5 seconds
-      let heroInterval = setInterval(nextImage, 5000);
+      // Set up automatic cycling every 8 seconds (increased duration)
+      let heroInterval = setInterval(nextImage, 8000);
       
       // Add event listeners to the navigation buttons
       const prevBtn = document.querySelector('.prev-btn');

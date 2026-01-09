@@ -88,17 +88,22 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 .container {
     padding: 0 12px;
     width: 100%;
     margin: 0; /* Full width without centering */
+    max-width: 100%; /* Ensure it doesn't exceed viewport */
 }
 
 main.container {
     flex: 1;
     padding: 0 12px; /* Ensure main content has consistent padding */
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 button,
@@ -117,8 +122,11 @@ select {
 
 .site-header {
     border-bottom: 1px solid var(--md-sys-color-outline);
-    padding: 16px 0;
+    padding: 8px 0; /* Reduced padding */
     background: var(--md-sys-color-surface);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .site-header .container {
@@ -144,7 +152,7 @@ select {
         Arial;
     font-weight: 700;
     letter-spacing: 0.2px;
-    font-size: 24px;
+    font-size: 20px; /* Reduced size */
     color: var(--md-sys-color-on-surface);
 }
 
@@ -152,15 +160,15 @@ select {
     float: right;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px; /* Reduced gap */
 }
 
 .nav a {
     color: var(--md-sys-color-on-surface);
     text-decoration: none;
-    font-size: 14px;
-    padding: 8px 16px;
-    border-radius: 8px;
+    font-size: 13px; /* Reduced font size */
+    padding: 6px 12px; /* Reduced padding */
+    border-radius: 6px; /* Reduced border radius */
     transition: all 0.2s;
 }
 
@@ -204,6 +212,7 @@ select {
     justify-content: center;
     overflow: hidden;
     min-height: 500px;
+    max-height: calc(100vh - 100px); /* Make sure it fits within the viewport with header space */
 }
 
 .hero-card-content {
@@ -264,7 +273,9 @@ select {
     bottom: 20px;
     right: 20px;
     z-index: 1;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
     text-decoration: none;
@@ -273,6 +284,7 @@ select {
     font-weight: 600;
     font-size: 16px;
     transition: all 0.3s;
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
 .hero-cta-pill:hover {
@@ -301,8 +313,11 @@ select {
     background: var(--md-sys-color-primary);
     border-radius: 50%; /* Circular shape */
     margin-left: -2px; /* Overlap slightly with pill button */
-    padding: 8px;
+    padding: 0; /* Reset padding to center the icon properly */
     transition: all 0.3s;
+    border: none; /* Remove any default border */
+    cursor: pointer; /* Ensure it looks clickable */
+    position: relative; /* For proper positioning */
 }
 
 .hero-cta-icon:hover {
@@ -326,6 +341,10 @@ select {
     width: 24px;
     height: 24px;
     filter: brightness(0) invert(1); /* Make the icon white */
+    position: absolute; /* Position absolutely within the circular button */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the icon */
 }
 
 /* Top right image switch buttons */
@@ -345,7 +364,7 @@ select {
     color: white;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 50%; /* Circular shape - this was already correct */
     cursor: pointer;
     display: flex;
     align-items: center;
