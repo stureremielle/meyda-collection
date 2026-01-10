@@ -208,8 +208,6 @@ if (!empty($_SESSION['cart'])) {
     <div class="divider-line"></div>
     
     <!-- Category Filter Section -->
-      <div class="alert alert-success"><?php echo h($success); ?></div>
-    <?php endif; ?>
 
     <!-- Divider Line -->
     <div class="divider-line"></div>
