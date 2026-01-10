@@ -94,6 +94,11 @@ body {
     padding-top: 80px; /* Space for floating header */
 }
 
+/* Override padding for sections that should be full width */
+body.full-width-section {
+    padding-top: 0;
+}
+
 .container {
     padding: 0 12px;
     width: 100%;
@@ -598,35 +603,36 @@ button:disabled {
 }
 
 /* Hero Card Styles */
+/* Full-width hero section that breaks out of container constraints */
 .hero-card {
-    width: 100%;
-    max-width: 1200px;
+    width: 100vw;
+    max-width: 100vw;
     height: calc(100vh - 80px); /* Full viewport height minus header space */
     position: relative;
     background: var(--card);
     overflow: hidden;
-    margin: 80px auto 40px; /* Match header top space */
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    margin-top: 80px;
+    margin-bottom: 40px;
     padding: 0; /* Remove extra padding */
     box-sizing: border-box; /* Ensure padding doesn't push it over the edge */
-    border-radius: 16px;
+    border-radius: 0; /* Remove border radius for true full-width */
     box-shadow: var(--elevation-2); /* Add shadow to help blend with background */
-    /* Center using margin auto instead of left/transform */
-    margin-left: auto;
-    margin-right: auto;
 }
 
 /* Mobile responsive hero card */
 @media (max-width: 768px) {
     .hero-card {
-        width: 100%; /* Full width on mobile */
+        width: 100vw; /* Full width on mobile */
+        max-width: 100vw;
         height: calc(100vh - 70px); /* Full viewport height minus header space */
-        margin: 70px auto 40px; /* Match header top space on mobile */
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+        margin-top: 70px;
+        margin-bottom: 40px;
         padding: 0; /* Remove extra padding */
-        max-width: 1200px; /* Keep max-width consistent */
-        border-radius: 12px;
-        /* Center using margin auto instead of left/transform */
-        margin-left: auto;
-        margin-right: auto;
+        border-radius: 0; /* Keep it flat on mobile too */
         box-sizing: border-box; /* Ensure padding doesn't push it over the edge */
     }
 }
