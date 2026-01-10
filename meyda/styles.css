@@ -986,14 +986,15 @@ button:disabled {
     /* Adjust hero card for smaller screens */
     .hero-card {
         width: 100%; /* Full width */
-        height: 70vh; /* Updated height */
-        margin: 80px auto 40px; /* Adjust top margin and add normal bottom margin */
+        height: calc(100vh - 70px); /* Full viewport height minus header space */
+        margin: 70px auto 40px; /* Match header top space on mobile */
         padding: 0; /* Remove extra padding */
         max-width: 1200px; /* Keep consistent max-width */
         border-radius: 12px;
         box-sizing: border-box; /* Ensure padding doesn't push it over the edge */
-        left: 50%;
-        transform: translateX(-50%); /* Maintain centering */
+        /* Center using margin auto instead of left/transform */
+        margin-left: auto;
+        margin-right: auto;
     }
     
     .headline-text {
