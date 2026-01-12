@@ -103,7 +103,7 @@ body {
 
 main.container {
     flex: 1;
-    padding: 0 12px; /* Ensure main content has consistent padding */
+    padding: 0 40px; /* Ensure main content has consistent padding */
     width: 100%;
     max-width: 100%;
     overflow-x: hidden; /* Prevent horizontal scrolling */
@@ -599,11 +599,11 @@ button:disabled {
 .hero-card {
     /*width: calc(100% - 40px);
     max-width: 1200px;*/
-    height: 70vh;
+    height: 85vh;
     position: relative;
     background: var(--card);
     overflow: hidden;
-    margin: 120px auto 40px; /* Add top margin to accommodate floating header and normal bottom margin */
+    margin: 20px auto 20px; /* Add top margin to accommodate floating header and normal bottom margin */
     padding: 0 20px 0 0; /* Add right padding to prevent kissing edge */
     box-sizing: border-box; /* Ensure padding doesn't push it over the edge */
     border-radius: 16px;

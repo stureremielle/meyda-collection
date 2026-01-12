@@ -1,9 +1,15 @@
 <?php
 // config.php - edit these values for your host
-define("DB_HOST", "mysql-meyda.alwaysdata.net"); // Database host address (force TCP/IP connection)
+// define("DB_HOST", "mysql-meyda.alwaysdata.net"); // Database host address (force TCP/IP connection)
+// define("DB_NAME", "meyda_collection");
+// define("DB_USER", "meyda"); // set to the DB user you create on your server
+// define("DB_PASS", "kraccbacc"); // Change this to a strong password
+// define("DEFAULT_USER_ID", 1); // id_user used for transactions (admin). Ensure it exists.
+
+define("DB_HOST", "127.0.0.1"); // Database host address (force TCP/IP connection)
 define("DB_NAME", "meyda_collection");
-define("DB_USER", "meyda"); // set to the DB user you create on your server
-define("DB_PASS", "kraccbacc"); // Change this to a strong password
+define("DB_USER", "root"); // set to the DB user you create on your server
+define("DB_PASS", ""); // Change this to a strong password
 define("DEFAULT_USER_ID", 1); // id_user used for transactions (admin). Ensure it exists.
 
 // Generate a secure key if not already set
