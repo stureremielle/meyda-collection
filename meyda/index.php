@@ -208,6 +208,11 @@ if (!empty($_SESSION['cart'])) {
     <div class="divider-line"></div>
     
     <!-- Category Filter Section -->
+
+    <!-- Divider Line -->
+    <div class="divider-line"></div>
+    
+    <!-- Category Filter Section -->
     <section class="category-filter no-card-filter">
       <div class="filter-container">
         <select id="categoryFilter" onchange="filterProducts()">
