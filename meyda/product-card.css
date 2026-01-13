@@ -1,8 +1,8 @@
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-    gap: 24px;
-    padding: 48px 0;
+    gap: 20px; /* Reduced gap for mobile */
+    padding: 32px 0; /* Reduced padding */
     justify-content: start;
     width: 100%;
     max-width: 100%;
@@ -163,4 +163,62 @@
 /* Product card container to position button in top-right corner */
 .product-card {
     position: relative;
+}
+
+/* Mobile responsive product cards */
+@media (max-width: 768px) {
+    .products-grid {
+        gap: 16px; /* Even smaller gap on mobile */
+        padding: 24px 16px; /* Add side padding on mobile */
+    }
+    
+    .product-card {
+        max-width: 100%; /* Allow full width on small screens */
+        margin: 0 auto; /* Center the cards */
+    }
+    
+    .product-card .product-img,
+    .product-card .product-img-real {
+        height: 200px; /* Slightly smaller images on mobile */
+    }
+    
+    .product-card h3 {
+        font-size: 16px; /* Smaller font on mobile */
+    }
+    
+    .price {
+        font-size: 18px; /* Slightly smaller price text */
+    }
+    
+    .add-to-cart-form {
+        bottom: 6px; /* Adjust position */
+        right: 6px; /* Adjust position */
+    }
+}
+
+/* Extra small screen optimization */
+@media (max-width: 480px) {
+    .products-grid {
+        gap: 12px; /* Even smaller gap on very small screens */
+        padding: 16px 12px; /* Reduced padding */
+    }
+    
+    .product-card .product-img,
+    .product-card .product-img-real {
+        height: 160px; /* Even smaller images on very small screens */
+    }
+    
+    .product-card h3 {
+        font-size: 15px; /* Even smaller font on very small screens */
+    }
+    
+    .price {
+        font-size: 16px; /* Even smaller price text */
+    }
+    
+    .add-to-cart-form {
+        bottom: 4px; /* Adjust position */
+        right: 4px; /* Adjust position */
+        z-index: 10; /* Higher z-index to ensure visibility */
+    }
 }
