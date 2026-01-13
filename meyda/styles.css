@@ -563,19 +563,19 @@ button:disabled {
 /* Floating pill-shaped header */
 .transparent-nav {
     position: fixed;
-    top: 20px;
+    /*top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000;
+    z-index: 1000;*/
     background: rgba(42, 42, 42, 0.9);
     backdrop-filter: blur(10px);
     border-radius: 50px;
-    margin: 0;
+    margin: 20px 40px 0px 40px;
     box-shadow: var(--elevation-2);
     padding: 12px 24px;
     border: 1px solid var(--md-sys-color-outline);
-    width: 100%;
-    max-width: 1200px; /* Match hero card width */
+    width: 1840px;
+    /*max-width: 1200px;*/
 }
 
 .header-container {
@@ -605,7 +605,7 @@ button:disabled {
 .hero-card {
     /*width: calc(100% - 40px);
     max-width: 1200px;*/
-    height: 85vh;
+    height: 88vh;
     position: relative;
     background: var(--card);
     overflow: hidden;
