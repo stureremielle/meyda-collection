@@ -108,7 +108,7 @@ body.full-width-section {
 
 main.container {
     flex: 1;
-    padding: 0 40px; /* Ensure main content has consistent padding */
+    padding: 0 16px; /* Reduced padding for mobile */
     width: 100%;
     max-width: 100%;
     overflow-x: hidden; /* Prevent horizontal scrolling */
@@ -593,10 +593,28 @@ button:disabled {
         max-width: 100%; /* Full width on mobile */
         top: 10px;
         padding: 8px 16px;
+        margin: 10px;
     }
 
     .header-container {
+        flex-direction: column;
         padding: 0 12px;
+        gap: 8px;
+    }
+    
+    .brand {
+        align-self: flex-start;
+    }
+    
+    .nav {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .nav a {
+        padding: 6px 10px;
+        font-size: 12px;
     }
 }
 
@@ -623,11 +641,10 @@ button:disabled {
 /* Mobile responsive hero card */
 @media (max-width: 768px) {
     .hero-card {
-        width: 85vw; /* Reduce width to add margins */
+        width: 90vw; /* Reduce width to add margins */
         max-width: 95vw; /* Allow slight reduction from full width */
-        height: calc(
-            100vh - 70px
-        ); /* Full viewport height minus header space */
+        height: 50vh; /* Reduce height for mobile */
+        min-height: 300px; /* Ensure minimum height */
         margin: 20px auto 40px auto; /* Center the card with top/bottom margins */
         padding: 0;
         border-radius: 16px; /* Slightly less rounded on mobile */
@@ -957,6 +974,11 @@ button:disabled {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    .divider-line {
+        width: 80px; /* Smaller width on mobile */
+        height: 3px; /* Thinner line on mobile */
+    }
+
     .container {
         padding: 0 16px;
         max-width: 100%; /* Full width on mobile */
@@ -992,11 +1014,11 @@ button:disabled {
 
     /* Adjust hero card for smaller screens */
     .hero-card {
-        width: calc(100% - 40px); /* Account for padding */
-        height: 60vh;
-        margin: 80px auto 40px; /* Adjust top margin and add normal bottom margin */
-        padding: 0 20px 0 0; /* Add right padding to prevent kissing edge */
-        /*max-width: 1200px;*/
+        width: 95vw; /* Make it almost full width */
+        height: 40vh; /* Reduce height further */
+        min-height: 250px; /* Minimum height */
+        margin: 60px auto 30px; /* Adjust top margin and add normal bottom margin */
+        padding: 0; /* Remove padding */
         border-radius: 12px;
         box-sizing: border-box; /* Ensure padding doesn't push it over the edge */
         /* Center using margin auto instead of left/transform */
@@ -1005,34 +1027,40 @@ button:disabled {
     }
 
     .headline-text {
-        top: 2rem;
-        left: 1.5rem;
-        max-width: 500px;
-        font-size: 1.5rem;
+        top: 1.5rem;
+        left: 1rem;
+        max-width: 80%;
+        font-size: 1.3rem;
+        padding-right: 1rem; /* Add padding to prevent text from being too close to edge */
     }
 
     .slogan-text {
-        bottom: 1.5rem;
-        left: 1.5rem;
-        font-size: 1.2rem;
+        bottom: 2.5rem;
+        left: 1rem;
+        font-size: 1.1rem;
+        padding-right: 1rem; /* Add padding to prevent text from being too close to edge */
     }
 
     .shop-now-button {
-        bottom: 1.5rem;
-        right: 1.5rem;
-        padding: 10px 20px;
-        font-size: 14px;
+        bottom: 1rem;
+        right: 1rem;
+        padding: 8px 16px;
+        font-size: 13px;
     }
 
     .carousel-arrows-container {
-        top: 1.5rem;
-        right: 1.5rem;
-        gap: 8px; /* Smaller gap on mobile */
+        top: 1rem;
+        right: 1rem;
+        gap: 6px; /* Smaller gap on mobile */
+        display: flex;
+        flex-direction: column; /* Stack arrows vertically */
     }
 
     .carousel-nav {
-        width: 60px; /* Match the width of the shop now button on mobile */
-        height: 34px; /* Match the height of the shop now button on mobile */
+        width: 36px; /* Smaller size on mobile */
+        height: 36px; /* Smaller size on mobile */
+        border-radius: 8px; /* More rounded */
+        padding: 4px; /* Reduce padding */
     }
 
     .carousel-nav.prev {
