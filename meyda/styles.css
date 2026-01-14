@@ -572,7 +572,7 @@ button:disabled {
     border-radius: 50px;
     margin: 20px 40px 0px 40px;
     box-shadow: var(--elevation-2);
-    padding: 12px 24px;
+    /*padding: 12px 24px;*/
     border: 1px solid var(--md-sys-color-outline);
     width: 1840px;
     /*max-width: 1200px;*/
@@ -604,24 +604,24 @@ button:disabled {
         padding: 0 12px;
         gap: 8px;
     }
-    
+
     .brand {
         align-self: flex-start;
     }
-    
+
     .nav {
         width: 100%;
         justify-content: center;
         flex-wrap: wrap;
         gap: 8px; /* Consistent gap */
     }
-    
+
     .nav a {
         padding: 6px 10px;
         font-size: 12px;
         margin: 2px 1px; /* Small margin to separate items */
     }
-    
+
     body {
         padding-top: 70px; /* Adjust space for floating header on mobile */
     }
@@ -714,10 +714,10 @@ button:disabled {
     background: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
     text-decoration: none;
-    padding: 12px 28px;
+    padding: 18px 60px;
     border-radius: 30px;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 20px;
     transition: all 0.3s;
     white-space: nowrap;
     border: none;
@@ -754,13 +754,14 @@ button:disabled {
 
 .carousel-nav {
     position: static; /* Let flexbox handle positioning */
-    width: 84px; /* Match the width of the shop now button */
-    height: 40px; /* Match the height of the shop now button */
+    width: 60px; /* Match the width of the shop now button */
+    height: 60px; /* Match the height of the shop now button */
+    margin: 0px 0px 0px 0px;
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
-    border-radius: 8px;
+    border-radius: 30px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1015,24 +1016,24 @@ button:disabled {
     body {
         padding-top: 70px; /* Adjust space for floating header on mobile */
     }
-    
+
     .header-container {
         flex-direction: column;
         padding: 0 12px;
         gap: 8px;
     }
-    
+
     .brand {
         align-self: flex-start;
     }
-    
+
     .nav {
         width: 100%;
         justify-content: center;
         flex-wrap: wrap;
         gap: 8px; /* Consistent gap */
     }
-    
+
     .nav a {
         padding: 6px 10px;
         font-size: 12px;
