@@ -91,7 +91,7 @@ body {
     overflow-x: hidden; /* Prevent horizontal scrolling */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    padding-top: 80px; /* Space for floating header */
+    padding-top: 66px; /* Space for floating header */
 }
 
 /* Override padding for sections that should be full width */
@@ -632,7 +632,7 @@ button:disabled {
 .hero-card {
     /*width: calc(100% - 40px);
     max-width: 1200px;*/
-    height: 88vh;
+    height: 89.5vh;
     position: relative;
     background: var(--card);
     overflow: hidden;
@@ -908,12 +908,11 @@ button:disabled {
     max-height: 100%;
 }
 
-/* Divider line - hidden initially below the fold */
-.divider-line {
+/*.divider-line {
     width: 100px;
     height: 4px;
     background: var(--md-sys-color-primary);
-    margin: 0 auto 30px auto; /* Positioned right after the hero card */
+    margin: 0 auto 30px auto;
     border-radius: 2px;
     opacity: 0;
     transform: translateY(20px);
@@ -925,7 +924,7 @@ button:disabled {
 .divider-line.visible {
     opacity: 1;
     transform: translateY(0);
-}
+}*/
 
 /* Category Filter Styles */
 .category-filter {
