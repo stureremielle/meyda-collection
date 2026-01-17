@@ -1517,3 +1517,7 @@ body.auth-page main.auth-center {
 .login-card .login-form {
     padding: 20px 0;
 }
+
+.our_collection {
+    margin-top: 200px;
+}
