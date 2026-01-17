@@ -979,7 +979,7 @@ button:disabled {
 
 /* Product grid with ID for scrolling */
 #products {
-    padding-top: 48px;
+    padding-top: 0px;
 }
 
 /* Responsive adjustments */
@@ -1147,7 +1147,7 @@ button:disabled {
     .products-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 16px;
-        padding: 0 16px;
+        padding: 0px 0px 16px 0px;
     }
 
     .product-card {
@@ -1520,4 +1520,5 @@ body.auth-page main.auth-center {
 
 .our_collection {
     margin-top: 200px;
+    
 }
