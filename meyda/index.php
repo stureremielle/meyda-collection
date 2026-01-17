@@ -270,8 +270,8 @@ if (!empty($_SESSION["cart"])) {
     <!-- Category Filter Section -->
     <section class="category-filter no-card-filter">
       <div class="filter-container">
-        <select id="categoryFilter" onchange="filterProducts()">
-          <option value="all">All Categories</option>
+        <div class="category-pills">
+          <button class="category-pill active" data-category="all">All</button>
           <?php
           // Get unique categories
           $catStmt = $pdo->query(
@@ -279,12 +279,12 @@ if (!empty($_SESSION["cart"])) {
           );
           $categories = $catStmt->fetchAll();
           foreach ($categories as $category): ?>
-            <option value="<?php echo h(
+            <button class="category-pill" data-category="<?php echo h(
                 $category["nama_kategori"],
-            ); ?>"><?php echo h($category["nama_kategori"]); ?></option>
+            ); ?>"><?php echo h($category["nama_kategori"]); ?></button>
           <?php endforeach;
           ?>
-        </select>
+        </div>
       </div>
     </section>
 
@@ -318,7 +318,11 @@ if (!empty($_SESSION["cart"])) {
               <input type="hidden" name="id" value="<?php echo (int) $p[
                   "id_produk"
               ]; ?>">
-              <label style="display:none"><input type="number" name="qty" value="1" min="1"></label>
+              <div class="quantity-control">
+                <button type="button" class="qty-btn" onclick="adjustQuantity(this, -1)">-</button>
+                <input type="number" name="qty" value="1" min="1" max="<?php echo (int)$p['stok']; ?>" class="qty-input">
+                <button type="button" class="qty-btn" onclick="adjustQuantity(this, 1)">+</button>
+              </div>
               <button type="submit" class="add-to-cart-btn no-text"<?php echo $p[
                   "stok"
               ] <= 0
@@ -335,22 +339,34 @@ if (!empty($_SESSION["cart"])) {
   <?php include __DIR__ . "/_footer.php"; ?>
 
   <script>
-    function filterProducts() {
-      const selectedCategory = document.getElementById('categoryFilter').value;
+    function filterProducts(category) {
       const productCards = document.querySelectorAll('.product-card');
+      
+      // Update active pill button
+      document.querySelectorAll('.category-pill').forEach(pill => {
+        pill.classList.remove('active');
+      });
+      
+      if (category === 'all') {
+        document.querySelector('.category-pill[data-category="all"]').classList.add('active');
+      } else {
+        document.querySelector(`.category-pill[data-category="${category}"]`).classList.add('active');
+      }
 
       productCards.forEach(card => {
         const cardCategory = card.getAttribute('data-category');
 
-        if (selectedCategory === 'all' || cardCategory === selectedCategory) {
+        if (category === 'all' || cardCategory === category) {
           card.style.display = 'flex';
         } else {
           card.style.display = 'none';
         }
       });
     }
+    
 
-    // Update the Shop it Now button to smoothly scroll to products
+
+    // Update the Shop it Now button to smoothly scroll to products and handle other DOM ready tasks
     document.addEventListener('DOMContentLoaded', function() {
       const shopButtons = document.querySelectorAll('.shop-button');
       shopButtons.forEach(button => {
@@ -382,6 +398,18 @@ if (!empty($_SESSION["cart"])) {
 
         observer.observe(divider);
       }
+      
+      // Add event listeners to category pills
+      const categoryPills = document.querySelectorAll('.category-pill');
+      categoryPills.forEach(pill => {
+        pill.addEventListener('click', function() {
+          const category = this.getAttribute('data-category');
+          filterProducts(category);
+        });
+      });
+      
+      // Set default filter to 'all'
+      filterProducts('all');
     });
 
     // Function to add item to cart via AJAX
@@ -488,6 +516,22 @@ if (!empty($_SESSION["cart"])) {
           });
         })
         .catch(error => console.error('Error updating cart count:', error));
+    }
+
+    // Function to adjust quantity in input field
+    function adjustQuantity(btn, change) {
+      const container = btn.closest('.quantity-control');
+      const input = container.querySelector('.qty-input');
+      let currentValue = parseInt(input.value) || 1;
+      const minValue = parseInt(input.min) || 1;
+      const maxValue = parseInt(input.max) || 999;
+      
+      let newValue = currentValue + change;
+      
+      // Ensure the value stays within bounds
+      newValue = Math.max(minValue, Math.min(newValue, maxValue));
+      
+      input.value = newValue;
     }
 
     // Function to show a notification

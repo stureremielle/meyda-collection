@@ -405,9 +405,11 @@ button:disabled {
     width: auto;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     padding: 0;
     margin: 0;
     z-index: 1;
+    gap: 8px;
 }
 
 .add-to-cart-btn {
@@ -958,23 +960,83 @@ button:disabled {
     color: var(--md-sys-color-on-surface);
 }
 
-#categoryFilter {
-    padding: 10px 16px;
-    border-radius: 8px;
-    background: var(--md-sys-color-surface);
+/* Category Pills Styles */
+.category-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.category-pill {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: transparent;
     border: 1px solid var(--md-sys-color-outline);
     color: var(--md-sys-color-on-surface);
-    font-family:
-        "Futura",
-        system-ui,
-        -apple-system,
-        "Segoe UI",
-        Roboto,
-        "Google Sans",
-        Arial;
+    font-family: "Futura", system-ui, -apple-system, "Segoe UI", Roboto, "Google Sans", Arial;
     font-size: 14px;
-    width: 250px;
-    max-width: 100%;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: auto;
+    width: auto;
+}
+
+.category-pill:hover {
+    background: var(--md-sys-color-surface-variant);
+    border-color: var(--accent);
+}
+
+.category-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--md-sys-color-on-primary);
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 8px;
+}
+
+.qty-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--md-sys-color-outline);
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.qty-btn:hover {
+    background: var(--md-sys-color-surface-variant);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.qty-input {
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 6px;
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font-family: "Futura", inherit;
+    font-size: 14px;
+    padding: 0;
+}
+
+.qty-input:focus {
+    outline: none;
+    border-color: var(--accent);
 }
 
 /* Product grid with ID for scrolling */
