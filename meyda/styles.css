@@ -23,32 +23,9 @@
 }
 
 @font-face {
-    font-family: "OGG";
-    src: url("./fonts/ogg/oggtext-bold.otf") format("opentype");
-    font-weight: 700;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "OGG";
-    src: url("./fonts/ogg/oggtext-medium.otf") format("opentype");
-    font-weight: 500;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "OGG";
-    src: url("./fonts/ogg/oggtext-book.otf") format("opentype");
+    font-family: "Bigerty";
+    src: url("./fonts/bigerty/Bigerty-Regular.ttf") format("truetype");
     font-weight: 400;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "OGG";
-    src: url("./fonts/ogg/oggtext-bold.otf") format("opentype");
-    font-weight: bold;
-    font-style: normal;
-    font-display: swap;
 }
 
 @font-face {
@@ -61,6 +38,25 @@
     font-family: "Futura";
     src: url("./fonts/futura/Futura Bold font.ttf") format("truetype");
     font-weight: 700;
+}
+
+@font-face {
+    font-family: "Garamond";
+    src: url("./fonts/garamond/Garamond Regular.ttf") format("truetype");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: "Garamond";
+    src: url("./fonts/garamond/Garamond Bold font.ttf") format("truetype");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: "Garamond";
+    src: url("./fonts/garamond/Garamond Medium Italic.ttf") format("truetype");
+    font-weight: 500;
+    font-style: italic;
 }
 
 /* Performance improvements */
@@ -1546,7 +1542,10 @@ body.auth-page main.auth-center {
     padding: 20px 0;
 }
 
-.our_collection {
+.our_collection h2 {
     margin-top: 200px;
-
+    font-family: "Garamond";
+    font-size: 80px;
+    font-weight: 400;
+    margin-bottom: 0px;
 }
