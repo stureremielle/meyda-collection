@@ -109,7 +109,54 @@ if ($action === 'cart_count') {
     exit;
 }
 
+if ($action === 'update_qty' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+  header('Content-Type: application/json');
+  $id = (int)($_POST['id'] ?? 0);
+  $qty = (int)($_POST['qty'] ?? 1);
+  
+  if ($id > 0 && isset($_SESSION['cart'][$id])) {
+    // Basic check against database stock
+    $stmtS = $pdo->prepare("SELECT stok FROM produk WHERE id_produk = :id");
+    $stmtS->execute([':id' => $id]);
+    $stok = (int)$stmtS->fetchColumn();
+    
+    $qty = max(1, min($qty, $stok));
+    $_SESSION['cart'][$id] = $qty;
+    
+    // Prepare response data
+    $stmtC = $pdo->prepare("SELECT harga FROM produk WHERE id_produk = :id");
+    $stmtC->execute([':id' => $id]);
+    $harga = (float)$stmtC->fetchColumn();
+    $subtotal = $harga * $qty;
+    
+    // Recalculate total
+    $total = 0;
+    $ids = array_keys($_SESSION['cart']);
+    if (!empty($ids)) {
+      $placeholders = implode(',', array_fill(0, count($ids), '?'));
+      $stmtAll = $pdo->prepare("SELECT id_produk, harga FROM produk WHERE id_produk IN ($placeholders)");
+      $stmtAll->execute($ids);
+      $prices = $stmtAll->fetchAll(PDO::FETCH_KEY_PAIR);
+      foreach ($_SESSION['cart'] as $pid => $q) {
+        $total += ($prices[$pid] ?? 0) * $q;
+      }
+    }
+
+    echo json_encode([
+      'success' => true,
+      'qty' => $qty,
+      'subtotal' => 'Rp ' . number_format($subtotal, 0, ',', '.'),
+      'total' => 'Rp ' . number_format($total, 0, ',', '.'),
+      'cart_count' => array_sum($_SESSION['cart'])
+    ]);
+  } else {
+    echo json_encode(['success' => false]);
+  }
+  exit;
+}
+
 $cart_items = [];
+
 $cart_total = 0.0;
 if (!empty($_SESSION['cart'])) {
     $ids = array_keys($_SESSION['cart']);
@@ -183,8 +230,12 @@ if (!empty($_SESSION['cart'])) {
               <h3 class="cart-item-name"><?php echo h($it['nama']); ?></h3>
               <p class="cart-item-price">Rp <?php echo number_format($it['harga'],0,',','.'); ?></p>
               <div class="cart-item-quantity">
-                <span>Qty: <?php echo (int)$it['qty']; ?></span>
-                <span class="cart-item-subtotal">Rp <?php echo number_format($it['subtotal'],0,',','.'); ?></span>
+                <div class="quantity-control">
+                  <button type="button" class="qty-btn" onclick="changeQuantity(<?php echo (int)$it['id']; ?>, -1)">-</button>
+                  <input type="number" id="qty-<?php echo (int)$it['id']; ?>" value="<?php echo (int)$it['qty']; ?>" class="qty-input" readonly>
+                  <button type="button" class="qty-btn" onclick="changeQuantity(<?php echo (int)$it['id']; ?>, 1)">+</button>
+                </div>
+                <span class="cart-item-subtotal" id="subtotal-<?php echo (int)$it['id']; ?>">Rp <?php echo number_format($it['subtotal'],0,',','.'); ?></span>
               </div>
             </div>
             <a href="cart.php?action=remove&id=<?php echo (int)$it['id']; ?>" class="remove-btn">Hapus</a>
@@ -195,7 +246,7 @@ if (!empty($_SESSION['cart'])) {
         <div class="cart-summary">
           <div class="summary-row total-row">
             <span><strong>Total</strong></span>
-            <span><strong>Rp <?php echo number_format($cart_total,0,',','.'); ?></strong></span>
+            <span><strong id="cart-total">Rp <?php echo number_format($cart_total,0,',','.'); ?></strong></span>
           </div>
         </div>
 
@@ -212,16 +263,46 @@ if (!empty($_SESSION['cart'])) {
   <?php include __DIR__ . '/_footer.php'; ?>
 
   <script>
+    async function changeQuantity(productId, change) {
+      const input = document.getElementById(`qty-${productId}`);
+      const currentQty = parseInt(input.value);
+      const newQty = currentQty + change;
+      
+      if (newQty < 1) return;
+
+      const formData = new FormData();
+      formData.append('action', 'update_qty');
+      formData.append('id', productId);
+      formData.append('qty', newQty);
+
+      try {
+        const response = await fetch('cart.php', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          input.value = data.qty;
+          document.getElementById(`subtotal-${productId}`).textContent = data.subtotal;
+          document.getElementById('cart-total').textContent = data.total;
+          updateCartCount();
+        }
+      } catch (error) {
+        console.error('Error changing quantity:', error);
+      }
+    }
+
     // Function to update the cart count in the navigation
     function updateCartCount() {
       // We need to fetch the updated cart count from the server
       fetch('index.php?action=cart_count')
         .then(response => response.json())
         .then(data => {
-          const cartLinks = document.querySelectorAll('a[href*="cart"], a[href*="index.php?action=cart"]');
+          const cartLinks = document.querySelectorAll('a[href*="cart"]');
           cartLinks.forEach(cartLink => {
             // Extract the text content before the cart count and append the new count
-            const baseText = cartLink.textContent.replace(/\s*\([^)]*\)/, '');
+            const baseText = 'cart'; 
             cartLink.innerHTML = baseText + ' (' + data.count + ')';
           });
         })

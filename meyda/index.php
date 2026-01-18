@@ -263,7 +263,7 @@ if (!empty($_SESSION["cart"])) {
         "cta_text" => "Shop Now",
     ]);
     ?>
-    <section class="our_collection"
+    <section class="our_collection">
         <h2>Our collection</h2>
     </section>
 
@@ -275,7 +275,7 @@ if (!empty($_SESSION["cart"])) {
           <?php
           // Get unique categories
           $catStmt = $pdo->query(
-              "SELECT DISTINCT k.nama_kategori FROM kategori_produk k JOIN produk p ON k.id_kategori = p.id_kategori WHERE p.stok > 0",
+              "SELECT DISTINCT k.nama_kategori FROM kategori_produk k JOIN produk p ON k.id_kategori = p.id_kategori WHERE p.stok > 0 ORDER BY k.nama_kategori ASC",
           );
           $categories = $catStmt->fetchAll();
           foreach ($categories as $category): ?>
