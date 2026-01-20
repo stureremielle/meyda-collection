@@ -61,9 +61,9 @@ if ($action === "remove") {
 if ($action === "checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
     // Only logged-in customers can checkout
     if (!isCustomer()) {
-        $error = "Silakan login sebagai pelanggan untuk melakukan checkout.";
+        $error = "Please login as a customer to checkout.";
     } elseif (empty($_SESSION["cart"])) {
-        $error = "Keranjang kosong.";
+        $error = "Your cart is empty.";
     } else {
         try {
             $pdo->beginTransaction();
@@ -88,7 +88,7 @@ if ($action === "checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
                     $idUser = (int) $fallback;
                 } else {
                     throw new Exception(
-                        "Tidak ada akun staff/admin di sistem. Silakan hubungi administrator untuk membuat akun admin.",
+                        "No staff/admin account found. Please contact an administrator.",
                     );
                 }
             }
@@ -117,7 +117,7 @@ if ($action === "checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmtP->execute([":id" => $pid]);
                 $p = $stmtP->fetch();
                 if (!$p) {
-                    throw new Exception("Produk tidak ditemukan: " . $pid);
+                    throw new Exception("Product not found: " . $pid);
                 }
                 $harga = (float) $p["harga"];
                 $subtotal = $harga * $qty;
@@ -153,16 +153,16 @@ if ($action === "checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
               total_pendapatan=VALUES(total_pendapatan),
               total_item_terjual=VALUES(total_item_terjual),
               generated_at=CURRENT_TIMESTAMP
-            SQL;
+SQL;
             $stmtL = $pdo->prepare($sqlL);
             $stmtL->execute();
 
             $pdo->commit();
             $_SESSION["cart"] = [];
-            $success = "Checkout berhasil. ID Transaksi: $id_transaksi";
+            $success = "Checkout successful. Transaction ID: $id_transaksi";
         } catch (Exception $e) {
             $pdo->rollBack();
-            $error = "Terjadi kesalahan saat checkout: " . $e->getMessage();
+            $error = "An error occurred during checkout: " . $e->getMessage();
         }
     }
 }
@@ -220,28 +220,29 @@ if (!empty($_SESSION["cart"])) {
   <link rel="stylesheet" href="product-card.css">
 </head>
 <body>
-  <header class="site-header transparent-nav">
-    <div class="header-container">
-      <h1 class="brand">meyda</h1>
-      <nav class="nav">
-        <a href="index.php">home</a>
-        <a href="cart.php">cart (<?php echo array_sum(
-            $_SESSION["cart"] ?? [],
-        ); ?>)</a>
+  <header class="site-header">
+    <div class="minimal-header-container">
+      <div class="header-nav-left">
+        <a href="index.php" class="brand-minimal">meyda</a>
+      </div>
+      <div class="header-nav-middle">
+        <a href="#products" class="header-link">collection</a>
+        <a href="#newsletter" class="header-link">newsletter</a>
+      </div>
+      <div class="header-nav-right">
+        <a href="cart.php" class="header-link">cart (<?php echo array_sum($_SESSION["cart"] ?? []); ?>)</a>
         <?php if (isLoggedIn()): ?>
           <?php if (isCustomer()): ?>
-            <a href="account.php">Hi, <?php echo htmlspecialchars(
-                $_SESSION["customer_name"],
-            ); ?></a>
-            <a href="auth.php?action=logout">logout</a>
+            <a href="account.php" class="header-link">account</a>
+            <a href="auth.php?action=logout" class="header-link">logout</a>
           <?php elseif (isStaff()): ?>
-            <a href="admin/products.php">admin</a>
-            <a href="auth.php?action=logout">logout</a>
+            <a href="admin/products.php" class="header-link">admin</a>
+            <a href="auth.php?action=logout" class="header-link">logout</a>
           <?php endif; ?>
         <?php else: ?>
-          <a href="login.php?mode=customer">login</a>
+          <a href="login.php?mode=customer" class="header-link">login</a>
         <?php endif; ?>
-      </nav>
+      </div>
     </div>
   </header>
 
@@ -262,9 +263,13 @@ if (!empty($_SESSION["cart"])) {
         "slogan" => "MAKE YOUR LOOK MORE SIGMA",
         "cta_text" => "Shop Now",
     ]);
+
+    // Include the Features component
+    require_once __DIR__ . "/Features.php";
+    echo renderFeaturesBar();
     ?>
     <section class="our_collection">
-        <h2>Our collection</h2>
+        <h2 id="products">Our Collection</h2>
     </section>
 
     <!-- Category Filter Section -->
@@ -328,40 +333,75 @@ if (!empty($_SESSION["cart"])) {
               ] <= 0
                   ? " disabled"
                   : ""; ?> aria-label="<?php echo $p["stok"] > 0
-     ? "Tambah ke Keranjang"
-     : "Habis"; ?>"></button>
+     ? "Add to Cart"
+     : "Out of Stock"; ?>"></button>
             </form>
           </article>
         <?php endforeach; ?>
       </section>
+
+    <?php
+    // Include the Newsletter component
+    require_once __DIR__ . "/Newsletter.php";
+    echo renderNewsletter();
+    ?>
   </main>
 
   <?php include __DIR__ . "/_footer.php"; ?>
 
   <script>
+    // Smooth scroll for header links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
     function filterProducts(category) {
       const productCards = document.querySelectorAll('.product-card');
+      const grid = document.querySelector('.products-grid');
       
       // Update active pill button
       document.querySelectorAll('.category-pill').forEach(pill => {
         pill.classList.remove('active');
       });
       
-      if (category === 'all') {
-        document.querySelector('.category-pill[data-category="all"]').classList.add('active');
-      } else {
-        document.querySelector(`.category-pill[data-category="${category}"]`).classList.add('active');
-      }
+      const activePill = document.querySelector(`.category-pill[data-category="${category}"]`);
+      if (activePill) activePill.classList.add('active');
+
+      // Add a "filtering" class to the grid for coordinated transitions if needed
+      grid.classList.add('filtering');
 
       productCards.forEach(card => {
         const cardCategory = card.getAttribute('data-category');
-
-        if (category === 'all' || cardCategory === category) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
+        
+        // Start fade out
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(10px)';
+        
+        setTimeout(() => {
+          if (category === 'all' || cardCategory === category) {
+            card.style.display = 'flex';
+            // Trigger reflow
+            card.offsetHeight;
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          } else {
+            card.style.display = 'none';
+          }
+        }, 300); // Wait for fade out to complete
       });
+      
+      setTimeout(() => {
+        grid.classList.remove('filtering');
+      }, 600);
     }
     
 
@@ -439,7 +479,7 @@ if (!empty($_SESSION["cart"])) {
           updateCartCount();
 
           // Optional: Show a success message
-          showNotification('Item ditambahkan ke keranjang!');
+          showNotification('Item added to cart!');
         } else {
           console.error('Error adding item to cart');
         }

@@ -5,6 +5,39 @@ requireLogin('customer');
 $pdo = getPDO();
 $customerId = $_SESSION['customer_id'];
 
+// Ensure payment method table exists
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS metode_pembayaran (
+        id_metode INT AUTO_INCREMENT PRIMARY KEY,
+        id_pelanggan INT NOT NULL,
+        tipe VARCHAR(50) DEFAULT 'credit_card',
+        nomor_kartu VARCHAR(20) NOT NULL,
+        nama_kartu VARCHAR(100) NOT NULL,
+        masa_berlaku VARCHAR(5) NOT NULL,
+        cvv VARCHAR(4) NOT NULL,
+        FOREIGN KEY (id_pelanggan) REFERENCES pelanggan(id_pelanggan) ON DELETE CASCADE
+    )
+");
+
+// Handle form submissions for payment methods
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if ($_POST['action'] === 'add_payment') {
+        $stmt = $pdo->prepare("INSERT INTO metode_pembayaran (id_pelanggan, nomor_kartu, nama_kartu, masa_berlaku, cvv) VALUES (:id, :num, :name, :exp, :cvv)");
+        $stmt->execute([
+            ':id' => $customerId,
+            ':num' => $_POST['nomor_kartu'],
+            ':name' => $_POST['nama_kartu'],
+            ':exp' => $_POST['masa_berlaku'],
+            ':cvv' => $_POST['cvv']
+        ]);
+        header("Location: account.php"); exit;
+    } elseif ($_POST['action'] === 'delete_payment') {
+        $stmt = $pdo->prepare("DELETE FROM metode_pembayaran WHERE id_metode = :id AND id_pelanggan = :cid");
+        $stmt->execute([':id' => $_POST['id_metode'], ':cid' => $customerId]);
+        header("Location: account.php"); exit;
+    }
+}
+
 // Fetch customer transactions
 $stmt = $pdo->prepare("
     SELECT t.id_transaksi, t.tanggal, t.total, t.status, COUNT(d.id_detail) as item_count
@@ -16,6 +49,11 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([':id' => $customerId]);
 $transactions = $stmt->fetchAll();
+
+// Fetch payment methods
+$stmtPay = $pdo->prepare("SELECT * FROM metode_pembayaran WHERE id_pelanggan = :id");
+$stmtPay->execute([':id' => $customerId]);
+$paymentMethods = $stmtPay->fetchAll();
 
 // Check if viewing detail
 $viewId = (int)($_GET['view'] ?? 0);
@@ -72,20 +110,12 @@ if ($viewId > 0) {
     .profile-card { padding: 20px; border: 1px solid var(--md-sys-color-outline); border-radius: 8px; background: var(--md-sys-color-surface-variant); margin-bottom: 20px; }
   </style>
 </head>
-<body>
-  <header class="site-header">
-    <div class="container">
-      <h1 class="brand">MeyDa Collection</h1>
-      <nav class="nav">
-        <a href="index.php">Home</a>
-        <a href="index.php?action=cart">Cart</a>
-        <a href="account.php">Hi, <?php echo htmlspecialchars($_SESSION['customer_name']); ?></a>
-        <a href="auth.php?action=logout">Logout</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="account-container">
+<body class="auth-page">
+  <main class="auth-center" style="max-width: 1000px; margin: 40px auto; padding: 20px; position: relative;">
+    <a href="index.php" class="back-button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Back to Home
+    </a>
     <h2>Akun Saya</h2>
 
     <div class="account-content">
@@ -93,6 +123,50 @@ if ($viewId > 0) {
         <h3>Informasi Profil</h3>
         <p><strong>Nama:</strong> <?php echo htmlspecialchars($_SESSION['customer_name']); ?></p>
         <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['customer_email']); ?></p>
+        <p style="margin-top: 10px;"><a href="auth.php?action=logout" class="action-link" style="color: #f87171;">Logout</a></p>
+      </div>
+
+      <div class="profile-card">
+        <h3>Metode Pembayaran (Kartu Kredit)</h3>
+        <?php if (empty($paymentMethods)): ?>
+          <p>Anda belum menyimpan metode pembayaran.</p>
+        <?php else: ?>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;">
+            <?php foreach ($paymentMethods as $pay): ?>
+              <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; border: 1px solid var(--md-sys-color-outline);">
+                <p style="font-weight: 600; font-size: 16px;"><?php echo htmlspecialchars($pay['nama_kartu']); ?></p>
+                <p style="font-family: monospace; letter-spacing: 2px; margin: 8px 0; color: var(--accent);"><?php 
+                  $num = htmlspecialchars($pay['nomor_kartu']);
+                  echo "**** **** **** " . substr($num, -4); 
+                ?></p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                  <span style="font-size: 12px; color: var(--muted);">Exp: <?php echo htmlspecialchars($pay['masa_berlaku']); ?></span>
+                  <form method="post" style="display: inline;">
+                    <input type="hidden" name="action" value="delete_payment">
+                    <input type="hidden" name="id_metode" value="<?php echo $pay['id_metode']; ?>">
+                    <button type="submit" style="background: none; border: none; color: #f87171; font-size: 12px; padding: 0; width: auto; cursor: pointer;">Hapus</button>
+                  </form>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--md-sys-color-outline);">
+          <h4 style="margin-bottom: 16px;">Tambah Kartu Baru</h4>
+          <form method="post" style="display: grid; gap: 12px;">
+            <input type="hidden" name="action" value="add_payment">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <input type="text" name="nama_kartu" required placeholder="Nama di Kartu" style="width: 100%;">
+              <input type="text" name="nomor_kartu" required placeholder="Nomor Kartu (16 digit)" maxlength="16" style="width: 100%;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <input type="text" name="masa_berlaku" required placeholder="MM/YY" maxlength="5" style="width: 100%;">
+              <input type="password" name="cvv" required placeholder="CVV" maxlength="4" style="width: 100%;">
+            </div>
+            <button type="submit" style="margin-top: 8px;">Simpan Kartu</button>
+          </form>
+        </div>
       </div>
 
     <?php if ($viewId > 0 && !empty($transDetail)): ?>
@@ -163,7 +237,5 @@ if ($viewId > 0) {
     <?php endif; ?>
     </div> <!-- Close account-content div -->
   </main>
-
-  <?php include __DIR__ . '/_footer.php'; ?>
 </body>
 </html>

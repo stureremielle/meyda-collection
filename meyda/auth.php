@@ -40,7 +40,7 @@ function isAdmin() {
 
 function customerLogin($email, $password) {
     $pdo = getPDO();
-    $stmt = $pdo->prepare("SELECT id_pelanggan, nama, password_hash FROM pelanggan WHERE email = :email");
+    $stmt = $pdo->prepare("SELECT id_pelanggan, nama, password_hash, alamat FROM pelanggan WHERE email = :email");
     $stmt->execute([':email' => $email]);
     $customer = $stmt->fetch();
 
@@ -55,18 +55,28 @@ function customerLogin($email, $password) {
         $_SESSION['customer_id'] = $customer['id_pelanggan'];
         $_SESSION['customer_name'] = $customer['nama'];
         $_SESSION['customer_email'] = $email;
+        $_SESSION['customer_address'] = $customer['alamat'];
 
         // Ensure carts mapping exists
         if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts'])) $_SESSION['carts'] = [];
 
         $custId = $customer['id_pelanggan'];
-        // If there's a transient cart (guest) in session, save it under this customer
-        if (!empty($_SESSION['cart'])) {
-            $_SESSION['carts'][$custId] = $_SESSION['cart'];
+        
+        // Merge Logic: if guest cart exists, merge it into the customer's saved cart
+        if (!isset($_SESSION['carts'][$custId])) {
+            $_SESSION['carts'][$custId] = [];
         }
 
-        // Load saved cart for this customer (if any)
-        $_SESSION['cart'] = $_SESSION['carts'][$custId] ?? [];
+        if (!empty($_SESSION['cart'])) {
+            // Merge guest items into customer slot
+            foreach ($_SESSION['cart'] as $pid => $qty) {
+                $_SESSION['carts'][$custId][$pid] = ($_SESSION['carts'][$custId][$pid] ?? 0) + $qty;
+            }
+            // Clear transient cart after merge if desired, or let it be overwritten by load
+        }
+
+        // Load saved/merged cart for this customer
+        $_SESSION['cart'] = $_SESSION['carts'][$custId];
         $_SESSION['cart_owner'] = $custId;
 
         return true;
@@ -163,15 +173,15 @@ function requireLogin($type = 'any') {
     }
     if ($type === 'customer' && !isCustomer()) {
         http_response_code(403);
-        die('Akses hanya untuk customer.');
+        die('Access denied. Customer only.');
     }
     if ($type === 'staff' && !isStaff()) {
         http_response_code(403);
-        die('Akses hanya untuk staff.');
+        die('Access denied. Staff only.');
     }
     if ($type === 'admin' && !isAdmin()) {
         http_response_code(403);
-        die('Akses hanya untuk admin.');
+        die('Access denied. Admin only.');
     }
 }
 

@@ -26,14 +26,19 @@ function renderHeroCard($options = []) {
     ?>
     
     <section class="hero-card">
-        <!-- Hero Image -->
-        <div class="hero-image-container">
-            <img 
-                src="<?php echo htmlspecialchars($options['image_src']); ?>" 
-                alt="<?php echo htmlspecialchars($options['image_alt']); ?>"
-                class="hero-image"
-                id="heroMainImage"
-            >
+        <!-- Hero Carousel Track -->
+        <div class="hero-carousel-container">
+            <div class="hero-carousel-track" id="heroTrack">
+                <?php foreach ($carousel_images as $index => $img_src): ?>
+                    <div class="hero-slide">
+                        <img 
+                            src="<?php echo htmlspecialchars($img_src); ?>" 
+                            alt="Hero background <?php echo $index + 1; ?>"
+                            class="hero-image"
+                        >
+                    </div>
+                <?php endforeach; ?>
+            </div>
         </div>
         
         <!-- Headline Text - Top Left -->
@@ -68,41 +73,71 @@ function renderHeroCard($options = []) {
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Carousel functionality
             let currentImageIndex = 0;
-            const images = <?php echo json_encode($carousel_images); ?>;
+            const track = document.getElementById('heroTrack');
+            const slides = document.querySelectorAll('.hero-slide');
+            const totalSlides = slides.length;
             
             const prevBtn = document.querySelector('.carousel-nav.prev');
             const nextBtn = document.querySelector('.carousel-nav.next');
-            const heroImage = document.getElementById('heroMainImage');
             
-            function updateImage(index) {
-                // Add fade out effect
-                heroImage.classList.remove('fade-in');
-                heroImage.classList.add('fade-out');
-                
-                setTimeout(() => {
-                    heroImage.src = images[index];
-                    heroImage.alt = `Hero background ${index + 1}`;
-                    
-                    // Add fade in effect
-                    heroImage.classList.remove('fade-out');
-                    heroImage.classList.add('fade-in');
-                }, 250); // Half of the transition duration
+            let autoCycleInterval;
+
+            function updateCarousel() {
+                const offset = -currentImageIndex * 100;
+                track.style.transform = `translateX(${offset}%)`;
+            }
+
+            function nextSlide() {
+                currentImageIndex = (currentImageIndex + 1) % totalSlides;
+                updateCarousel();
+            }
+
+            function prevSlide() {
+                currentImageIndex = (currentImageIndex - 1 + totalSlides) % totalSlides;
+                updateCarousel();
+            }
+
+            function startAutoCycle() {
+                stopAutoCycle();
+                autoCycleInterval = setInterval(nextSlide, 10000);
+            }
+
+            function stopAutoCycle() {
+                if (autoCycleInterval) clearInterval(autoCycleInterval);
             }
             
             prevBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-                updateImage(currentImageIndex);
+                prevSlide();
+                startAutoCycle(); // Reset timer
             });
             
             nextBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                currentImageIndex = (currentImageIndex + 1) % images.length;
-                updateImage(currentImageIndex);
+                nextSlide();
+                startAutoCycle(); // Reset timer
             });
+
+            // Handle touch events for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            track.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+                stopAutoCycle();
+            }, {passive: true});
+
+            track.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                if (touchStartX - touchEndX > 50) nextSlide();
+                if (touchEndX - touchStartX > 50) prevSlide();
+                startAutoCycle();
+            }, {passive: true});
             
+            // Initial start
+            startAutoCycle();
+
             // Smooth scroll for CTA button
             const ctaButton = document.querySelector('.shop-now-button');
             ctaButton.addEventListener('click', function(e) {

@@ -2,7 +2,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, 280px);
     gap: 20px;
-    padding: 250px 0;
+    padding: 0;
     justify-content: left;
     width: 100%;
     max-width: 100%;
@@ -19,7 +19,10 @@
     align-items: flex-start;
     box-shadow: var(--elevation-1);
     overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.3s ease,
+        opacity 0.4s ease-out;
+    will-change: transform, opacity;
     position: relative;
     padding-bottom: 60px;
 }
