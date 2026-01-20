@@ -12,7 +12,6 @@ if (!is_dir($uploadsDir)) {
     mkdir($uploadsDir, 0755, true);
 }
 
-function h($s){ return htmlspecialchars($s, ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8'); }
 
 // Handle delete
 if ((isset($_GET['delete']) || (isset($_POST['action']) && $_POST['action'] === 'delete')) && isAdmin()) {
@@ -28,7 +27,7 @@ if ((isset($_GET['delete']) || (isset($_POST['action']) && $_POST['action'] === 
             
             if ($count > 0 && !$force_delete) {
                 // Product is referenced and force delete not specified
-                $error = 'Tidak bisa menghapus: Produk sudah digunakan dalam transaksi sebelumnya. Gunakan fitur "hapus paksa" jika tetap ingin menghapusnya.';
+                $error = 'Cannot delete: Product is referenced in past transactions. Use "force delete" if you really want to remove it.';
             } else {
                 if ($count > 0 && $force_delete) {
                     // Force delete - remove related records in detail_transaksi first
@@ -48,10 +47,10 @@ if ((isset($_GET['delete']) || (isset($_POST['action']) && $_POST['action'] === 
                 // Delete the product
                 $stmt = $pdo->prepare("DELETE FROM produk WHERE id_produk = :id");
                 $stmt->execute([':id' => $id]);
-                $success = 'Produk dihapus.';
+                $success = 'Product deleted successfully.';
             }
         } catch (Exception $e) {
-            $error = 'Tidak bisa menghapus: ' . $e->getMessage();
+            $error = 'Cannot delete: ' . $e->getMessage();
         }
     }
 }
@@ -67,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama']) && isAdmin())
     $gambar = null;
 
     if (empty($nama) || $kategori <= 0 || $harga <= 0) {
-        $error = 'Nama, kategori, dan harga harus diisi dengan benar.';
+        $error = 'Name, category, and price are required.';
     } else {
         // Handle image upload
         if (!empty($_FILES['gambar']['name'])) {
@@ -76,9 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama']) && isAdmin())
             $maxSize = 2 * 1024 * 1024; // 2MB
 
             if (!in_array($file['type'], $allowed)) {
-                $error = 'Format gambar tidak didukung. Gunakan JPG, PNG, GIF, atau WebP.';
+                $error = 'Unsupported image format. Use JPG, PNG, GIF, or WebP.';
             } elseif ($file['size'] > $maxSize) {
-                $error = 'Gambar terlalu besar (max 2MB).';
+                $error = 'Image too large (max 2MB).';
             } else {
                 try {
                     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
@@ -86,10 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama']) && isAdmin())
                     if (move_uploaded_file($file['tmp_name'], $uploadsDir . '/' . $newFilename)) {
                         $gambar = $newFilename;
                     } else {
-                        $error = 'Gagal mengunggah gambar.';
+                        $error = 'Failed to upload image.';
                     }
                 } catch (Exception $e) {
-                    $error = 'Kesalahan upload: ' . $e->getMessage();
+                    $error = 'Upload error: ' . $e->getMessage();
                 }
             }
         }
@@ -148,191 +147,195 @@ if ($editId > 0) {
 }
 ?>
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Kelola Produk - MeyDa Collection</title>
+  <title>Manage Products - MeyDa Admin</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
-    @font-face {
-      font-family: 'Futura';
-      src: url('../fonts/futura/Futura Book font.ttf') format('truetype');
-      font-weight: 400;
+    .products-layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 32px;
+      align-items: flex-start;
     }
-    @font-face {
-      font-family: 'Futura';
-      src: url('../fonts/futura/futura medium bt.ttf') format('truetype');
-      font-weight: 500;
+    @media (max-width: 992px) {
+      .products-layout { grid-template-columns: 1fr; }
     }
-    @font-face {
-      font-family: 'Futura';
-      src: url('../fonts/futura/Futura Bold font.ttf') format('truetype');
-      font-weight: 700;
+    .product-img-cell {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
     }
-    * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
-    main.container { max-width: 1200px; margin: 0 auto; padding: 20px 12px; width: 100%; }
-    .form-container { max-width: 100%; margin: 20px 0; padding: 20px; border: 1px solid #404040; border-radius: 8px; background: #252525; width: 100%; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #ffffff; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #404040; border-radius: 8px; font-family: 'Futura', inherit; background: #1a1a1a; color: #ffffff; }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #ff6d00; box-shadow: 0 0 0 2px rgba(255,109,0,0.1); }
-    .form-group textarea { resize: vertical; min-height: 80px; }
-    .form-group input[type="file"] { padding: 4px; }
-    .image-preview { max-width: 200px; margin-top: 10px; border-radius: 8px; }
-    .form-buttons { display:flex; flex-direction:row; justify-content:flex-end; align-items:center; gap:12px; margin-top:12px; padding: 0; }
-    .form-buttons button, .form-buttons .cancel-button { width: 120px; text-align: center; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; height: 40px; display: flex; align-items: center; justify-content: center; line-height: 1; min-width: 100px; text-decoration: none; }
-    .form-buttons button { background: #ff6d00; color: white; cursor: pointer; }
-    .form-buttons button:hover { background: #e55d00; transform: translateY(-1px); }
-    .form-buttons .cancel-button { background: #404040; color: white; }
-    .form-buttons .cancel-button:hover { background: #505050; transform: translateY(-1px); }
-    .error-msg { color: #ff9999; background: #4a2a2a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #662a2a; }
-    .success-msg { color: #99ff99; background: #2a4a3a; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2a6a4a; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #252525; }
-    table th, table td { padding: 16px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
-    table th { background: #1a1a1a; font-weight: 600; }
-    .action-cell { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
-    .action-btn { background: #ff6d00; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Futura', inherit; white-space: nowrap; flex-shrink: 0; }
-    .action-btn:hover { background: #e55d00; transform: translateY(-1px); }
-    .action-btn-danger { background: #c84f2c; }
-    .action-btn-danger:hover { background: #a83a1f; }
-    .delete-form { display: inline-block; margin: 0; padding: 0; flex-shrink: 0; }
-    .delete-form button { background: #c84f2c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Futura', inherit; white-space: nowrap; flex-shrink: 0; width: auto; }
-    .delete-form button:hover { background: #a83a1f; transform: translateY(-1px); }
-    .product-img { max-width: 60px; height: auto; border-radius: 4px; }
-    .image-section { display: flex; flex-direction: column; align-items: center; gap: 12px;}
-
   </style>
 </head>
-<body>
+<body class="admin-body">
   <?php include __DIR__ . '/_header.php'; ?>
 
-  <main class="container">
-    <h2><?php echo $editId > 0 ? 'Edit Produk' : 'Kelola Produk'; ?></h2>
+  <main class="products-layout">
+    <!-- Form Side -->
+    <aside class="admin-sidebar-form">
+      <div class="admin-card">
+        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 24px;">
+          <?php echo $editId > 0 ? 'Edit Product' : 'Add New Product'; ?>
+        </h3>
+        
+        <?php if (!empty($error)): ?>
+          <div class="alert alert-error" style="margin-bottom: 24px;"><?php echo h($error); ?></div>
+        <?php endif; ?>
 
-    <?php if (!empty($error)): ?>
-      <div class="error-msg"><?php echo h($error); ?></div>
-    <?php endif; ?>
+        <?php if (!empty($success)): ?>
+          <div class="alert alert-success" style="margin-bottom: 24px;"><?php echo h($success); ?></div>
+        <?php endif; ?>
 
-    <?php if (!empty($success)): ?>
-      <div class="success-msg"><?php echo h($success); ?></div>
-    <?php endif; ?>
-
-    <?php if (isAdmin()): ?>
-      <div class="form-container">
-        <form method="post" enctype="multipart/form-data">
-          <?php if ($editId > 0): ?>
-            <input type="hidden" name="id" value="<?php echo $editId; ?>">
-          <?php endif; ?>
-
-          <div class="form-group">
-            <label for="nama">Nama Produk *</label>
-            <input type="text" id="nama" name="nama" value="<?php echo $editData ? h($editData['nama_produk']) : ''; ?>" required>
-          </div>
-
-          <div class="form-group">
-            <label for="kategori">Kategori *</label>
-            <select id="kategori" name="kategori" required>
-              <option value="">-- Pilih Kategori --</option>
-              <?php foreach ($categories as $cat): ?>
-                <option value="<?php echo $cat['id_kategori']; ?>" <?php echo ($editData && $editData['id_kategori'] == $cat['id_kategori']) ? 'selected' : ''; ?>>
-                  <?php echo h($cat['nama_kategori']); ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="deskripsi">Deskripsi</label>
-            <textarea id="deskripsi" name="deskripsi"><?php echo $editData ? h($editData['deskripsi']) : ''; ?></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="harga">Harga (Rp) *</label>
-            <input type="number" id="harga" name="harga" value="<?php echo $editData ? $editData['harga'] : ''; ?>" step="0.01" min="0" required>
-          </div>
-
-          <div class="form-group">
-            <label for="stok">Stok *</label>
-            <input type="number" id="stok" name="stok" value="<?php echo $editData ? $editData['stok'] : ''; ?>" min="0" required>
-          </div>
-          <div class="form-group">
-              <label for="gambar">Gambar Produk (JPG, PNG, GIF, WebP - Max 2MB) - Ukuran optimal: 280x200px (lebar x tinggi) untuk tampilan terbaik</label>
-              <input type="file" id="gambar" name="gambar" accept="image/*">
-
-              <?php if ($editData && !empty($editData['gambar'])): ?>
-                  <div class="image-section">
-                      <p style="font-size: 13px; color: #6b7280;">Gambar saat ini:</p>
-                      <img src="../uploads/<?php echo h($editData['gambar']); ?>" 
-                          alt="Product" class="image-preview">
-                  </div>
-              <?php endif; ?>
-          </div>
-          <div class="form-buttons">
-              <?php if ($editId > 0): ?>
-                  <button type="submit">Update</button>
-              <?php else: ?>
-                  <button type="submit">Tambah</button>
-              <?php endif; ?>
-          </div>
-
-        </form>
-      </div>
-    <?php endif; ?>
-
-    <h3>Daftar Produk</h3>
-    <?php if (empty($products)): ?>
-      <p>Tidak ada produk.</p>
-    <?php else: ?>
-      <table>
-        <thead>
-          <tr>
-            <th>Gambar</th>
-            <th>Nama</th>
-            <th>Kategori</th>
-            <th>Harga</th>
-            <th>Stok</th>
-            <?php if (isAdmin()): ?>
-              <th>Aksi</th>
+        <?php if (isAdmin()): ?>
+          <form method="post" enctype="multipart/form-data">
+            <?php if ($editId > 0): ?>
+              <input type="hidden" name="id" value="<?php echo $editId; ?>">
             <?php endif; ?>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($products as $p): ?>
+
+            <div class="admin-form-group">
+              <label>Product Name *</label>
+              <input type="text" name="nama" class="admin-input" value="<?php echo $editData ? h($editData['nama_produk']) : ''; ?>" required placeholder="e.g. Silk Scarf">
+            </div>
+
+            <div class="admin-form-group">
+              <label>Category *</label>
+              <select name="kategori" class="admin-input" required>
+                <option value="">-- Select Category --</option>
+                <?php foreach ($categories as $cat): ?>
+                  <option value="<?php echo $cat['id_kategori']; ?>" <?php echo ($editData && $editData['id_kategori'] == $cat['id_kategori']) ? 'selected' : ''; ?>>
+                    <?php echo h($cat['nama_kategori']); ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div class="admin-form-group">
+              <label>Description</label>
+              <textarea name="deskripsi" class="admin-input" style="min-height: 100px;"><?php echo $editData ? h($editData['deskripsi']) : ''; ?></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div class="admin-form-group">
+                <label>Price (Rp) *</label>
+                <input type="number" name="harga" class="admin-input" value="<?php echo $editData ? $editData['harga'] : ''; ?>" step="0.01" min="0" required>
+              </div>
+              <div class="admin-form-group">
+                <label>Stock *</label>
+                <input type="number" name="stok" class="admin-input" value="<?php echo $editData ? $editData['stok'] : ''; ?>" min="0" required>
+              </div>
+            </div>
+
+            <div class="admin-form-group">
+              <label>Product Image</label>
+              <input type="file" name="gambar" class="admin-input" accept="image/*">
+              <?php if ($editData && !empty($editData['gambar'])): ?>
+                <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px;">
+                  <img src="../uploads/<?php echo h($editData['gambar']); ?>" style="width: 50px; height: 50px; border-radius: 4px; object-fit: cover;">
+                  <span style="font-size: 12px; color: var(--muted);">Current Image</span>
+                </div>
+              <?php endif; ?>
+            </div>
+
+            <div style="margin-top: 32px; display: flex; gap: 12px;">
+              <button type="submit" class="admin-btn admin-btn-primary" style="flex: 1; justify-content: center;">
+                <?php echo $editId > 0 ? 'Update Product' : 'Add Product'; ?>
+              </button>
+              <?php if ($editId > 0): ?>
+                <a href="products.php" class="admin-btn admin-btn-secondary">Cancel</a>
+              <?php endif; ?>
+            </div>
+          </form>
+        <?php else: ?>
+          <p style="color: var(--muted); font-size: 14px;">Log in as Admin to manage products.</p>
+        <?php endif; ?>
+      </div>
+    </aside>
+
+    <!-- Table Side -->
+    <div class="admin-card" style="overflow-x: auto;">
+      <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 24px;">Product Inventory</h3>
+      
+      <?php if (empty($products)): ?>
+        <p style="color: var(--muted); padding: 40px 0; text-align: center;">No products found.</p>
+      <?php else: ?>
+        <table class="admin-table">
+          <thead>
             <tr>
-              <td>
-                <?php if (!empty($p['gambar'])): ?>
-                  <img src="../uploads/<?php echo h($p['gambar']); ?>" alt="Product" class="product-img">
-                <?php else: ?>
-                  <span style="color: #6b7280; font-size: 13px;">Tidak ada gambar</span>
-                <?php endif; ?>
-              </td>
-              <td><?php echo h($p['nama_produk']); ?></td>
-              <td><?php echo h($p['nama_kategori']); ?></td>
-              <td>Rp <?php echo number_format($p['harga'], 0, ',', '.'); ?></td>
-              <td><?php echo $p['stok']; ?></td>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
               <?php if (isAdmin()): ?>
-                <td>
-                  <div class="action-cell">
-                    <a href="products.php?edit=<?php echo $p['id_produk']; ?>" class="action-btn">Edit</a>
-                    <form method="post" class="delete-form" style="margin-right: 5px;">
-                      <input type="hidden" name="action" value="delete">
-                      <input type="hidden" name="id" value="<?php echo $p['id_produk']; ?>">
-                      <button type="submit" class="action-btn action-btn-danger" onclick="return confirm('Hapus produk ini?')">Hapus</button>
-                    </form>
-                    <form method="post" class="delete-form">
-                      <input type="hidden" name="action" value="delete">
-                      <input type="hidden" name="id" value="<?php echo $p['id_produk']; ?>">
-                      <input type="hidden" name="force" value="1">
-                      <button type="submit" class="action-btn action-btn-danger" onclick="return confirm('Produk ini pernah digunakan dalam transaksi. Yakin ingin hapus paksa?')">Hapus Paksa</button>
-                    </form>
-                  </div>
-                </td>
+                <th style="text-align: right;">Actions</th>
               <?php endif; ?>
             </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-    <?php endif; ?>
+          </thead>
+          <tbody>
+            <?php foreach ($products as $p): ?>
+              <tr>
+                <td>
+                  <?php if (!empty($p['gambar'])): ?>
+                    <img src="../uploads/<?php echo h($p['gambar']); ?>" class="product-img-cell">
+                  <?php else: ?>
+                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 10px;">No Image</div>
+                  <?php endif; ?>
+                </td>
+                <td style="font-weight: 600;"><?php echo h($p['nama_produk']); ?></td>
+                <td><span style="font-size: 13px; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px;"><?php echo h($p['nama_kategori']); ?></span></td>
+                <td style="color: var(--accent); font-weight: 600;">Rp <?php echo number_format($p['harga'], 0, ',', '.'); ?></td>
+                <td>
+                  <span style="<?php echo ($p['stok'] <= 5) ? 'color: #f87171;' : ''; ?>">
+                    <?php echo $p['stok']; ?>
+                  </span>
+                </td>
+                <?php if (isAdmin()): ?>
+                  <td style="text-align: right;">
+                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                      <a href="products.php?edit=<?php echo $p['id_produk']; ?>" class="admin-btn admin-btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</a>
+                      
+                      <form method="post" style="display: inline;">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" value="<?php echo $p['id_produk']; ?>">
+                    <button type="button" class="admin-btn admin-btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="confirmDelete(this, 'product')">Delete</button>
+                  </form>
+
+                      <form method="post" style="display: inline;">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" value="<?php echo $p['id_produk']; ?>">
+                        <input type="hidden" name="force" value="1">
+                        <button type="submit" class="admin-btn admin-btn-danger" style="padding: 6px 12px; font-size: 12px; opacity: 0.6;" onclick="return confirm('Force delete will remove this product even if it was in previous transactions. Continue?')">Force</button>
+                      </form>
+                    </div>
+                  </td>
+                <?php endif; ?>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
+    </div>
   </main>
+
+  <script>
+  function confirmDelete(btn, type) {
+      const form = btn.closest('form');
+      adminConfirm({
+          title: 'Delete ' + type.charAt(0).toUpperCase() + type.slice(1),
+          message: 'Are you sure you want to permanently delete this ' + type + '?',
+          confirmText: 'Delete',
+          confirmClass: 'admin-btn-danger'
+      }, () => {
+          form.submit();
+      });
+  }
+  </script>
 
   <?php include __DIR__ . '/_footer.php'; ?>

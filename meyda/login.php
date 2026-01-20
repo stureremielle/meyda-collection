@@ -1,33 +1,37 @@
 <?php
 require_once __DIR__ . '/auth.php';
 
+if (isset($_GET['logout'])) {
+    logout('index.php');
+}
+
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
     if (empty($email) || empty($password)) {
-      $error = 'Email dan password harus diisi.';
+      $error = 'Email and password are required.';
     } else {
       if (customerLogin($email, $password)) {
         $redirect = $_GET['redirect'] ?? 'index.php';
         header('Location: ' . $redirect);
         exit;
       } else {
-        $error = 'Email atau password salah. Jika Anda belum mendaftar, silakan daftar terlebih dahulu.';
+        $error = 'Invalid email or password. Please try again or register if you don\'t have an account.';
       }
     }
 }
 ?>
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Login - MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="auth-page">
   <main class="auth-center">
     <a href="index.php" class="back-button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>

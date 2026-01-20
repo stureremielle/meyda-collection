@@ -13,80 +13,66 @@ $stmt = $pdo->query("
 ");
 $reports = $stmt->fetchAll();
 
-// Month names in Indonesian
-$months = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+// Month names in English
+$months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 ?>
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Laporan Penjualan - MeyDa Collection</title>
+  <title>Sales Reports - MeyDa Admin</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
-    @font-face {
-      font-family: 'Futura';
-      src: url('../fonts/futura/Futura Book font.ttf') format('truetype');
-      font-weight: 400;
+    .reports-layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 24px;
     }
-    @font-face {
-      font-family: 'Futura';
-      src: url('../fonts/futura/futura medium bt.ttf') format('truetype');
-      font-weight: 500;
-    }
-    @font-face {
-      font-family: 'Futura';
-      src: url('../fonts/futura/Futura Bold font.ttf') format('truetype');
-      font-weight: 700;
-    }
-    * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
-    html, body { height: 100%; }
-    body { display: flex; flex-direction: column; }
-    main.container { flex: 1; max-width: 1200px; margin: 0 auto; padding: 12px; width: 100%; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #252525; }
-    table th, table td { padding: 16px; border-bottom: 1px solid #404040; text-align: left; color: #ffffff; }
-    table th { background: #1a1a1a; font-weight: 600; }
   </style>
 </head>
-<body>
+<body class="admin-body">
   <?php include __DIR__ . '/_header.php'; ?>
 
-  <main class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h2>Laporan Penjualan</h2>
-      <a href="reset_data.php" class="btn-reset">Reset Data</a>
+  <main class="reports-layout">
+    <div class="admin-page-header">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="font-family: 'Garamond', serif; font-size: 40px; margin-bottom: 8px;">Sales Reports</h2>
+          <p style="color: var(--muted); font-size: 16px;">Monthly financial performance and sales volume.</p>
+        </div>
+        <a href="reset_data.php" class="admin-btn admin-btn-danger" style="opacity: 0.6;">Reset All Reports</a>
+      </div>
     </div>
 
-    <?php if (empty($reports)): ?>
-      <p>Tidak ada laporan.</p>
-    <?php else: ?>
-      <table>
-        <thead>
-          <tr>
-            <th>Periode</th>
-            <th>Total Transaksi</th>
-            <th>Pendapatan</th>
-            <th>Total Item Terjual</th>
-            <th>Generated</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($reports as $r): ?>
+    <div class="admin-card">
+      <?php if (empty($reports)): ?>
+        <p style="color: var(--muted); padding: 40px 0; text-align: center;">No reports have been generated yet.</p>
+      <?php else: ?>
+        <table class="admin-table">
+          <thead>
             <tr>
-              <td><?php echo $months[$r['periode_month']] . ' ' . $r['periode_year']; ?></td>
-              <td><?php echo (int)$r['total_transaksi']; ?></td>
-              <td>Rp <?php echo number_format($r['total_pendapatan'], 0, ',', '.'); ?></td>
-              <td><?php echo (int)$r['total_item_terjual']; ?></td>
-              <td><?php echo htmlspecialchars($r['generated_at']); ?></td>
+              <th>Period</th>
+              <th>Total Transactions</th>
+              <th>Revenue</th>
+              <th>Items Sold</th>
+              <th style="text-align: right;">Generated At</th>
             </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-    <?php endif; ?>
+          </thead>
+          <tbody>
+            <?php foreach ($reports as $r): ?>
+              <tr>
+                <td style="font-weight: 600;"><?php echo $months[$r['periode_month']] . ' ' . $r['periode_year']; ?></td>
+                <td><?php echo (int)$r['total_transaksi']; ?></td>
+                <td style="color: var(--accent); font-weight: 600;">Rp <?php echo number_format($r['total_pendapatan'], 0, ',', '.'); ?></td>
+                <td><?php echo (int)$r['total_item_terjual']; ?></td>
+                <td style="text-align: right; color: var(--muted); font-size: 13px;"><?php echo date('M d, Y H:i', strtotime($r['generated_at'])); ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
+    </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container"><small>&copy; MeyDa Collection Admin</small></div>
-  </footer>
-</body>
-</html>
+  <?php include __DIR__ . '/_footer.php'; ?>

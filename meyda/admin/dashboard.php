@@ -4,7 +4,7 @@ requireLogin('staff');
 
 $pdo = getPDO();
 
-// Fetch summary stats
+// Summary Stats
 $stats = [];
 $stmtTrans = $pdo->query("SELECT COUNT(*) as cnt FROM transaksi WHERE MONTH(tanggal) = MONTH(NOW()) AND YEAR(tanggal) = YEAR(NOW())");
 $stats['monthly_trans'] = $stmtTrans->fetch()['cnt'];
@@ -15,82 +15,173 @@ $stats['monthly_rev'] = $stmtRev->fetch()['rev'];
 $stmtStok = $pdo->query("SELECT COUNT(*) as cnt FROM produk WHERE stok <= 5");
 $stats['low_stock'] = $stmtStok->fetch()['cnt'];
 
-$stmtProducts = $pdo->query("SELECT COUNT(*) as cnt FROM produk");
-$stats['total_products'] = $stmtProducts->fetch()['cnt'];
+// Avg Order Value
+$stmtAvg = $pdo->query("SELECT COALESCE(AVG(total), 0) as avg_val FROM transaksi WHERE status='paid'");
+$stats['avg_order'] = $stmtAvg->fetch()['avg_val'];
+
+// Chart Data: Last 30 Days Sales
+$stmtChart = $pdo->query("
+    SELECT DATE(tanggal) as date, SUM(total) as daily_total
+    FROM transaksi
+    WHERE status = 'paid' AND tanggal >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    GROUP BY DATE(tanggal)
+    ORDER BY DATE(tanggal) ASC
+");
+$chartDataRaw = $stmtChart->fetchAll();
+$chartLabels = [];
+$chartValues = [];
+foreach ($chartDataRaw as $row) {
+    $chartLabels[] = date('d M', strtotime($row['date']));
+    $chartValues[] = (float)$row['daily_total'];
+}
+
+// Recent Transactions
+$stmtRecent = $pdo->query("
+    SELECT t.id_transaksi, t.tanggal, COALESCE(p.nama, 'Guest') as customer, t.total, t.status
+    FROM transaksi t
+    LEFT JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
+    ORDER BY t.tanggal DESC
+    LIMIT 5
+");
+$recentTransactions = $stmtRecent->fetchAll();
 ?>
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin Dashboard - MeyDa Collection</title>
+  <title>Dashboard - MeyDa Admin</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    @font-face {
-      font-family: 'Futura';
-      src: url('../fonts/futura/Futura Book font.ttf') format('truetype');
-      font-weight: 400;
+    .dashboard-layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 24px;
     }
-    @font-face {
-      font-family: 'Futura';
-      src: url('../fonts/futura/futura medium bt.ttf') format('truetype');
-      font-weight: 500;
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
     }
-    @font-face {
-      font-family: 'Futura';
-      src: url('../fonts/futura/Futura Bold font.ttf') format('truetype');
-      font-weight: 700;
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 32px;
+      margin-bottom: 40px;
     }
-    * { font-family: 'Futura', system-ui, -apple-system, "Segoe UI", Roboto, 'Google Sans', Arial; }
-    html, body { height: 100%; }
-    body { display: flex; flex-direction: column; }
-    main.container { flex: 1; max-width: 1200px; margin: 0 auto; padding: 20px 12px; width: 100%; }
-    .admin-header { background: #f8fafc; border-bottom: 1px solid #eef2f6; padding: 15px 0; margin-bottom: 20px; }
-    .admin-nav { display: flex; gap: 15px; margin-top: 10px; }
-    .admin-nav a { color: #ff6d00; text-decoration: none; padding: 8px 12px; border-radius: 4px; transition: all 0.2s; }
-    .admin-nav a:hover { background: #404040; }
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-    .stat-card { background: #252525; border: 1px solid #404040; padding: 15px; border-radius: 8px; }
-    .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: #a0a0a0; }
-    .stat-card .value { font-size: 28px; font-weight: 600; color: #ff6d00; }
-    .section { margin-bottom: 30px; }
-    .section h2 { margin-top: 0; color: #ffffff; }
-    .btn { display: inline-block; padding: 10px 16px; background: #ff6d00; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; }
-    .btn:hover { background: #e55d00; transform: translateY(-1px); }
+    @media (max-width: 1100px) {
+      .analytics-grid { grid-template-columns: 1fr; }
+    }
+    .chart-container {
+      height: 350px;
+      margin-top: 24px;
+    }
   </style>
 </head>
-<body>
+<body class="admin-body">
   <?php include __DIR__ . '/_header.php'; ?>
 
-  <main class="container">
-    <h2>Dashboard</h2>
+  <main class="dashboard-layout">
+    <div class="admin-page-header">
+      <h2 style="font-family: 'Garamond', serif; font-size: 40px; margin-bottom: 8px;">Dashboard Overview</h2>
+      <p style="color: var(--muted); font-size: 16px;">Real-time performance and store analytics.</p>
+    </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h3>Transaksi Bulan Ini</h3>
-        <div class="value"><?php echo (int)$stats['monthly_trans']; ?></div>
+    <div class="stats-row">
+      <div class="admin-stats-card">
+        <span class="admin-stats-label">Monthly Revenue</span>
+        <span class="admin-stats-value">Rp <?php echo number_format($stats['monthly_rev'], 0, ',', '.'); ?></span>
       </div>
-      <div class="stat-card">
-        <h3>Pendapatan Bulan Ini</h3>
-        <div class="value">Rp <?php echo number_format($stats['monthly_rev'], 0, ',', '.'); ?></div>
+      <div class="admin-stats-card">
+        <span class="admin-stats-label">Monthly Orders</span>
+        <span class="admin-stats-value"><?php echo $stats['monthly_trans']; ?></span>
       </div>
-      <div class="stat-card">
-        <h3>Total Produk</h3>
-        <div class="value"><?php echo (int)$stats['total_products']; ?></div>
+      <div class="admin-stats-card">
+        <span class="admin-stats-label">Avg. Order Value</span>
+        <span class="admin-stats-value">Rp <?php echo number_format($stats['avg_order'], 0, ',', '.'); ?></span>
       </div>
-      <div class="stat-card">
-        <h3>Stok Rendah (&le;5)</h3>
-        <div class="value" style="color: #c84f2c;"><?php echo (int)$stats['low_stock']; ?></div>
+      <div class="admin-stats-card">
+        <span class="admin-stats-label">Low Stock Alerts</span>
+        <span class="admin-stats-value" style="color: #f87171;"><?php echo $stats['low_stock']; ?></span>
       </div>
     </div>
-    
-    <div style="margin: 20px 0; text-align: center;">
-      <a href="reset_data.php" class="btn-reset">Reset Data Transaksi & Laporan</a>
+
+    <div class="analytics-grid">
+      <div class="admin-card">
+        <h3 style="font-size: 20px; font-weight: 600;">Sales Trend (30 Days)</h3>
+        <div class="chart-container">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 24px;">Recent Transactions</h3>
+        <div class="recent-list">
+          <?php foreach ($recentTransactions as $t): ?>
+            <div style="padding: 16px 0; border-bottom: 1px solid var(--md-sys-color-outline); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 600; font-size: 14px;">#<?php echo $t['id_transaksi']; ?> - <?php echo h($t['customer']); ?></div>
+                <div style="color: var(--muted); font-size: 12px;"><?php echo date('M d, H:i', strtotime($t['tanggal'])); ?></div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: 600; font-size: 14px;">Rp <?php echo number_format($t['total'], 0, ',', '.'); ?></div>
+                <span class="admin-status admin-status-<?php echo h($t['status']); ?>" style="font-size: 10px; padding: 2px 8px;"><?php echo $t['status']; ?></span>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+        <a href="transactions.php" class="admin-btn admin-btn-secondary" style="width: 100%; justify-content: center; margin-top: 24px;">View All Transactions</a>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="reset_data.php" class="admin-btn admin-btn-danger" style="opacity: 0.5;">Reset Store Data</a>
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container"><small>&copy; MeyDa Collection Admin</small></div>
-  </footer>
-</body>
-</html>
+  <script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: <?php echo json_encode($chartLabels); ?>,
+        datasets: [{
+          label: 'Revenue',
+          data: <?php echo json_encode($chartValues); ?>,
+          borderColor: '#ff6d00',
+          backgroundColor: 'rgba(255, 109, 0, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: '#ff6d00',
+          pointBorderColor: '#1a1a1a',
+          pointBorderWidth: 2,
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { 
+              color: '#a0a0a0',
+              callback: (value) => 'Rp ' + value.toLocaleString()
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#a0a0a0' }
+          }
+        }
+      }
+    });
+  </script>
+  <?php include __DIR__ . '/_footer.php'; ?>

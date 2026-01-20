@@ -5,10 +5,6 @@ $pdo = getPDO();
 // Simple router via "action"
 $action = $_POST["action"] ?? ($_GET["action"] ?? "home");
 
-function h($s)
-{
-    return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
-}
 
 if (!isset($_SESSION["cart"])) {
     $_SESSION["cart"] = [];
@@ -260,7 +256,7 @@ if (!empty($_SESSION["cart"])) {
     echo renderHeroCard([
         "headline" =>
             "Discover our latest collection of premium fashion items designed to elevate your style.",
-        "slogan" => "MAKE YOUR LOOK MORE SIGMA",
+        "slogan" => "",
         "cta_text" => "Shop Now",
     ]);
 
@@ -488,71 +484,46 @@ if (!empty($_SESSION["cart"])) {
       }
     }
 
-    // Function to update the cart count in the navigation
-    function updateCartCount() {
-      // We need to fetch the updated cart count from the server
-      fetch('index.php?action=cart_count')
-        .then(response => response.json())
-        .then(data => {
-          const cartLink = document.querySelector('a[href="index.php?action=cart"]');
-          if (cartLink) {
-            // Extract the text content before the cart count and append the new count
-            cartLink.innerHTML = 'cart (' + data.count + ')';
-          }
-        })
-        .catch(error => console.error('Error updating cart count:', error));
-    }
+    // Function showNotification (consolidated and styled)
+    function showNotification(message, type = 'success') {
+      const existing = document.querySelectorAll('.toast-notification');
+      existing.forEach(n => n.remove());
 
-    // Function to show a notification
-    function showNotification(message) {
-      // Remove any existing notifications
-      const existingNotifications = document.querySelectorAll('.notification');
-      existingNotifications.forEach(notification => notification.remove());
-
-      // Create a notification element
       const notification = document.createElement('div');
-      notification.className = 'notification';
-      notification.textContent = message;
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #4CAF50;
-        color: white;
-        padding: 15px;
-        border-radius: 5px;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
+      notification.className = `toast-notification toast-${type}`;
+      
+      const icon = type === 'success' ? 
+        `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>` :
+        `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+      notification.innerHTML = `
+        <div class="toast-content">
+          <span class="toast-icon">${icon}</span>
+          <span class="toast-message">${message}</span>
+        </div>
       `;
 
       document.body.appendChild(notification);
 
-      // Fade in
-      setTimeout(() => {
-        notification.style.opacity = '1';
-      }, 10);
+      // Trigger animation
+      setTimeout(() => notification.classList.add('active'), 10);
 
-      // Remove after 3 seconds
+      // Auto remove
       setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-          notification.remove();
-        }, 300);
+        notification.classList.remove('active');
+        setTimeout(() => notification.remove(), 300);
       }, 3000);
     }
 
-    // Function to update the cart count in the navigation
+    // Function to update the cart count in the navigation (consolidated)
     function updateCartCount() {
-      // We need to fetch the updated cart count from the server
       fetch('index.php?action=cart_count')
         .then(response => response.json())
         .then(data => {
-          const cartLinks = document.querySelectorAll('a[href*="cart"], a[href*="index.php?action=cart"]');
+          const cartLinks = document.querySelectorAll('a[href*="cart"]');
           cartLinks.forEach(cartLink => {
-            // Extract the text content before the cart count and append the new count
-            const baseText = cartLink.textContent.replace(/\s*\([^)]*\)/, '');
-            cartLink.innerHTML = baseText + ' (' + data.count + ')';
+            const baseText = cartLink.textContent.includes('cart') ? 'cart' : cartLink.textContent.split('(')[0].trim();
+            cartLink.innerHTML = `${baseText} (${data.count})`;
           });
         })
         .catch(error => console.error('Error updating cart count:', error));
@@ -574,47 +545,6 @@ if (!empty($_SESSION["cart"])) {
       input.value = newValue;
     }
 
-    // Function to show a notification
-    function showNotification(message) {
-      // Remove any existing notifications
-      const existingNotifications = document.querySelectorAll('.notification');
-      existingNotifications.forEach(notification => notification.remove());
-
-      // Create a notification element
-      const notification = document.createElement('div');
-      notification.className = 'notification';
-      notification.textContent = message;
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #4CAF50;
-        color: white;
-        padding: 15px 20px;
-        border-radius: 5px;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        font-family: inherit;
-        font-size: 14px;
-      `;
-
-      document.body.appendChild(notification);
-
-      // Fade in
-      setTimeout(() => {
-        notification.style.opacity = '1';
-      }, 10);
-
-      // Remove after 3 seconds
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-          notification.remove();
-        }, 300);
-      }, 3000);
-    }
   </script>
 </body>
 </html>

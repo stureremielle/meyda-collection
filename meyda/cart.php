@@ -5,7 +5,6 @@ $pdo = getPDO();
 // Simple router via "action"
 $action = $_POST['action'] ?? $_GET['action'] ?? 'view';
 
-function h($s){ return htmlspecialchars($s, ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8'); }
 
 if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
 
@@ -195,14 +194,6 @@ if (!empty($_SESSION['cart'])) {
         }
     }
 }
-
-// Fetch saved payment methods if logged in
-$savedPayments = [];
-if (isCustomer()) {
-    $stmtP = $pdo->prepare("SELECT * FROM metode_pembayaran WHERE id_pelanggan = :id");
-    $stmtP->execute([':id' => $_SESSION['customer_id']]);
-    $savedPayments = $stmtP->fetchAll();
-}
 ?>
 <!doctype html>
 <html lang="id">
@@ -257,7 +248,7 @@ if (isCustomer()) {
     <div class="cart-container">
       <div class="cart-wrapper">
         <div class="cart-header">
-          <h2 style="font-family: 'Garamond', serif; font-size: 48px; margin-bottom: 12px;">Your Bag</h2>
+          <h2 style="font-family: 'Garamond', serif; font-size: 48px; margin-bottom: 12px;">Your Cart</h2>
           <p style="color: var(--muted); font-size: 18px;">Review your items before proceeding to checkout</p>
         </div>
 
@@ -267,8 +258,8 @@ if (isCustomer()) {
               <!-- Provided base64 icon -->
               <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNmNGYxZjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCAxOWEyIDIgMCAxIDAgNCAwYTIgMiAwIDAgMC00IDAiLz48cGF0aCBkPSJNMTMgMTdINlYzSDQiLz48cGF0aCBkPSJtNiA1bDE0IDFsLTEgN0g2bTE2IDlsLTUtNW0wIDVsNS01Ii8+PC9nPjwvc3ZnPg==" style="width: 120px; height: 120px;">
             </div>
-            <h3 class="empty-cart-message">Your bag is empty</h3>
-            <p class="empty-cart-sub">Looks like you haven't added anything to your bag yet.</p>
+            <h3 class="empty-cart-message">Your cart is empty</h3>
+            <p class="empty-cart-sub">Looks like you haven't added anything to your cart yet.</p>
             <a href="index.php#products" class="btn-continue-shopping">Start Shopping</a>
           </div>
         <?php else: ?>
@@ -322,30 +313,6 @@ if (isCustomer()) {
                 <span class="method-info">Virtual Account</span>
               </div>
             </div>
-
-            <?php if (!empty($savedPayments)): ?>
-              <div style="margin-top: 24px;">
-                <h4 style="font-size: 14px; color: var(--muted); margin-bottom: 12px; text-transform: uppercase;">Saved Cards</h4>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                  <?php foreach ($savedPayments as $sp): ?>
-                    <div class="payment-method-card saved-card" style="flex-direction: row; align-items: center; justify-content: space-between; width: 100%;" 
-                         onclick="selectSavedCard(this, <?php echo htmlspecialchars(json_encode($sp)); ?>)">
-                      <div style="display: flex; align-items: center; gap: 16px;">
-                        <div class="method-icon">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                        </div>
-                        <div>
-                          <span class="method-name" style="display: block;"><?php echo htmlspecialchars($sp['nama_kartu']); ?></span>
-                          <span class="method-info">**** **** **** <?php echo substr($sp['nomor_kartu'], -4); ?></span>
-                        </div>
-                      </div>
-                      <span style="font-size: 12px; color: var(--muted);">Exp: <?php echo htmlspecialchars($sp['masa_berlaku']); ?></span>
-                    </div>
-                  <?php endforeach; ?>
-                </div>
-              </div>
-            <?php endif; ?>
-
           </div>
 
           <div class="cart-summary">
@@ -455,7 +422,7 @@ if (isCustomer()) {
         <p class="simulation-status" id="success-header">Payment Successful!</p>
         <p class="simulation-message" id="simulation-message-text">Your order has been placed successfully.</p>
         <div id="va-result"></div>
-        <p style="margin-top: 24px; font-size: 14px; color: var(--muted);">Redirecting you shortly...</p>
+        <p id="redirect-hint" style="margin-top: 24px; font-size: 14px; color: var(--muted);">Redirecting you shortly...</p>
       </div>
     </div>
   </div>
@@ -467,7 +434,7 @@ if (isCustomer()) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
       </div>
       <h3 class="modal-title">Remove Item?</h3>
-      <p class="modal-message">Are you sure you want to remove <strong id="modal-item-name"></strong> from your bag?</p>
+      <p class="modal-message">Are you sure you want to remove <strong id="modal-item-name"></strong> from your cart?</p>
       <div class="modal-actions">
         <button type="button" class="modal-btn modal-btn-cancel" onclick="closeConfirmModal()">Cancel</button>
         <button type="button" class="modal-btn modal-btn-confirm" id="confirm-remove-btn">Yes, Remove</button>
@@ -512,29 +479,13 @@ if (isCustomer()) {
       document.getElementById('payment-overlay').classList.remove('active');
     }
 
-    function selectSavedCard(element, cardData) {
-      // Deactivate other cards
-      document.querySelectorAll('.payment-method-card').forEach(card => card.classList.remove('active'));
-      element.classList.add('active');
-      selectedPaymentMethod = 'cc';
-      
-      // Auto-fill simulation fields
-      const ccFields = document.getElementById('cc-fields');
-      const inputs = ccFields.querySelectorAll('input');
-      inputs[0].value = "**** **** **** " + cardData.nomor_kartu.slice(-4);
-      inputs[1].value = cardData.masa_berlaku;
-      inputs[2].value = "***"; // Mask CVV
-      
-      // We don't need to show overlay yet, or we can show it with pre-filled values
-      showPaymentInputs();
-    }
-
     function startFinalSimulation() {
       const formStep = document.getElementById('simulation-form-step');
       const loader = document.getElementById('simulation-loading');
       const success = document.getElementById('simulation-success');
       const simMessage = document.getElementById('simulation-message-text');
       const successHeader = document.getElementById('success-header');
+      const redirectHint = document.getElementById('redirect-hint');
       
       formStep.style.display = 'none';
       loader.style.display = 'block';
@@ -548,7 +499,7 @@ if (isCustomer()) {
           <div class="va-display-container">
             <span class="va-label">${bank} Virtual Account</span>
             <div class="va-number">${vaNumber}</div>
-            <span class="va-copy-hint">Copy this number to complete payment</span>
+            <span class="va-copy-hint">Copy this number and complete yourpayment</span>
           </div>
         `;
         successHeader.textContent = 'Order Reserved';
@@ -565,9 +516,23 @@ if (isCustomer()) {
         loader.style.display = 'none';
         success.style.display = 'block';
         
-        setTimeout(() => {
-          document.getElementById('checkout-form').submit();
-        }, selectedPaymentMethod === 'va' ? 5000 : 2000); // Give more time to see VA
+        if (selectedPaymentMethod === 'va') {
+          // No auto-redirect for VA, show a button
+          redirectHint.style.display = 'none';
+          const finishBtn = document.createElement('button');
+          finishBtn.type = 'button';
+          finishBtn.className = 'checkout-btn';
+          finishBtn.style.marginTop = '24px';
+          finishBtn.textContent = "I already paid";
+          finishBtn.onclick = () => document.getElementById('checkout-form').submit();
+          vaContainer.appendChild(finishBtn);
+        } else {
+          // Auto-redirect for Credit Card as before
+          redirectHint.style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('checkout-form').submit();
+          }, 2000);
+        }
       }, 2500);
     }
 

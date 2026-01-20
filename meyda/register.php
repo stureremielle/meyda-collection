@@ -10,46 +10,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $password = trim($_POST['password'] ?? '');
   $password_confirm = trim($_POST['password_confirm'] ?? '');
   $telepon = trim($_POST['telepon'] ?? '');
-  $alamat = trim($_POST['alamat'] ?? '');
 
     if (empty($nama) || empty($email) || empty($password)) {
-      $error = 'Nama, email dan password harus diisi.';
+      $error = 'Name, email and password are required.';
     } elseif ($password !== $password_confirm) {
-      $error = 'Password dan konfirmasi password tidak cocok.';
+      $error = 'Password and password confirmation do not match.';
     } else {
         $pdo = getPDO();
         // Check if email already exists
         $check = $pdo->prepare("SELECT id_pelanggan FROM pelanggan WHERE email = :email");
         $check->execute([':email' => $email]);
         if ($check->fetch()) {
-            $error = 'Email sudah terdaftar.';
+            $error = 'Email is already registered.';
         } else {
             try {
           $hash = password_hash($password, PASSWORD_DEFAULT);
-          $stmt = $pdo->prepare("INSERT INTO pelanggan (nama, email, password_hash, telepon, alamat) VALUES (:nama, :email, :password_hash, :telepon, :alamat)");
+          $stmt = $pdo->prepare("INSERT INTO pelanggan (nama, email, password_hash, telepon) VALUES (:nama, :email, :password_hash, :telepon)");
           $stmt->execute([
             ':nama' => $nama,
             ':email' => $email,
             ':password_hash' => $hash,
-            ':telepon' => $telepon,
-            ':alamat' => $alamat
+            ':telepon' => $telepon
           ]);
-                $success = 'Pendaftaran berhasil! Silakan login dengan email Anda.';
+                $success = 'Registration successful! Please login with your email.';
             } catch (Exception $e) {
-                $error = 'Terjadi kesalahan: ' . $e->getMessage();
+                $error = 'An error occurred: ' . $e->getMessage();
             }
         }
     }
 }
 ?>
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Register - MeyDa Collection</title>
   <link rel="stylesheet" href="styles.css">
-<body>
+<body class="auth-page">
   <main class="auth-center">
     <a href="index.php" class="back-button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -58,19 +56,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="register-container">
       <div class="register-card">
         <div class="login-card-title">
-          <h2>Pendaftaran Pelanggan</h2>
+          <h2>Customer Registration</h2>
           <p style="margin-top: 8px; color: var(--muted); font-size: 14px;">Fill in your details to create a new account</p>
         </div>
 
         <div class="register-form-content" style="margin-top: 24px;">
           <?php if (!empty($error)): ?>
-            <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+            <div class="alert alert-error"><?php echo h($error); ?></div>
           <?php endif; ?>
 
           <?php if (!empty($success)): ?>
-            <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
-            <div style="text-align: center; margin-top: 24px;">
-              <a href="login.php" class="btn-primary" style="text-decoration: none; display: inline-block;">Login now</a>
+            <div class="alert alert-success"><?php echo h($success); ?></div>
+            <div style="margin-top: 32px;">
+              <a href="login.php" class="btn-primary">Login now</a>
             </div>
           <?php else: ?>
             <form method="post" class="register-form">
@@ -111,15 +109,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="tel" id="telepon" name="telepon" placeholder="08123456789">
               </div>
 
-              <div class="form-group">
-                <label for="alamat">Address</label>
-                <textarea id="alamat" name="alamat" placeholder="Your shipping address" style="width: 100%; padding: 12px; background: #0f0f0f; color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline); border-radius: 10px; min-height: 80px;"></textarea>
-              </div>
-
-              <button type="submit" class="btn-primary" style="margin-top: 8px;">Daftar Sekarang</button>
+              <button type="submit" class="btn-primary" style="margin-top: 8px;">Register Now</button>
 
               <div style="text-align: center; margin-top: 24px; font-size: 14px; color: var(--muted);">
-                Sudah punya akun? <a href="login.php" class="link">Login di sini</a>
+                Already have an account? <a href="login.php" class="link">Login here</a>
               </div>
             </form>
           <?php endif; ?>
@@ -148,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const p2 = document.getElementById('password_confirm').value;
         if (p1 !== p2) {
           e.preventDefault();
-          alert('Password dan konfirmasi password tidak cocok.');
+          alert('Password and password confirmation do not match.');
         }
       });
     }

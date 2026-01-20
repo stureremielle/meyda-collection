@@ -113,7 +113,7 @@ function staffLogin($username, $password) {
     return false;
 }
 
-function logout() {
+function logout($redirect = 'index.php') {
     // Remove only authentication-related keys and clear transient cart
     $cartOwner = $_SESSION['cart_owner'] ?? null;
 
@@ -156,8 +156,8 @@ function logout() {
     // Finally, destroy the session
     session_destroy();
     
-    // Redirect to home page
-    header('Location: index.php');
+    // Redirect to target page
+    header('Location: ' . $redirect);
     exit;
 }
 

@@ -52,3 +52,10 @@ function getPDO()
     }
     return $pdo;
 }
+/**
+ * Shorthand for htmlspecialchars
+ */
+function h($text)
+{
+    return htmlspecialchars($text ?? '', ENT_QUOTES, 'UTF-8');
+}

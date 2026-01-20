@@ -18,11 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt = $pdo->prepare("SELECT COUNT(*) as cnt FROM produk WHERE id_kategori = :id");
         $stmt->execute([':id' => $id]);
         if ($stmt->fetch()['cnt'] > 0) {
-            $error = 'Tidak bisa menghapus kategori yang memiliki produk.';
+            $error = 'Cannot delete a category that still has products.';
         } else {
             $stmt = $pdo->prepare("DELETE FROM kategori_produk WHERE id_kategori = :id");
             $stmt->execute([':id' => $id]);
-            $success = 'Kategori berhasil dihapus.';
+            $success = 'Category deleted successfully.';
         }
     } catch (Exception $e) {
         $error = 'Error: ' . $e->getMessage();
@@ -35,18 +35,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
     $desc = trim($_POST['deskripsi'] ?? '');
     
     if (empty($name)) {
-        $error = 'Nama kategori harus diisi.';
+        $error = 'Category name is required.';
     } else {
         try {
             if ($_POST['action'] === 'add') {
                 $stmt = $pdo->prepare("INSERT INTO kategori_produk (nama_kategori, deskripsi) VALUES (:nama, :desc)");
                 $stmt->execute([':nama' => $name, ':desc' => $desc]);
-                $success = 'Kategori berhasil ditambahkan.';
+                $success = 'Category added successfully.';
             } else {
                 $id = intval($_POST['id'] ?? 0);
                 $stmt = $pdo->prepare("UPDATE kategori_produk SET nama_kategori = :nama, deskripsi = :desc WHERE id_kategori = :id");
                 $stmt->execute([':nama' => $name, ':desc' => $desc, ':id' => $id]);
-                $success = 'Kategori berhasil diperbarui.';
+                $success = 'Category updated successfully.';
             }
         } catch (Exception $e) {
             $error = 'Error: ' . $e->getMessage();
@@ -68,128 +68,134 @@ if (isset($_GET['edit'])) {
 }
 ?>
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Kelola Kategori - MeyDa Admin</title>
+  <title>Manage Categories - MeyDa Admin</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
-    html, body { height: 100%; }
-    body { display: flex; flex-direction: column; }
-    main.container { flex: 1; max-width: 1200px; margin: 0 auto; padding: 12px; width: 100%; }
-    .form-section { background: #252525; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #404040; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #ffffff; }
-    .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #404040; border-radius: 8px; font-family: inherit; background: #1a1a1a; color: #ffffff; }
-    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #ff6d00; box-shadow: 0 0 0 2px rgba(255,109,0,0.1); }
-    .form-group textarea { min-height: 80px; resize: vertical; }
-    button, .btn-secondary { background: #ff6d00; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; margin-right: 10px; font-weight: 500; transition: all 0.2s; font-family: 'Futura', inherit; }
-    button:hover, .btn-secondary:hover { background: #e55d00; transform: translateY(-1px); }
-    .btn-secondary { background: #404040; }
-    .btn-secondary:hover { background: #505050; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #252525; }
-    table th, table td { padding: 16px; text-align: left; border-bottom: 1px solid #404040; color: #ffffff; }
-    table th { background: #1a1a1a; font-weight: 600; }
-    .action-cell { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
-    .action-btn { background: #ff6d00; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; font-size: 13px; transition: all 0.2s; margin: 0; font-family: 'Futura', inherit; white-space: nowrap; flex-shrink: 0; }
-    .action-btn:hover { background: #e55d00; transform: translateY(-1px); }
-    .action-btn-danger { background: #c84f2c; }
-    .action-btn-danger:hover { background: #a83a1f; }
-    .action-disabled { color: #888888; font-size: 13px; }
-    .delete-form { display: inline-block; margin: 0; padding: 0; flex-shrink: 0; }
-    .delete-form button { white-space: nowrap; width: auto; display: inline-block; padding: 6px 12px; margin: 0; }
-    .alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-    .alert-error { background: #4a2a2a; color: #ff9999; border: 1px solid #662a2a; }
-    .alert-success { background: #2a4a3a; color: #99ff99; border: 1px solid #2a6a4a; }
-    .section { margin-bottom: 30px; }
-    .section h2 { margin-top: 0; color: #ffffff; }
+    .categories-layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 32px;
+      align-items: flex-start;
+    }
+    @media (max-width: 992px) {
+      .categories-layout { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
-<body>
+<body class="admin-body">
   <?php include __DIR__ . '/_header.php'; ?>
 
-  <main class="container">
-    <h2>Kelola Kategori</h2>
+  <main class="categories-layout">
+    <!-- Form Side -->
+    <aside class="admin-sidebar-form">
+      <div class="admin-card">
+        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 24px;">
+          <?php echo $edit ? 'Edit Category' : 'Add New Category'; ?>
+        </h3>
 
-    <?php if ($error): ?>
-      <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
-    <?php endif; ?>
-    <?php if ($success): ?>
-      <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
-    <?php endif; ?>
+        <?php if ($error): ?>
+          <div class="alert alert-error" style="margin-bottom: 24px;"><?php echo h($error); ?></div>
+        <?php endif; ?>
+        <?php if ($success): ?>
+          <div class="alert alert-success" style="margin-bottom: 24px;"><?php echo h($success); ?></div>
+        <?php endif; ?>
 
-    <!-- Form Add/Edit -->
-    <div class="form-section">
-      <h2><?php echo $edit ? 'Edit Kategori' : 'Tambah Kategori'; ?></h2>
-      <form method="post">
+        <form method="post">
           <input type="hidden" name="action" value="<?php echo $edit ? 'edit' : 'add'; ?>">
           <?php if ($edit): ?>
             <input type="hidden" name="id" value="<?php echo $edit['id_kategori']; ?>">
           <?php endif; ?>
 
-          <div class="form-group">
-            <label>Nama Kategori</label>
-            <input type="text" name="nama_kategori" value="<?php echo $edit ? htmlspecialchars($edit['nama_kategori']) : ''; ?>" required>
+          <div class="admin-form-group">
+            <label>Category Name *</label>
+            <input type="text" name="nama_kategori" class="admin-input" value="<?php echo $edit ? h($edit['nama_kategori']) : ''; ?>" required placeholder="e.g. Silk Collection">
           </div>
 
-          <div class="form-group">
-            <label>Deskripsi (opsional)</label>
-            <textarea name="deskripsi"><?php echo $edit ? htmlspecialchars($edit['deskripsi'] ?? '') : ''; ?></textarea>
+          <div class="admin-form-group">
+            <label>Description (optional)</label>
+            <textarea name="deskripsi" class="admin-input" style="min-height: 100px;"><?php echo $edit ? h($edit['deskripsi'] ?? '') : ''; ?></textarea>
           </div>
 
-          <div class="form-buttons" style="display: flex; flex-direction: row; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 12px; padding: 0;">
-          <button type="submit" class="action-btn"><?php echo $edit ? 'Update' : 'Tambah'; ?> Kategori</button>
-          <?php if ($edit): ?>
-            <a href="categories.php" class="btn-secondary" style="padding: 6px 12px; display: inline-block; font-size: 13px; height: auto; text-align: center;">Batal</a>
-          <?php endif; ?>
-        </div>
+          <div style="margin-top: 32px; display: flex; gap: 12px;">
+            <button type="submit" class="admin-btn admin-btn-primary" style="flex: 1; justify-content: center;">
+              <?php echo $edit ? 'Update Category' : 'Add Category'; ?>
+            </button>
+            <?php if ($edit): ?>
+              <a href="categories.php" class="admin-btn admin-btn-secondary">Cancel</a>
+            <?php endif; ?>
+          </div>
         </form>
       </div>
+    </aside>
 
-      <!-- Category List -->
-      <div class="section">
-        <h2>Daftar Kategori</h2>
-        <table class="table">
+    <!-- Table Side -->
+    <div class="admin-card" style="overflow-x: auto;">
+      <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 24px;">Category List</h3>
+      
+      <table class="admin-table">
+        <thead>
           <tr>
-            <th>Nama Kategori</th>
-            <th>Deskripsi</th>
-            <th>Produk</th>
-            <th>Aksi</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Products</th>
+            <th style="text-align: right;">Actions</th>
           </tr>
+        </thead>
+        <tbody>
           <?php foreach ($categories as $c): ?>
             <?php
-              $stmt = $pdo->prepare("SELECT COUNT(*) as cnt FROM produk WHERE id_kategori = :id");
-              $stmt->execute([':id' => $c['id_kategori']]);
-              $productCount = $stmt->fetch()['cnt'];
+              $stmtCnt = $pdo->prepare("SELECT COUNT(*) as cnt FROM produk WHERE id_kategori = :id");
+              $stmtCnt->execute([':id' => $c['id_kategori']]);
+              $productCount = $stmtCnt->fetch()['cnt'];
             ?>
             <tr>
-              <td><?php echo htmlspecialchars($c['nama_kategori']); ?></td>
-              <td><?php echo htmlspecialchars($c['deskripsi'] ?? '-'); ?></td>
-              <td><?php echo $productCount; ?></td>
+              <td style="font-weight: 600;"><?php echo h($c['nama_kategori']); ?></td>
+              <td style="color: var(--muted); font-size: 14px;"><?php echo h($c['deskripsi'] ?? '-'); ?></td>
               <td>
-                <div class="action-cell">
-                  <a href="?edit=<?php echo $c['id_kategori']; ?>" class="action-btn">Edit</a>
+                <span class="admin-badge">
+                  <span class="badge-count"><?php echo $productCount; ?></span> Products
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+                  <a href="?edit=<?php echo $c['id_kategori']; ?>" class="admin-btn admin-btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</a>
                   <?php if ($productCount == 0): ?>
-                    <form method="post" class="delete-form">
+                    <form method="post" style="display: inline;">
                       <input type="hidden" name="action" value="delete">
                       <input type="hidden" name="id" value="<?php echo $c['id_kategori']; ?>">
-                      <button type="submit" class="action-btn action-btn-danger" onclick="return confirm('Yakin?')">Hapus</button>
+                      <button type="button" class="admin-btn admin-btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="confirmDelete(this, 'category')">Delete</button>
                     </form>
                   <?php else: ?>
-                    <span class="action-disabled">Tidak bisa hapus</span>
+                    <span style="color: var(--muted); font-size: 11px; font-style: italic;">Cannot delete</span>
                   <?php endif; ?>
                 </div>
               </td>
             </tr>
           <?php endforeach; ?>
-        </table>
-      </div>
+        </tbody>
+      </table>
+    </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container"><small>&copy; MeyDa Collection Admin</small></div>
-  </footer>
+  <script>
+  function confirmDelete(btn, type) {
+      const form = btn.closest('form');
+      adminConfirm({
+          title: 'Delete ' + type.charAt(0).toUpperCase() + type.slice(1),
+          message: 'Are you sure you want to permanently delete this ' + type + '?',
+          confirmText: 'Delete',
+          confirmClass: 'admin-btn-danger'
+      }, () => {
+          form.submit();
+      });
+  }
+  </script>
 
-</body>
-</html>
+  <?php include __DIR__ . '/_footer.php'; ?>
