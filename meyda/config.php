@@ -12,6 +12,12 @@ define("DB_USER", "meyda"); // set to the DB user you create on your server
 define("DB_PASS", "kraccbacc"); // Change this to a strong password
 define("DEFAULT_USER_ID", 1); // id_user used for transactions (admin). Ensure it exists.
 
+// Email Configuration (SMTP / AlwaysData)
+define("SMTP_HOST", "smtp-meyda.alwaysdata.net"); // e.g., smtp.gmail.com or smtp.yoursite.com
+define("SMTP_USER", "meyda@alwaysdata.net"); // Your full email address
+define("SMTP_PASS", "kraccbacc"); // Your email password or App Password
+define("SMTP_PORT", 465);
+
 // Detect Base URL for assets
 if (!defined("BASE_URL")) {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";

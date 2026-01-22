@@ -19,6 +19,13 @@ if ($action === "add" && $_SERVER["REQUEST_METHOD"] === "POST") {
       $_SESSION["cart"][$id] = 0;
     }
     $_SESSION["cart"][$id] += $qty;
+
+    // Persist to DB if logged in
+    if (isCustomer()) {
+      $custId = $_SESSION['customer_id'];
+      $stmt = $pdo->prepare("INSERT INTO keranjang (id_pelanggan, id_produk, qty) VALUES (:id_pelanggan, :id_produk, :qty) ON DUPLICATE KEY UPDATE qty = qty + VALUES(qty)");
+      $stmt->execute([':id_pelanggan' => $custId, ':id_produk' => $id, ':qty' => $qty]);
+    }
   }
 
   // Check if this is an AJAX request
@@ -156,6 +163,13 @@ SQL;
 
       $pdo->commit();
       $_SESSION["cart"] = [];
+      
+      // Clear DB cart if logged in
+      if (isCustomer()) {
+        $stmtDB = $pdo->prepare("DELETE FROM keranjang WHERE id_pelanggan = :cid");
+        $stmtDB->execute([':cid' => $_SESSION['customer_id']]);
+      }
+
       $success = "Checkout successful. Transaction ID: $id_transaksi";
     } catch (Exception $e) {
       $pdo->rollBack();
@@ -235,7 +249,6 @@ if (!empty($_SESSION["cart"])) {
             <a href="account" class="header-link">account</a>
             <a href="auth?action=logout" class="header-link">logout</a>
           <?php elseif (isStaff()): ?>
-            <a href="admin/products" class="header-link">admin</a>
             <a href="auth?action=logout" class="header-link">logout</a>
           <?php endif; ?>
         <?php else: ?>

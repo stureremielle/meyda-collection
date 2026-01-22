@@ -211,11 +211,12 @@ $details = $stmtDetail->fetchAll();
         }
 
         .btn-print {
+            font-size: 20px;
             background: var(--accent);
             color: white;
             padding: 14px 32px;
             border-radius: 14px;
-            font-weight: 600;
+            font-weight: 400;
             text-decoration: none;
             transition: all 0.3s ease;
             border: none;
@@ -242,33 +243,64 @@ $details = $stmtDetail->fetchAll();
             background: rgba(255, 255, 255, 0.1);
         }
 
+        @page {
+            margin: 20mm;
+            size: portrait;
+        }
+
         @media print {
             body {
-                background: white;
-                padding: 0;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                height: auto !important;
+                min-height: 0 !important;
+                color: black !important;
+                overflow: visible !important;
             }
+            
             .receipt-card {
-                box-shadow: none;
-                border: none;
-                max-width: 100%;
-                padding: 0;
-                background: white;
+                box-shadow: none !important;
+                border: none !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: white !important;
+                overflow: visible !important;
+                width: 100% !important;
             }
+            
             .receipt-card::before, .print-actions, .btn-back {
                 display: none !important;
             }
+            
             .billing-grid {
-                background: none;
-                border: 1px solid #eee;
+                background: none !important;
+                border: 1px solid #eee !important;
+                padding: 15px !important;
             }
-            .brand-section h1, .bill-group p, .item-name, td {
-                color: black;
+            
+            .brand-section h1, .bill-group p, .item-name, td, .total-label, .total-value {
+                color: black !important;
             }
+            
             .grand-total {
                 color: #ff6d00 !important;
+                border-top: 1px solid #eee !important;
             }
+            
             .receipt-table th {
-                color: #666;
+                color: #666 !important;
+                border-bottom: 1px solid #eee !important;
+            }
+
+            .receipt-table td {
+                border-bottom: 1px solid #f5f5f5 !important;
+            }
+
+            .order-meta h2 {
+                color: black !important;
             }
         }
     </style>

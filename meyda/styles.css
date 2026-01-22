@@ -23,6 +23,12 @@
 }
 
 @font-face {
+    font-family: "Futura";
+    src: url("./fonts/futura/Futura Bold font.ttf") format("truetype");
+    font-weight: 600;
+}
+
+@font-face {
     font-family: "Bigerty";
     src: url("./fonts/bigerty/Bigerty-Regular.ttf") format("truetype");
     font-weight: 400;

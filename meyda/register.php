@@ -117,6 +117,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       </svg>
                     </button>
                   </div>
+                  <div id="password-error" style="color: #ff6b6b; font-size: 12px; margin-top: 4px; display: none;">
+                    Passwords do not match
+                  </div>
                 </div>
               </div>
 
@@ -125,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="tel" id="telepon" name="telepon" placeholder="08123456789">
               </div>
 
-              <button type="submit" class="btn-primary" style="margin-top: 8px;">Register Now</button>
+              <button type="submit" id="register-btn" class="btn-primary" style="margin-top: 8px;">Register Now</button>
 
               <div style="text-align: center; margin-top: 24px; font-size: 14px; color: var(--muted);">
                 Already have an account? <a href="login" class="link">Login here</a>
@@ -150,14 +153,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
 
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('password_confirm');
+    const registerBtn = document.getElementById('register-btn');
+    const errorMsg = document.getElementById('password-error');
+
+    function checkPasswords() {
+      const p1 = passwordInput.value;
+      const p2 = confirmInput.value;
+      
+      if (p2 && p1 !== p2) {
+        errorMsg.style.display = 'block';
+        registerBtn.disabled = true;
+        registerBtn.style.opacity = '0.5';
+        registerBtn.style.cursor = 'not-allowed';
+      } else {
+        errorMsg.style.display = 'none';
+        registerBtn.disabled = false;
+        registerBtn.style.opacity = '1';
+        registerBtn.style.cursor = 'pointer';
+      }
+    }
+
+    if (passwordInput && confirmInput) {
+      passwordInput.addEventListener('input', checkPasswords);
+      confirmInput.addEventListener('input', checkPasswords);
+    }
+
     const form = document.querySelector('form');
     if (form) {
       form.addEventListener('submit', function (e) {
-        const p1 = document.getElementById('password').value;
-        const p2 = document.getElementById('password_confirm').value;
+        const p1 = passwordInput.value;
+        const p2 = confirmInput.value;
         if (p1 !== p2) {
           e.preventDefault();
-          alert('Password and password confirmation do not match.');
         }
       });
     }

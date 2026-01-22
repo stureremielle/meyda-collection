@@ -11,8 +11,15 @@ if (!isset($_SESSION['cart']))
 
 if ($action === 'remove') {
   $id = (int) ($_GET['id'] ?? 0);
-  if ($id > 0 && isset($_SESSION['cart'][$id]))
+  if ($id > 0 && isset($_SESSION['cart'][$id])) {
     unset($_SESSION['cart'][$id]);
+    
+    // Persist to DB if logged in
+    if (isCustomer()) {
+      $stmt = $pdo->prepare("DELETE FROM keranjang WHERE id_pelanggan = :cid AND id_produk = :pid");
+      $stmt->execute([':cid' => $_SESSION['customer_id'], ':pid' => $id]);
+    }
+  }
   if (session_status() === PHP_SESSION_ACTIVE)
     session_write_close();
   header('Location: cart');
@@ -110,6 +117,13 @@ SQL;
 
       $pdo->commit();
       $_SESSION['cart'] = [];
+
+      // Clear DB cart if logged in
+      if (isCustomer()) {
+        $stmtDB = $pdo->prepare("DELETE FROM keranjang WHERE id_pelanggan = :cid");
+        $stmtDB->execute([':cid' => $_SESSION['customer_id']]);
+      }
+
       $success = "Checkout successful. Transaction ID: $id_transaksi";
     } catch (Exception $e) {
       $pdo->rollBack();
@@ -138,6 +152,12 @@ if ($action === 'update_qty' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $qty = max(1, min($qty, $stok));
     $_SESSION['cart'][$id] = $qty;
+
+    // Persist to DB if logged in
+    if (isCustomer()) {
+      $stmt = $pdo->prepare("UPDATE keranjang SET qty = :qty WHERE id_pelanggan = :cid AND id_produk = :pid");
+      $stmt->execute([':qty' => $qty, ':cid' => $_SESSION['customer_id'], ':pid' => $id]);
+    }
 
     // Prepare response data
     $stmtC = $pdo->prepare("SELECT harga FROM produk WHERE id_produk = :id");
@@ -556,7 +576,7 @@ if (!empty($_SESSION['cart'])) {
           <div class="va-display-container">
             <span class="va-label">${bank} Virtual Account</span>
             <div class="va-number">${vaNumber}</div>
-            <span class="va-copy-hint">Copy this number and complete yourpayment</span>
+            <span class="va-copy-hint">Copy this number and complete your payment</span>
           </div>
         `;
         successHeader.textContent = 'Order Reserved';

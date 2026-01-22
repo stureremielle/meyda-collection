@@ -22,6 +22,15 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 require_once __DIR__ . '/config.php';
 
+// Session Timeout Logic (5 minutes = 300 seconds)
+define('SESSION_TIMEOUT', 300);
+
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > SESSION_TIMEOUT)) {
+    // Session expired
+    logout('login.php?timeout=1');
+}
+$_SESSION['last_activity'] = time();
+
 function isLoggedIn()
 {
     return !empty($_SESSION['user_type']); // 'customer' or 'staff'
@@ -70,20 +79,23 @@ function customerLogin($email, $password)
         $custId = $customer['id_pelanggan'];
 
         // Merge Logic: if guest cart exists, merge it into the customer's saved cart
-        if (!isset($_SESSION['carts'][$custId])) {
-            $_SESSION['carts'][$custId] = [];
-        }
-
         if (!empty($_SESSION['cart'])) {
-            // Merge guest items into customer slot
+            $stmtM = $pdo->prepare("INSERT INTO keranjang (id_pelanggan, id_produk, qty) VALUES (:id_pelanggan, :id_produk, :qty) ON DUPLICATE KEY UPDATE qty = qty + VALUES(qty)");
             foreach ($_SESSION['cart'] as $pid => $qty) {
-                $_SESSION['carts'][$custId][$pid] = ($_SESSION['carts'][$custId][$pid] ?? 0) + $qty;
+                $stmtM->execute([
+                    ':id_pelanggan' => $custId,
+                    ':id_produk' => $pid,
+                    ':qty' => $qty
+                ]);
             }
-            // Clear transient cart after merge if desired, or let it be overwritten by load
         }
 
-        // Load saved/merged cart for this customer
-        $_SESSION['cart'] = $_SESSION['carts'][$custId];
+        // Fetch items from DB to populate session cart
+        $stmtF = $pdo->prepare("SELECT id_produk, qty FROM keranjang WHERE id_pelanggan = :id");
+        $stmtF->execute([':id' => $custId]);
+        $dbCart = $stmtF->fetchAll(PDO::FETCH_KEY_PAIR);
+
+        $_SESSION['cart'] = $dbCart;
         $_SESSION['cart_owner'] = $custId;
 
         return true;
@@ -123,17 +135,7 @@ function staffLogin($username, $password)
 
 function logout($redirect = 'index.php')
 {
-    // Remove only authentication-related keys and clear transient cart
-    $cartOwner = $_SESSION['cart_owner'] ?? null;
-
-    // Save customer's cart into persistent in-session storage if present
-    if ($cartOwner && isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
-        if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts']))
-            $_SESSION['carts'] = [];
-        $_SESSION['carts'][$cartOwner] = $_SESSION['cart'];
-    }
-
-    // Remove all authentication-related keys
+    // Clear the specific session keys
     unset($_SESSION['user_type']);
     unset($_SESSION['customer_id']);
     unset($_SESSION['customer_name']);
@@ -142,16 +144,14 @@ function logout($redirect = 'index.php')
     unset($_SESSION['staff_name']);
     unset($_SESSION['staff_role']);
     unset($_SESSION['cart_owner']);
-
-    // Clear transient cart so guest has empty cart
-    $_SESSION['cart'] = [];
+    unset($_SESSION['cart']);
 
     // Regenerate session id to avoid session fixation
     if (function_exists('session_regenerate_id')) {
         session_regenerate_id(true);
     }
 
-    // Destroy all session data
+    // Destroy session completely
     $_SESSION = array();
 
     // Delete the session cookie if it exists

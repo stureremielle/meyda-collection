@@ -6,6 +6,10 @@ if (isset($_GET['logout'])) {
 }
 
 $error = null;
+$success = null;
+if (isset($_GET['timeout'])) {
+  $success = "Your session has expired due to inactivity. Please login again.";
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = trim($_POST['email'] ?? '');
@@ -51,8 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </p>
         </div>
 
-        <?php if (isset($error)): ?>
+        <?php if (!empty($error)): ?>
           <div class="alert alert-error"><?php echo h($error); ?></div>
+        <?php endif; ?>
+        <?php if (!empty($success)): ?>
+          <div class="alert alert-success"><?php echo h($success); ?></div>
         <?php endif; ?>
 
         <form method="post" class="login-form">
@@ -73,6 +80,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </svg>
               </button>
             </div>
+          </div>
+          <div style="text-align: right; margin-bottom: 24px;">
+            <a href="forgot_password" class="link" style="font-size: 14px;">Forgot Password?</a>
           </div>
           <button type="submit" class="btn-primary">Login</button>
         </form>

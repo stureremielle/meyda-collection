@@ -6,6 +6,10 @@ if (isset($_GET['logout'])) {
 }
 
 $error = null;
+$success = null;
+if (isset($_GET['timeout'])) {
+    $success = "Admin session expired. Please re-authenticate.";
+}
 
 // Simple rate limiting: limit login attempts
 $max_attempts = 5;
@@ -107,6 +111,9 @@ if (count($recent_attempts) >= $max_attempts) {
 
         <?php if (!empty($error)): ?>
           <div class="alert alert-error"><?php echo h($error); ?></div>
+        <?php endif; ?>
+        <?php if (!empty($success)): ?>
+          <div class="alert alert-success"><?php echo h($success); ?></div>
         <?php endif; ?>
 
         <form method="post" class="login-form">
