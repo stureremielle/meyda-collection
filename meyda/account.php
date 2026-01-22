@@ -523,7 +523,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
         <?php elseif ($viewId > 0 && !empty($transDetail)): ?>
             <div class="detail-header">
                 <h3 class="section-title">Order #<?php echo $viewId; ?> Details</h3>
-                <a href="account.php" class="action-link">Back to Orders</a>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <a href="receipt.php?id=<?php echo $viewId; ?>" target="_blank" class="action-link" style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                        Print Receipt
+                    </a>
+                    <a href="account.php" class="action-link">Back to Orders</a>
+                </div>
             </div>
             
             <div class="details-list">
@@ -583,7 +589,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="account.php?view=<?php echo $t['id_transaksi']; ?>" class="action-link">View Details</a>
+                                        <div style="display: flex; gap: 12px;">
+                                            <a href="account.php?view=<?php echo $t['id_transaksi']; ?>" class="action-link">View</a>
+                                            <a href="receipt.php?id=<?php echo $t['id_transaksi']; ?>" target="_blank" class="action-link" style="color: var(--muted);">Receipt</a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

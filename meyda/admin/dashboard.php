@@ -51,7 +51,7 @@ $recentTransactions = $stmtRecent->fetchAll();
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Dashboard - MeyDa Admin</title>
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="<?php echo asset('styles.css'); ?>">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .dashboard-layout {

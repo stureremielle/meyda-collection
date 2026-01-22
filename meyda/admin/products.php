@@ -152,7 +152,7 @@ if ($editId > 0) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Manage Products - MeyDa Admin</title>
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="<?php echo asset('styles.css'); ?>">
   <style>
     .products-layout {
       max-width: 1400px;

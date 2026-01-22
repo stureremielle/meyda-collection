@@ -17,9 +17,9 @@ function renderHeroCard($options = []) {
     $options = array_merge($defaults, $options);
     
     $carousel_images = [
-        'hero_images/1.jpg',
-        'hero_images/2.jpg', 
-        'hero_images/3.jpg'
+        asset('hero_images/1.jpg'),
+        asset('hero_images/2.jpg'), 
+        asset('hero_images/3.jpg')
     ];
     
     ob_start();

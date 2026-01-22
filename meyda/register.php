@@ -46,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Register - MeyDa Collection</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="<?php echo asset('styles.css'); ?>">
+</head>
 <body class="auth-page">
   <main class="auth-center">
     <a href="index.php" class="back-button">

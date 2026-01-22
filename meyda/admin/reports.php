@@ -22,7 +22,7 @@ $months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', '
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Sales Reports - MeyDa Admin</title>
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="<?php echo asset('styles.css'); ?>">
   <style>
     .reports-layout {
       max-width: 1400px;
