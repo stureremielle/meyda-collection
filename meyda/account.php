@@ -21,23 +21,23 @@ $transactions = $stmt->fetchAll();
 $totalOrders = count($transactions);
 $totalSpent = 0;
 foreach ($transactions as $t) {
-    if ($t['status'] === 'paid') {
-        $totalSpent += $t['total'];
-    }
+  if ($t['status'] === 'paid') {
+    $totalSpent += $t['total'];
+  }
 }
 
 // Check if viewing detail
-$viewId = (int)($_GET['view'] ?? 0);
+$viewId = (int) ($_GET['view'] ?? 0);
 $transDetail = null;
 if ($viewId > 0) {
-    $stmtDetail = $pdo->prepare("
+  $stmtDetail = $pdo->prepare("
         SELECT d.id_detail, d.qty, d.harga_satuan, d.subtotal, pr.nama_produk, pr.gambar
         FROM detail_transaksi d
         JOIN produk pr ON d.id_produk = pr.id_produk
         WHERE d.id_transaksi = :id
     ");
-    $stmtDetail->execute([':id' => $viewId]);
-    $transDetail = $stmtDetail->fetchAll();
+  $stmtDetail->execute([':id' => $viewId]);
+  $transDetail = $stmtDetail->fetchAll();
 }
 
 $tab = $_GET['tab'] ?? 'dashboard';
@@ -46,24 +46,25 @@ $error = null;
 
 // Handle address update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'update_address') {
-    $newAddress = trim($_POST['address'] ?? '');
-    if (empty($newAddress)) {
-        $error = "Address cannot be empty.";
-    } else {
-        try {
-            $upd = $pdo->prepare("UPDATE pelanggan SET alamat = :alamat WHERE id_pelanggan = :id");
-            $upd->execute([':alamat' => $newAddress, ':id' => $customerId]);
-            $_SESSION['customer_address'] = $newAddress;
-            $success = "Address updated successfully.";
-            $tab = 'settings'; // Stay on settings tab after update
-        } catch (Exception $e) {
-            $error = "Failed to update address: " . $e->getMessage();
-        }
+  $newAddress = trim($_POST['address'] ?? '');
+  if (empty($newAddress)) {
+    $error = "Address cannot be empty.";
+  } else {
+    try {
+      $upd = $pdo->prepare("UPDATE pelanggan SET alamat = :alamat WHERE id_pelanggan = :id");
+      $upd->execute([':alamat' => $newAddress, ':id' => $customerId]);
+      $_SESSION['customer_address'] = $newAddress;
+      $success = "Address updated successfully.";
+      $tab = 'settings'; // Stay on settings tab after update
+    } catch (Exception $e) {
+      $error = "Failed to update address: " . $e->getMessage();
     }
+  }
 }
 ?>
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -208,7 +209,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
     /* Main Content Styles */
     .account-main {
       flex: 1;
-      min-width: 0; /* Important for flex child with overflow */
+      min-width: 0;
+      /* Important for flex child with overflow */
     }
 
     .dashboard-header {
@@ -294,9 +296,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
       text-transform: uppercase;
     }
 
-    .status-paid { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
-    .status-pending { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
-    .status-cancelled { background: rgba(248, 113, 113, 0.1); color: #f87171; }
+    .status-paid {
+      background: rgba(74, 222, 128, 0.1);
+      color: #4ade80;
+    }
+
+    .status-pending {
+      background: rgba(251, 191, 36, 0.1);
+      color: #fbbf24;
+    }
+
+    .status-cancelled {
+      background: rgba(248, 113, 113, 0.1);
+      color: #f87171;
+    }
 
     .action-link {
       color: var(--accent);
@@ -323,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
       display: flex;
       gap: 20px;
       padding: 16px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .product-img {
@@ -361,7 +374,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
     .address-card {
       margin-top: 32px;
       padding: 20px;
-      background: rgba(255,255,255,0.03);
+      background: rgba(255, 255, 255, 0.03);
       border-radius: 16px;
       border: 1px solid var(--md-sys-color-outline);
     }
@@ -421,9 +434,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
     }
   </style>
 </head>
+
 <body class="account-page">
-  <a href="index.php" class="back-button">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+  <a href="index" class="back-button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
     Back to Home
   </a>
 
@@ -437,20 +455,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
         </div>
         <h3 class="profile-name"><?php echo h($_SESSION['customer_name']); ?></h3>
         <p class="profile-email"><?php echo h($_SESSION['customer_email']); ?></p>
-        
+
         <ul class="profile-nav">
-          <li><a href="account.php?tab=dashboard" class="<?php echo ($tab == 'dashboard') ? 'active' : ''; ?>">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-            Dashboard
-          </a></li>
-          <li><a href="account.php?tab=settings" class="<?php echo ($tab == 'settings') ? 'active' : ''; ?>">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            Settings
-          </a></li>
-          <li><a href="auth.php?action=logout" style="color: #f87171;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            Logout
-          </a></li>
+          <li><a href="account?tab=dashboard" class="<?php echo ($tab == 'dashboard') ? 'active' : ''; ?>">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              </svg>
+              Dashboard
+            </a></li>
+          <li><a href="account?tab=settings" class="<?php echo ($tab == 'settings') ? 'active' : ''; ?>">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Settings
+            </a></li>
+          <li><a href="auth?action=logout" style="color: #f87171;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Logout
+            </a></li>
         </ul>
 
         <?php if (!empty($_SESSION['customer_address'])): ?>
@@ -465,8 +492,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
     <!-- Main Content -->
     <main class="account-main">
       <div class="dashboard-header">
-        <h2 style="font-family: 'Garamond', serif; font-size: 48px; margin-bottom: 8px;">Hello, <?php echo explode(' ', h($_SESSION['customer_name']))[0]; ?>!</h2>
-        <p style="color: var(--muted); font-size: 18px;">Welcome back to your dashboard. Here's what's happening with your account.</p>
+        <h2 style="font-family: 'Garamond', serif; font-size: 48px; margin-bottom: 8px;">Hello,
+          <?php echo explode(' ', h($_SESSION['customer_name']))[0]; ?>!</h2>
+        <p style="color: var(--muted); font-size: 18px;">Welcome back to your dashboard. Here's what's happening with
+          your account.</p>
       </div>
 
       <div class="stats-grid">
@@ -486,123 +515,138 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
 
       <div class="content-card">
         <?php if ($success): ?>
-            <div class="alert alert-success"><?php echo h($success); ?></div>
+          <div class="alert alert-success"><?php echo h($success); ?></div>
         <?php endif; ?>
         <?php if ($error): ?>
-            <div class="alert alert-error"><?php echo h($error); ?></div>
+          <div class="alert alert-error"><?php echo h($error); ?></div>
         <?php endif; ?>
 
         <?php if ($tab === 'settings'): ?>
-            <h3 class="section-title">Account Settings</h3>
-            <p style="color: var(--muted); margin-bottom: 32px;">Update your personal information and shipping details.</p>
-            
-            <form method="post" class="settings-form">
-                <input type="hidden" name="action" value="update_address">
-                
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" class="form-control" value="<?php echo h($_SESSION['customer_name']); ?>" disabled style="opacity: 0.6; cursor: not-allowed;">
-                    <small style="color: var(--muted); display: block; margin-top: 4px;">Name cannot be changed at this time.</small>
-                </div>
+          <h3 class="section-title">Account Settings</h3>
+          <p style="color: var(--muted); margin-bottom: 32px;">Update your personal information and shipping details.</p>
 
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" class="form-control" value="<?php echo h($_SESSION['customer_email']); ?>" disabled style="opacity: 0.6; cursor: not-allowed;">
-                </div>
+          <form method="post" class="settings-form">
+            <input type="hidden" name="action" value="update_address">
 
-                <div class="form-group">
-                    <label>Shipping Address</label>
-                    <textarea name="address" class="form-control" style="min-height: 120px;" required><?php echo h($_SESSION['customer_address'] ?? ''); ?></textarea>
-                </div>
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" class="form-control" value="<?php echo h($_SESSION['customer_name']); ?>" disabled
+                style="opacity: 0.6; cursor: not-allowed;">
+              <small style="color: var(--muted); display: block; margin-top: 4px;">Name cannot be changed at this
+                time.</small>
+            </div>
 
-                <div style="margin-top: 32px;">
-                    <button type="submit" class="btn-save">Save Changes</button>
-                </div>
-            </form>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" class="form-control" value="<?php echo h($_SESSION['customer_email']); ?>" disabled
+                style="opacity: 0.6; cursor: not-allowed;">
+            </div>
+
+            <div class="form-group">
+              <label>Shipping Address</label>
+              <textarea name="address" class="form-control" style="min-height: 120px;"
+                required><?php echo h($_SESSION['customer_address'] ?? ''); ?></textarea>
+            </div>
+
+            <div style="margin-top: 32px;">
+              <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+          </form>
 
         <?php elseif ($viewId > 0 && !empty($transDetail)): ?>
-            <div class="detail-header">
-                <h3 class="section-title">Order #<?php echo $viewId; ?> Details</h3>
-                <div style="display: flex; gap: 16px; align-items: center;">
-                    <a href="receipt.php?id=<?php echo $viewId; ?>" target="_blank" class="action-link" style="display: flex; align-items: center; gap: 8px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                        Print Receipt
-                    </a>
-                    <a href="account.php" class="action-link">Back to Orders</a>
-                </div>
+          <div class="detail-header">
+            <h3 class="section-title">Order #<?php echo $viewId; ?> Details</h3>
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <a href="receipt.php?id=<?php echo $viewId; ?>" target="_blank" class="action-link"
+                style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9V2h12v7"></path>
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                  <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                Print Receipt
+              </a>
+              <a href="account" class="action-link">Back to Orders</a>
             </div>
-            
-            <div class="details-list">
-                <?php $subtotalTotal = 0; foreach ($transDetail as $d): $subtotalTotal += $d['subtotal']; ?>
-                    <div class="product-list-item">
-                        <?php 
-                            $imgPath = !empty($d['gambar']) ? h($d['gambar']) : 'assets/placeholder.jpg';
-                            if (!empty($d['gambar']) && !str_contains($d['gambar'], '/') && !str_contains($d['gambar'], '\\')) {
-                                $imgPath = 'uploads/' . h($d['gambar']);
-                            }
-                        ?>
-                        <img src="<?php echo $imgPath; ?>" class="product-img" alt="">
-                        <div class="product-info">
-                            <div class="product-name"><?php echo h($d['nama_produk']); ?></div>
-                            <div class="product-price"><?php echo (int)$d['qty']; ?> x Rp <?php echo number_format($d['harga_satuan'], 0, ',', '.'); ?></div>
-                        </div>
-                        <div style="font-weight: 600;">Rp <?php echo number_format($d['subtotal'], 0, ',', '.'); ?></div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
+          </div>
 
-            <div class="total-summary">
-                <span>Total: Rp <?php echo number_format($subtotalTotal, 0, ',', '.'); ?></span>
-            </div>
+          <div class="details-list">
+            <?php $subtotalTotal = 0;
+            foreach ($transDetail as $d):
+              $subtotalTotal += $d['subtotal']; ?>
+              <div class="product-list-item">
+                <?php
+                $imgPath = !empty($d['gambar']) ? h($d['gambar']) : 'assets/placeholder.jpg';
+                if (!empty($d['gambar']) && !str_contains($d['gambar'], '/') && !str_contains($d['gambar'], '\\')) {
+                  $imgPath = 'uploads/' . h($d['gambar']);
+                }
+                ?>
+                <img src="<?php echo $imgPath; ?>" class="product-img" alt="">
+                <div class="product-info">
+                  <div class="product-name"><?php echo h($d['nama_produk']); ?></div>
+                  <div class="product-price"><?php echo (int) $d['qty']; ?> x Rp
+                    <?php echo number_format($d['harga_satuan'], 0, ',', '.'); ?></div>
+                </div>
+                <div style="font-weight: 600;">Rp <?php echo number_format($d['subtotal'], 0, ',', '.'); ?></div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+
+          <div class="total-summary">
+            <span>Total: Rp <?php echo number_format($subtotalTotal, 0, ',', '.'); ?></span>
+          </div>
 
         <?php else: ?>
-            <h3 class="section-title">Order History</h3>
-            
-            <?php if (empty($transactions)): ?>
-                <div style="text-align: center; padding: 40px 0;">
-                    <p style="color: var(--muted);">You haven't made any orders yet.</p>
-                    <a href="index.php#products" class="stat-value" style="font-size: 18px; text-decoration: none; display: block; margin-top: 16px;">Start Shopping →</a>
-                </div>
-            <?php else: ?>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Date</th>
-                                <th>Total</th>
-                                <th>Items</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($transactions as $t): ?>
-                                <tr>
-                                    <td style="font-weight: 600;">#<?php echo (int)$t['id_transaksi']; ?></td>
-                                    <td style="color: var(--muted);"><?php echo date('M d, Y', strtotime($t['tanggal'])); ?></td>
-                                    <td style="font-weight: 600;">Rp <?php echo number_format($t['total'], 0, ',', '.'); ?></td>
-                                    <td><?php echo (int)$t['item_count']; ?></td>
-                                    <td>
-                                        <span class="status-pill status-<?php echo h($t['status']); ?>">
-                                            <?php echo ucfirst(h($t['status'])); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div style="display: flex; gap: 12px;">
-                                            <a href="account.php?view=<?php echo $t['id_transaksi']; ?>" class="action-link">View</a>
-                                            <a href="receipt.php?id=<?php echo $t['id_transaksi']; ?>" target="_blank" class="action-link" style="color: var(--muted);">Receipt</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
+          <h3 class="section-title">Order History</h3>
+
+          <?php if (empty($transactions)): ?>
+            <div style="text-align: center; padding: 40px 0;">
+              <p style="color: var(--muted);">You haven't made any orders yet.</p>
+              <a href="index#products" class="stat-value"
+                style="font-size: 18px; text-decoration: none; display: block; margin-top: 16px;">Start Shopping →</a>
+            </div>
+          <?php else: ?>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($transactions as $t): ?>
+                    <tr>
+                      <td style="font-weight: 600;">#<?php echo (int) $t['id_transaksi']; ?></td>
+                      <td style="color: var(--muted);"><?php echo date('M d, Y', strtotime($t['tanggal'])); ?></td>
+                      <td style="font-weight: 600;">Rp <?php echo number_format($t['total'], 0, ',', '.'); ?></td>
+                      <td><?php echo (int) $t['item_count']; ?></td>
+                      <td>
+                        <span class="status-pill status-<?php echo h($t['status']); ?>">
+                          <?php echo ucfirst(h($t['status'])); ?>
+                        </span>
+                      </td>
+                      <td>
+                        <div style="display: flex; gap: 12px;">
+                          <a href="account?view=<?php echo $t['id_transaksi']; ?>" class="action-link">View</a>
+                          <a href="receipt.php?id=<?php echo $t['id_transaksi']; ?>" target="_blank" class="action-link"
+                            style="color: var(--muted);">Receipt</a>
+                        </div>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+          <?php endif; ?>
         <?php endif; ?>
-    </div>
+      </div>
     </main>
   </div>
 </body>
+
 </html>

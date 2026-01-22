@@ -8,134 +8,134 @@ $action = $_POST["action"] ?? ($_GET["action"] ?? "home");
 
 
 if (!isset($_SESSION["cart"])) {
-    $_SESSION["cart"] = [];
+  $_SESSION["cart"] = [];
 }
 
 if ($action === "add" && $_SERVER["REQUEST_METHOD"] === "POST") {
-    $id = (int) ($_POST["id"] ?? 0);
-    $qty = max(1, (int) ($_POST["qty"] ?? 1));
-    if ($id > 0) {
-        if (!isset($_SESSION["cart"][$id])) {
-            $_SESSION["cart"][$id] = 0;
-        }
-        $_SESSION["cart"][$id] += $qty;
+  $id = (int) ($_POST["id"] ?? 0);
+  $qty = max(1, (int) ($_POST["qty"] ?? 1));
+  if ($id > 0) {
+    if (!isset($_SESSION["cart"][$id])) {
+      $_SESSION["cart"][$id] = 0;
     }
+    $_SESSION["cart"][$id] += $qty;
+  }
 
-    // Check if this is an AJAX request
-    if (
-        !empty($_SERVER["HTTP_X_REQUESTED_WITH"]) &&
-        strtolower($_SERVER["HTTP_X_REQUESTED_WITH"]) == "xmlhttprequest"
-    ) {
-        // For AJAX requests, just return JSON response
-        header("Content-Type: application/json");
-        echo json_encode([
-            "success" => true,
-            "cart_count" => array_sum($_SESSION["cart"] ?? []),
-        ]);
-        exit();
-    } else {
-        // For regular form submissions, redirect as before
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_write_close();
-        }
-        header("Location: index.php");
-        exit();
+  // Check if this is an AJAX request
+  if (
+    !empty($_SERVER["HTTP_X_REQUESTED_WITH"]) &&
+    strtolower($_SERVER["HTTP_X_REQUESTED_WITH"]) == "xmlhttprequest"
+  ) {
+    // For AJAX requests, just return JSON response
+    header("Content-Type: application/json");
+    echo json_encode([
+      "success" => true,
+      "cart_count" => array_sum($_SESSION["cart"] ?? []),
+    ]);
+    exit();
+  } else {
+    // For regular form submissions, redirect as before
+    if (session_status() === PHP_SESSION_ACTIVE) {
+      session_write_close();
     }
+    header("Location: index.php");
+    exit();
+  }
 }
 
 if ($action === "remove") {
-    $id = (int) ($_GET["id"] ?? 0);
-    if ($id > 0 && isset($_SESSION["cart"][$id])) {
-        unset($_SESSION["cart"][$id]);
-    }
-    if (session_status() === PHP_SESSION_ACTIVE) {
-        session_write_close();
-    }
-    header("Location: index.php?action=cart");
-    exit();
+  $id = (int) ($_GET["id"] ?? 0);
+  if ($id > 0 && isset($_SESSION["cart"][$id])) {
+    unset($_SESSION["cart"][$id]);
+  }
+  if (session_status() === PHP_SESSION_ACTIVE) {
+    session_write_close();
+  }
+  header("Location: index?action=cart");
+  exit();
 }
 
 if ($action === "checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
-    // Only logged-in customers can checkout
-    if (!isCustomer()) {
-        $error = "Please login as a customer to checkout.";
-    } elseif (empty($_SESSION["cart"])) {
-        $error = "Your cart is empty.";
-    } else {
-        try {
-            $pdo->beginTransaction();
-            // Determine user/staff relationship: if staff is logged in, set id_user to staff id; otherwise use DEFAULT_USER_ID
-            $customerId = isCustomer() ? $_SESSION["customer_id"] : null;
-            $idUser = isStaff()
-                ? (int) $_SESSION["staff_id"]
-                : (int) DEFAULT_USER_ID;
+  // Only logged-in customers can checkout
+  if (!isCustomer()) {
+    $error = "Please login as a customer to checkout.";
+  } elseif (empty($_SESSION["cart"])) {
+    $error = "Your cart is empty.";
+  } else {
+    try {
+      $pdo->beginTransaction();
+      // Determine user/staff relationship: if staff is logged in, set id_user to staff id; otherwise use DEFAULT_USER_ID
+      $customerId = isCustomer() ? $_SESSION["customer_id"] : null;
+      $idUser = isStaff()
+        ? (int) $_SESSION["staff_id"]
+        : (int) DEFAULT_USER_ID;
 
-            // Verify id_user exists in the database; if not, try to fallback to any admin/staff account
-            $chk = $pdo->prepare(
-                "SELECT id_user FROM `user` WHERE id_user = :id LIMIT 1",
-            );
-            $chk->execute([":id" => $idUser]);
-            $found = $chk->fetchColumn();
-            if (!$found) {
-                $chk2 = $pdo->query(
-                    "SELECT id_user FROM `user` WHERE role IN ('admin','staff') ORDER BY id_user LIMIT 1",
-                );
-                $fallback = $chk2->fetchColumn();
-                if ($fallback) {
-                    $idUser = (int) $fallback;
-                } else {
-                    throw new Exception(
-                        "No staff/admin account found. Please contact an administrator.",
-                    );
-                }
-            }
+      // Verify id_user exists in the database; if not, try to fallback to any admin/staff account
+      $chk = $pdo->prepare(
+        "SELECT id_user FROM `user` WHERE id_user = :id LIMIT 1",
+      );
+      $chk->execute([":id" => $idUser]);
+      $found = $chk->fetchColumn();
+      if (!$found) {
+        $chk2 = $pdo->query(
+          "SELECT id_user FROM `user` WHERE role IN ('admin','staff') ORDER BY id_user LIMIT 1",
+        );
+        $fallback = $chk2->fetchColumn();
+        if ($fallback) {
+          $idUser = (int) $fallback;
+        } else {
+          throw new Exception(
+            "No staff/admin account found. Please contact an administrator.",
+          );
+        }
+      }
 
-            $stmt = $pdo->prepare(
-                "INSERT INTO transaksi (id_user, id_pelanggan, tanggal, total, status) VALUES (:id_user, :id_pelanggan, NOW(), 0, 'paid')",
-            );
-            $stmt->execute([
-                ":id_user" => $idUser,
-                ":id_pelanggan" => $customerId,
-            ]);
-            $id_transaksi = $pdo->lastInsertId();
+      $stmt = $pdo->prepare(
+        "INSERT INTO transaksi (id_user, id_pelanggan, tanggal, total, status) VALUES (:id_user, :id_pelanggan, NOW(), 0, 'paid')",
+      );
+      $stmt->execute([
+        ":id_user" => $idUser,
+        ":id_pelanggan" => $customerId,
+      ]);
+      $id_transaksi = $pdo->lastInsertId();
 
-            $total = 0.0;
-            $stmtP = $pdo->prepare(
-                "SELECT id_produk, nama_produk, harga, stok FROM produk WHERE id_produk = :id",
-            );
-            $stmtInsertDetail = $pdo->prepare(
-                "INSERT INTO detail_transaksi (id_transaksi, id_produk, qty, harga_satuan, subtotal) VALUES (:id_transaksi, :id_produk, :qty, :harga, :subtotal)",
-            );
-            $stmtUpdateStok = $pdo->prepare(
-                "UPDATE produk SET stok = GREATEST(stok - :qty, 0) WHERE id_produk = :id",
-            );
+      $total = 0.0;
+      $stmtP = $pdo->prepare(
+        "SELECT id_produk, nama_produk, harga, stok FROM produk WHERE id_produk = :id",
+      );
+      $stmtInsertDetail = $pdo->prepare(
+        "INSERT INTO detail_transaksi (id_transaksi, id_produk, qty, harga_satuan, subtotal) VALUES (:id_transaksi, :id_produk, :qty, :harga, :subtotal)",
+      );
+      $stmtUpdateStok = $pdo->prepare(
+        "UPDATE produk SET stok = GREATEST(stok - :qty, 0) WHERE id_produk = :id",
+      );
 
-            foreach ($_SESSION["cart"] as $pid => $qty) {
-                $stmtP->execute([":id" => $pid]);
-                $p = $stmtP->fetch();
-                if (!$p) {
-                    throw new Exception("Product not found: " . $pid);
-                }
-                $harga = (float) $p["harga"];
-                $subtotal = $harga * $qty;
-                $stmtInsertDetail->execute([
-                    ":id_transaksi" => $id_transaksi,
-                    ":id_produk" => $pid,
-                    ":qty" => $qty,
-                    ":harga" => $harga,
-                    ":subtotal" => $subtotal,
-                ]);
-                $stmtUpdateStok->execute([":qty" => $qty, ":id" => $pid]);
-                $total += $subtotal;
-            }
+      foreach ($_SESSION["cart"] as $pid => $qty) {
+        $stmtP->execute([":id" => $pid]);
+        $p = $stmtP->fetch();
+        if (!$p) {
+          throw new Exception("Product not found: " . $pid);
+        }
+        $harga = (float) $p["harga"];
+        $subtotal = $harga * $qty;
+        $stmtInsertDetail->execute([
+          ":id_transaksi" => $id_transaksi,
+          ":id_produk" => $pid,
+          ":qty" => $qty,
+          ":harga" => $harga,
+          ":subtotal" => $subtotal,
+        ]);
+        $stmtUpdateStok->execute([":qty" => $qty, ":id" => $pid]);
+        $total += $subtotal;
+      }
 
-            $stmtUp = $pdo->prepare(
-                "UPDATE transaksi SET total = :total WHERE id_transaksi = :id",
-            );
-            $stmtUp->execute([":total" => $total, ":id" => $id_transaksi]);
+      $stmtUp = $pdo->prepare(
+        "UPDATE transaksi SET total = :total WHERE id_transaksi = :id",
+      );
+      $stmtUp->execute([":total" => $total, ":id" => $id_transaksi]);
 
-            // update laporan for current month (use heredoc to avoid accidental escaping)
-            $sqlL = <<<'SQL'
+      // update laporan for current month (use heredoc to avoid accidental escaping)
+      $sqlL = <<<'SQL'
             INSERT INTO laporan (periode_year, periode_month, total_transaksi, total_pendapatan, total_item_terjual)
             SELECT YEAR(t.tanggal), MONTH(t.tanggal),
                    COUNT(DISTINCT t.id_transaksi),
@@ -151,64 +151,65 @@ if ($action === "checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
               total_item_terjual=VALUES(total_item_terjual),
               generated_at=CURRENT_TIMESTAMP
 SQL;
-            $stmtL = $pdo->prepare($sqlL);
-            $stmtL->execute();
+      $stmtL = $pdo->prepare($sqlL);
+      $stmtL->execute();
 
-            $pdo->commit();
-            $_SESSION["cart"] = [];
-            $success = "Checkout successful. Transaction ID: $id_transaksi";
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            $error = "An error occurred during checkout: " . $e->getMessage();
-        }
+      $pdo->commit();
+      $_SESSION["cart"] = [];
+      $success = "Checkout successful. Transaction ID: $id_transaksi";
+    } catch (Exception $e) {
+      $pdo->rollBack();
+      $error = "An error occurred during checkout: " . $e->getMessage();
     }
+  }
 }
 
 // Handle cart count API request
 if ($action === "cart_count") {
-    header("Content-Type: application/json");
-    echo json_encode(["count" => array_sum($_SESSION["cart"] ?? [])]);
-    exit();
+  header("Content-Type: application/json");
+  echo json_encode(["count" => array_sum($_SESSION["cart"] ?? [])]);
+  exit();
 }
 
 $stmt = $pdo->query(
-    "SELECT p.id_produk, p.nama_produk, p.deskripsi, p.harga, p.stok, p.gambar, k.nama_kategori FROM produk p JOIN kategori_produk k ON p.id_kategori = k.id_kategori ORDER BY p.created_at LIMIT 12",
+  "SELECT p.id_produk, p.nama_produk, p.deskripsi, p.harga, p.stok, p.gambar, k.nama_kategori FROM produk p JOIN kategori_produk k ON p.id_kategori = k.id_kategori ORDER BY p.created_at LIMIT 12",
 );
 $products = $stmt->fetchAll();
 
 $cart_items = [];
 $cart_total = 0.0;
 if (!empty($_SESSION["cart"])) {
-    $ids = array_keys($_SESSION["cart"]);
-    // prepare placeholders
-    $placeholders = implode(",", array_fill(0, count($ids), "?"));
-    $stmtC = $pdo->prepare(
-        "SELECT id_produk, nama_produk, harga FROM produk WHERE id_produk IN ($placeholders)",
-    );
-    $stmtC->execute($ids);
-    $rows = $stmtC->fetchAll();
-    $rowsAssoc = [];
-    foreach ($rows as $r) {
-        $rowsAssoc[$r["id_produk"]] = $r;
+  $ids = array_keys($_SESSION["cart"]);
+  // prepare placeholders
+  $placeholders = implode(",", array_fill(0, count($ids), "?"));
+  $stmtC = $pdo->prepare(
+    "SELECT id_produk, nama_produk, harga FROM produk WHERE id_produk IN ($placeholders)",
+  );
+  $stmtC->execute($ids);
+  $rows = $stmtC->fetchAll();
+  $rowsAssoc = [];
+  foreach ($rows as $r) {
+    $rowsAssoc[$r["id_produk"]] = $r;
+  }
+  foreach ($_SESSION["cart"] as $pid => $q) {
+    $p = $rowsAssoc[$pid] ?? null;
+    if ($p) {
+      $subtotal = $p["harga"] * $q;
+      $cart_items[] = [
+        "id" => $pid,
+        "nama" => $p["nama_produk"],
+        "qty" => $q,
+        "harga" => $p["harga"],
+        "subtotal" => $subtotal,
+      ];
+      $cart_total += $subtotal;
     }
-    foreach ($_SESSION["cart"] as $pid => $q) {
-        $p = $rowsAssoc[$pid] ?? null;
-        if ($p) {
-            $subtotal = $p["harga"] * $q;
-            $cart_items[] = [
-                "id" => $pid,
-                "nama" => $p["nama_produk"],
-                "qty" => $q,
-                "harga" => $p["harga"],
-                "subtotal" => $subtotal,
-            ];
-            $cart_total += $subtotal;
-        }
-    }
+  }
 }
 ?>
 <!doctype html>
 <html lang="id">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -216,6 +217,7 @@ if (!empty($_SESSION["cart"])) {
   <link rel="stylesheet" href="<?php echo asset('styles.css'); ?>">
   <link rel="stylesheet" href="<?php echo asset('product-card.css'); ?>">
 </head>
+
 <body>
   <header class="site-header">
     <div class="minimal-header-container">
@@ -227,17 +229,17 @@ if (!empty($_SESSION["cart"])) {
         <a href="#newsletter" class="header-link">newsletter</a>
       </div>
       <div class="header-nav-right">
-        <a href="cart.php" class="header-link">cart (<?php echo array_sum($_SESSION["cart"] ?? []); ?>)</a>
+        <a href="cart" class="header-link">cart (<?php echo array_sum($_SESSION["cart"] ?? []); ?>)</a>
         <?php if (isLoggedIn()): ?>
           <?php if (isCustomer()): ?>
-            <a href="account.php" class="header-link">account</a>
-            <a href="auth.php?action=logout" class="header-link">logout</a>
+            <a href="account" class="header-link">account</a>
+            <a href="auth?action=logout" class="header-link">logout</a>
           <?php elseif (isStaff()): ?>
-            <a href="admin/products.php" class="header-link">admin</a>
-            <a href="auth.php?action=logout" class="header-link">logout</a>
+            <a href="admin/products" class="header-link">admin</a>
+            <a href="auth?action=logout" class="header-link">logout</a>
           <?php endif; ?>
         <?php else: ?>
-          <a href="login.php?mode=customer" class="header-link">login</a>
+          <a href="login?mode=customer" class="header-link">login</a>
         <?php endif; ?>
       </div>
     </div>
@@ -255,10 +257,10 @@ if (!empty($_SESSION["cart"])) {
     // Include the HeroCard component
     require_once __DIR__ . "/HeroCard.php";
     echo renderHeroCard([
-        "headline" =>
-            "Discover our latest collection of premium fashion items designed to elevate your style.",
-        "slogan" => "",
-        "cta_text" => "Shop Now",
+      "headline" =>
+        "Discover our latest collection of premium fashion items designed to elevate your style.",
+      "slogan" => "",
+      "cta_text" => "Shop Now",
     ]);
 
     // Include the Features component
@@ -266,7 +268,7 @@ if (!empty($_SESSION["cart"])) {
     echo renderFeaturesBar();
     ?>
     <section class="our_collection">
-        <h2 id="products">Our Collection</h2>
+      <h2 id="products">Our Collection</h2>
     </section>
 
     <!-- Category Filter Section -->
@@ -277,12 +279,12 @@ if (!empty($_SESSION["cart"])) {
           <?php
           // Get unique categories
           $catStmt = $pdo->query(
-              "SELECT DISTINCT k.nama_kategori FROM kategori_produk k JOIN produk p ON k.id_kategori = p.id_kategori WHERE p.stok > 0 ORDER BY k.nama_kategori ASC",
+            "SELECT DISTINCT k.nama_kategori FROM kategori_produk k JOIN produk p ON k.id_kategori = p.id_kategori WHERE p.stok > 0 ORDER BY k.nama_kategori ASC",
           );
           $categories = $catStmt->fetchAll();
           foreach ($categories as $category): ?>
             <button class="category-pill" data-category="<?php echo h(
-                $category["nama_kategori"],
+              $category["nama_kategori"],
             ); ?>"><?php echo h($category["nama_kategori"]); ?></button>
           <?php endforeach;
           ?>
@@ -290,52 +292,52 @@ if (!empty($_SESSION["cart"])) {
       </div>
     </section>
 
-      <section class="products-grid" id="products" aria-label="Featured products">
-        <?php foreach ($products as $p): ?>
-          <article class="product-card" data-category="<?php echo h(
-              $p["nama_kategori"],
-          ); ?>">
-            <?php if (!empty($p["gambar"])): ?>
-              <img src="uploads/<?php echo h(
-                  $p["gambar"],
-              ); ?>" alt="<?php echo h(
-    $p["nama_produk"],
-); ?>" class="product-img-real">
-            <?php else: ?>
-              <div class="product-img">IMG</div>
-            <?php endif; ?>
-            <h3><?php echo h($p["nama_produk"]); ?></h3>
-            <p class="muted"><?php echo h($p["nama_kategori"]); ?></p>
-            <p class="desc"><?php echo h($p["deskripsi"]); ?></p>
-            <p class="price">Rp <?php echo number_format(
-                $p["harga"],
-                0,
-                ",",
-                ".",
-            ); ?></p>
-            <form class="add-to-cart-form" method="post" action="index.php" onsubmit="addToCart(event, <?php echo (int) $p[
-                "id_produk"
-            ]; ?>)">
-              <input type="hidden" name="action" value="add">
-              <input type="hidden" name="id" value="<?php echo (int) $p[
-                  "id_produk"
-              ]; ?>">
-              <div class="quantity-control">
-                <button type="button" class="qty-btn" onclick="adjustQuantity(this, -1)">-</button>
-                <input type="number" name="qty" value="1" min="1" max="<?php echo (int)$p['stok']; ?>" class="qty-input">
-                <button type="button" class="qty-btn" onclick="adjustQuantity(this, 1)">+</button>
-              </div>
-              <button type="submit" class="add-to-cart-btn no-text"<?php echo $p[
-                  "stok"
-              ] <= 0
-                  ? " disabled"
-                  : ""; ?> aria-label="<?php echo $p["stok"] > 0
-     ? "Add to Cart"
-     : "Out of Stock"; ?>"></button>
-            </form>
-          </article>
-        <?php endforeach; ?>
-      </section>
+    <section class="products-grid" id="products" aria-label="Featured products">
+      <?php foreach ($products as $p): ?>
+        <article class="product-card" data-category="<?php echo h(
+          $p["nama_kategori"],
+        ); ?>">
+          <?php if (!empty($p["gambar"])): ?>
+            <img src="uploads/<?php echo h(
+              $p["gambar"],
+            ); ?>" alt="<?php echo h(
+               $p["nama_produk"],
+             ); ?>" class="product-img-real">
+          <?php else: ?>
+            <div class="product-img">IMG</div>
+          <?php endif; ?>
+          <h3><?php echo h($p["nama_produk"]); ?></h3>
+          <p class="muted"><?php echo h($p["nama_kategori"]); ?></p>
+          <p class="desc"><?php echo h($p["deskripsi"]); ?></p>
+          <p class="price">Rp <?php echo number_format(
+            $p["harga"],
+            0,
+            ",",
+            ".",
+          ); ?></p>
+          <form class="add-to-cart-form" method="post" action="index.php" onsubmit="addToCart(event, <?php echo (int) $p[
+            "id_produk"
+          ]; ?>)">
+            <input type="hidden" name="action" value="add">
+            <input type="hidden" name="id" value="<?php echo (int) $p[
+              "id_produk"
+            ]; ?>">
+            <div class="quantity-control">
+              <button type="button" class="qty-btn" onclick="adjustQuantity(this, -1)">-</button>
+              <input type="number" name="qty" value="1" min="1" max="<?php echo (int) $p['stok']; ?>" class="qty-input">
+              <button type="button" class="qty-btn" onclick="adjustQuantity(this, 1)">+</button>
+            </div>
+            <button type="submit" class="add-to-cart-btn no-text" <?php echo $p[
+              "stok"
+            ] <= 0
+              ? " disabled"
+              : ""; ?> aria-label="<?php echo $p["stok"] > 0
+                 ? "Add to Cart"
+                 : "Out of Stock"; ?>"></button>
+          </form>
+        </article>
+      <?php endforeach; ?>
+    </section>
 
     <?php
     // Include the Newsletter component
@@ -364,12 +366,12 @@ if (!empty($_SESSION["cart"])) {
     function filterProducts(category) {
       const productCards = document.querySelectorAll('.product-card');
       const grid = document.querySelector('.products-grid');
-      
+
       // Update active pill button
       document.querySelectorAll('.category-pill').forEach(pill => {
         pill.classList.remove('active');
       });
-      
+
       const activePill = document.querySelector(`.category-pill[data-category="${category}"]`);
       if (activePill) activePill.classList.add('active');
 
@@ -378,11 +380,11 @@ if (!empty($_SESSION["cart"])) {
 
       productCards.forEach(card => {
         const cardCategory = card.getAttribute('data-category');
-        
+
         // Start fade out
         card.style.opacity = '0';
         card.style.transform = 'translateY(10px)';
-        
+
         setTimeout(() => {
           if (category === 'all' || cardCategory === category) {
             card.style.display = 'flex';
@@ -395,19 +397,19 @@ if (!empty($_SESSION["cart"])) {
           }
         }, 300); // Wait for fade out to complete
       });
-      
+
       setTimeout(() => {
         grid.classList.remove('filtering');
       }, 600);
     }
-    
+
 
 
     // Update the Shop it Now button to smoothly scroll to products and handle other DOM ready tasks
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const shopButtons = document.querySelectorAll('.shop-button');
       shopButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
           e.preventDefault();
           const targetId = this.getAttribute('href');
           const targetElement = document.querySelector(targetId);
@@ -435,16 +437,16 @@ if (!empty($_SESSION["cart"])) {
 
         observer.observe(divider);
       }
-      
+
       // Add event listeners to category pills
       const categoryPills = document.querySelectorAll('.category-pill');
       categoryPills.forEach(pill => {
-        pill.addEventListener('click', function() {
+        pill.addEventListener('click', function () {
           const category = this.getAttribute('data-category');
           filterProducts(category);
         });
       });
-      
+
       // Set default filter to 'all'
       filterProducts('all');
     });
@@ -492,8 +494,8 @@ if (!empty($_SESSION["cart"])) {
 
       const notification = document.createElement('div');
       notification.className = `toast-notification toast-${type}`;
-      
-      const icon = type === 'success' ? 
+
+      const icon = type === 'success' ?
         `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>` :
         `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
 
@@ -537,15 +539,16 @@ if (!empty($_SESSION["cart"])) {
       let currentValue = parseInt(input.value) || 1;
       const minValue = parseInt(input.min) || 1;
       const maxValue = parseInt(input.max) || 999;
-      
+
       let newValue = currentValue + change;
-      
+
       // Ensure the value stays within bounds
       newValue = Math.max(minValue, Math.min(newValue, maxValue));
-      
+
       input.value = newValue;
     }
 
   </script>
 </body>
+
 </html>

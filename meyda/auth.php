@@ -22,23 +22,28 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 require_once __DIR__ . '/config.php';
 
-function isLoggedIn() {
+function isLoggedIn()
+{
     return !empty($_SESSION['user_type']); // 'customer' or 'staff'
 }
 
-function isCustomer() {
+function isCustomer()
+{
     return ($_SESSION['user_type'] ?? null) === 'customer';
 }
 
-function isStaff() {
+function isStaff()
+{
     return ($_SESSION['user_type'] ?? null) === 'staff';
 }
 
-function isAdmin() {
+function isAdmin()
+{
     return (isStaff() && ($_SESSION['staff_role'] ?? null) === 'admin');
 }
 
-function customerLogin($email, $password) {
+function customerLogin($email, $password)
+{
     $pdo = getPDO();
     $stmt = $pdo->prepare("SELECT id_pelanggan, nama, password_hash, alamat FROM pelanggan WHERE email = :email");
     $stmt->execute([':email' => $email]);
@@ -47,7 +52,8 @@ function customerLogin($email, $password) {
     if ($customer) {
         $hash = $customer['password_hash'] ?? null;
         if (!empty($hash)) {
-            if (!password_verify($password, $hash)) return false;
+            if (!password_verify($password, $hash))
+                return false;
         }
 
         // Login success: attach cart to this customer's account in-session
@@ -58,10 +64,11 @@ function customerLogin($email, $password) {
         $_SESSION['customer_address'] = $customer['alamat'];
 
         // Ensure carts mapping exists
-        if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts'])) $_SESSION['carts'] = [];
+        if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts']))
+            $_SESSION['carts'] = [];
 
         $custId = $customer['id_pelanggan'];
-        
+
         // Merge Logic: if guest cart exists, merge it into the customer's saved cart
         if (!isset($_SESSION['carts'][$custId])) {
             $_SESSION['carts'][$custId] = [];
@@ -84,7 +91,8 @@ function customerLogin($email, $password) {
     return false;
 }
 
-function staffLogin($username, $password) {
+function staffLogin($username, $password)
+{
     $pdo = getPDO();
     $stmt = $pdo->prepare("SELECT id_user, username, nama_lengkap, role, password_hash FROM `user` WHERE username = :username");
     $stmt->execute([':username' => $username]);
@@ -103,23 +111,25 @@ function staffLogin($username, $password) {
         $_SESSION['staff_id'] = $staff['id_user'];
         $_SESSION['staff_name'] = $staff['nama_lengkap'];
         $_SESSION['staff_role'] = $staff['role'];
-        
+
         // Update last_login
         $upd = $pdo->prepare("UPDATE `user` SET last_login = NOW() WHERE id_user = :id");
         $upd->execute([':id' => $staff['id_user']]);
-        
+
         return true;
     }
     return false;
 }
 
-function logout($redirect = 'index.php') {
+function logout($redirect = 'index.php')
+{
     // Remove only authentication-related keys and clear transient cart
     $cartOwner = $_SESSION['cart_owner'] ?? null;
 
     // Save customer's cart into persistent in-session storage if present
     if ($cartOwner && isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
-        if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts'])) $_SESSION['carts'] = [];
+        if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts']))
+            $_SESSION['carts'] = [];
         $_SESSION['carts'][$cartOwner] = $_SESSION['cart'];
     }
 
@@ -147,15 +157,20 @@ function logout($redirect = 'index.php') {
     // Delete the session cookie if it exists
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
         );
     }
 
     // Finally, destroy the session
     session_destroy();
-    
+
     // Redirect to target page
     header('Location: ' . $redirect);
     exit;
@@ -166,9 +181,10 @@ if (basename($_SERVER['SCRIPT_NAME']) === 'auth.php' && ($_GET['action'] ?? null
     logout();
 }
 
-function requireLogin($type = 'any') {
+function requireLogin($type = 'any')
+{
     if (!isLoggedIn()) {
-        header('Location: login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+        header('Location: login?redirect=' . urlencode(str_replace('.php', '', $_SERVER['REQUEST_URI'])));
         exit;
     }
     if ($type === 'customer' && !isCustomer()) {
@@ -188,7 +204,8 @@ function requireLogin($type = 'any') {
 /**
  * Generate a CSRF token
  */
-function generateCSRFToken() {
+function generateCSRFToken()
+{
     if (!isset($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
@@ -198,7 +215,8 @@ function generateCSRFToken() {
 /**
  * Validate a CSRF token
  */
-function validateCSRFToken($token) {
+function validateCSRFToken($token)
+{
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 ?>
