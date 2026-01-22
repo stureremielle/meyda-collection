@@ -1,18 +1,78 @@
 <?php
 require_once __DIR__ . '/auth.php';
 
-$error = $_GET['error'] ?? null;
-$success = $_GET['success'] ?? null;
+$error = null;
+$success = null;
+
+// Helper function to send email via SMTP (AlwaysData or Gmail)
+function sendResetEmail($toEmail, $resetLink) {
+    if (!defined('SMTP_HOST') || SMTP_HOST === 'smtp.yourdomain.com' || empty(SMTP_HOST)) {
+        return ['success' => false, 'error' => 'SMTP not configured in config.php.'];
+    }
+
+    $subject = 'Reset Your Password - MeyDa Collection';
+    $message = "
+        <html>
+        <head>
+            <title>Reset Your Password</title>
+        </head>
+        <body>
+            <h1>Reset Your Password</h1>
+            <p>You requested a password reset for your MeyDa Collection account.</p>
+            <p>Click the link below to set a new password. This link will expire in 1 hour.</p>
+            <p><a href='{$resetLink}' style='padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; display: inline-block;'>Reset Password</a></p>
+            <p>If you did not request this, please ignore this email.</p>
+            <p><small>Or copy this link: {$resetLink}</small></p>
+        </body>
+        </html>
+    ";
+
+    $headers[] = 'MIME-Version: 1.0';
+    $headers[] = 'Content-type: text/html; charset=utf-8';
+    $headers[] = 'From: MeyDa Collection <' . SMTP_USER . '>';
+    $headers[] = 'Reply-To: ' . SMTP_USER;
+    $headers[] = 'X-Mailer: PHP/' . phpversion();
+
+    if (mail($toEmail, $subject, $message, implode("\r\n", $headers))) {
+        return ['success' => true];
+    } else {
+        return ['success' => false, 'error' => 'The server failed to send the email. Please check your hosting mail settings.'];
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
+    
     if (empty($email)) {
-        $error = 'Please enter your email address.';
+        $error = 'Email is required.';
     } else {
-        // We'll handle the logic in request_reset_process.php or here
-        // For simplicity, let's keep it here or redirect
-        header('Location: request_reset_process.php?email=' . urlencode($email));
-        exit;
+        $pdo = getPDO();
+        $stmt = $pdo->prepare("SELECT id_pelanggan, nama FROM pelanggan WHERE email = :email");
+        $stmt->execute([':email' => $email]);
+        $user = $stmt->fetch();
+
+        if ($user) {
+            $token = bin2hex(random_bytes(32));
+            $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+            $upd = $pdo->prepare("UPDATE pelanggan SET reset_token = :token, reset_expires_at = :expires WHERE id_pelanggan = :id");
+            $upd->execute([
+                ':token' => $token,
+                ':expires' => $expires,
+                ':id' => $user['id_pelanggan']
+            ]);
+
+            $resetLink = asset("reset_password.php?token=$token");
+            $result = sendResetEmail($email, $resetLink);
+
+            if ($result['success']) {
+                $success = "A password reset link has been sent to your email!";
+            } else {
+                $error = "Failed to send email: " . $result['error'];
+            }
+        } else {
+            $error = 'No account found with that email address.';
+        }
     }
 }
 ?>
@@ -50,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="alert alert-success"><?php echo h($success); ?></div>
                 <?php endif; ?>
 
-                <form method="post" class="login-form" action="request_reset_process.php">
+                <form method="post" class="login-form">
                     <div class="form-group">
                         <label>Email</label>
                         <input type="email" name="email" required placeholder="name@example.com">

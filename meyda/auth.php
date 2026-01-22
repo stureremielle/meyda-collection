@@ -25,8 +25,8 @@ require_once __DIR__ . '/config.php';
 // Session Timeout Logic (5 minutes = 300 seconds)
 define('SESSION_TIMEOUT', 300);
 
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > SESSION_TIMEOUT)) {
-    // Session expired
+if (isStaff() && isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > SESSION_TIMEOUT)) {
+    // Session expired (Staff only)
     logout('login.php?timeout=1');
 }
 $_SESSION['last_activity'] = time();

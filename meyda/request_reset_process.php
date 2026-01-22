@@ -119,9 +119,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
     } else {
-        // Don't reveal if email exists or not for security, but for UX we might just say "Check your email" anyway
-        // or just redirect back with a generic "If that email exists..."
-        header('Location: forgot_password.php?success=' . urlencode('If that email is registered, we have sent a reset link.'));
+        // User not found - spouting error as requested
+        header('Location: forgot_password.php?error=' . urlencode('No account found with that email address.'));
         exit;
     }
 } else {
