@@ -16,58 +16,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   } elseif ($password !== $password_confirm) {
     $error = 'Password and password confirmation do not match.';
   } else {
-    $complexity = validatePasswordComplexity($password);
-    if (!$complexity['success']) {
-      $error = $complexity['error'];
+    $pdo = getPDO();
+    // Check if email already exists
+    $check = $pdo->prepare("SELECT id_pelanggan FROM pelanggan WHERE email = :email");
+    $check->execute([':email' => $email]);
+    if ($check->fetch()) {
+      $error = 'Email is already registered.';
     } else {
-      $pdo = getPDO();
-      // Check if email already exists
-      $check = $pdo->prepare("SELECT id_pelanggan FROM pelanggan WHERE email = :email");
-      $check->execute([':email' => $email]);
-      if ($check->fetch()) {
-        $error = 'Email is already registered.';
-      } else {
-        try {
-          $hash = password_hash($password, PASSWORD_DEFAULT);
-          $activation_token = bin2hex(random_bytes(32));
-
-          $stmt = $pdo->prepare("INSERT INTO pelanggan (nama, email, password_hash, telepon, is_active, activation_token) VALUES (:nama, :email, :password_hash, :telepon, 0, :token)");
-          $stmt->execute([
-            ':nama' => $nama,
-            ':email' => $email,
-            ':password_hash' => $hash,
-            ':telepon' => $telepon,
-            ':token' => $activation_token
-          ]);
-
-          // Send Activation Email
-          require_once __DIR__ . '/SimpleSMTP.php';
-          $activationLink = asset("activate.php?token=$activation_token");
-          $subject = "Activate Your MeyDa Collection Account";
-          $message = "
-              <html>
-              <head><title>Activate Your Account</title></head>
-              <body>
-                  <h1>Welcome to MeyDa Collection!</h1>
-                  <p>Please click the link below to activate your account and start shopping:</p>
-                  <p><a href='$activationLink' style='padding: 12px 24px; background: #ff6d00; color: #fff; text-decoration: none; border-radius: 8px; display: inline-block;'>Activate Account</a></p>
-                  <p>If the link doesn't work, copy and paste this URL into your browser:</p>
-                  <p>$activationLink</p>
-              </body>
-              </html>
-          ";
-
-          $smtp = new SimpleSMTP(SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS);
-          $mailResult = $smtp->send($email, $subject, $message);
-
-          if ($mailResult['success']) {
-            $success = 'Registration successful! Please check your email to activate your account.';
-          } else {
-            $success = 'Registration successful! However, we could not send the activation email. Please contact support. (Error: ' . $mailResult['error'] . ')';
-          }
-        } catch (Exception $e) {
-          $error = 'An error occurred: ' . $e->getMessage();
-        }
+      try {
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("INSERT INTO pelanggan (nama, email, password_hash, telepon) VALUES (:nama, :email, :password_hash, :telepon)");
+        $stmt->execute([
+          ':nama' => $nama,
+          ':email' => $email,
+          ':password_hash' => $hash,
+          ':telepon' => $telepon
+        ]);
+        $success = 'Registration successful! Please login with your email.';
+      } catch (Exception $e) {
+        $error = 'An error occurred: ' . $e->getMessage();
       }
     }
   }
@@ -103,15 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="register-form-content" style="margin-top: 24px;">
           <?php if (!empty($error)): ?>
-            <div class="alert alert-error">
-              <?php echo h($error); ?>
-            </div>
+            <div class="alert alert-error"><?php echo h($error); ?></div>
           <?php endif; ?>
 
           <?php if (!empty($success)): ?>
-            <div class="alert alert-success">
-              <?php echo h($success); ?>
-            </div>
+            <div class="alert alert-success"><?php echo h($success); ?></div>
             <div style="margin-top: 32px;">
               <a href="login" class="btn-primary">Login now</a>
             </div>
@@ -131,9 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                   <label for="password">Password *</label>
                   <div class="password-field-wrapper">
-                    <input type="password" id="password" name="password" required placeholder="••••••••"
-                      pattern="(?=.*\d)(?=.*[!@#$%^&*(),.?\&quot;:{}|<>]).{8,}"
-                      title="Minimum 8 characters, at least one number and one special character">
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
                     <button type="button" class="toggle-password" onclick="togglePassword('password', this)">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -160,24 +121,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Passwords do not match
                   </div>
                 </div>
-              </div>
-
-              <div id="password-requirements"
-                style="margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 13px;">
-                <p style="margin-bottom: 8px; color: var(--muted); font-weight: 600;">Password Requirements:</p>
-                <ul style="list-style: none; padding: 0; margin: 0;">
-                  <li id="req-length"
-                    style="color: #ff6b6b; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
-                    <span class="icon">○</span> Minimum 8 characters
-                  </li>
-                  <li id="req-number"
-                    style="color: #ff6b6b; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
-                    <span class="icon">○</span> At least one number
-                  </li>
-                  <li id="req-special" style="color: #ff6b6b; display: flex; align-items: center; gap: 8px;">
-                    <span class="icon">○</span> At least one special character
-                  </li>
-                </ul>
               </div>
 
               <div class="form-group">
@@ -218,52 +161,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     function checkPasswords() {
       const p1 = passwordInput.value;
       const p2 = confirmInput.value;
-
-      // Update requirements indicators
-      const hasLength = p1.length >= 8;
-      const hasNumber = /[0-9]/.test(p1);
-      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(p1);
-
-      updateRequirement('req-length', hasLength);
-      updateRequirement('req-number', hasNumber);
-      updateRequirement('req-special', hasSpecial);
-
-      const isComplex = hasLength && hasNumber && hasSpecial;
-      const match = !p2 || p1 === p2;
-
-      if (!match) {
+      
+      if (p2 && p1 !== p2) {
         errorMsg.style.display = 'block';
-      } else {
-        errorMsg.style.display = 'none';
-      }
-
-      if (!isComplex || !match) {
         registerBtn.disabled = true;
         registerBtn.style.opacity = '0.5';
         registerBtn.style.cursor = 'not-allowed';
       } else {
+        errorMsg.style.display = 'none';
         registerBtn.disabled = false;
         registerBtn.style.opacity = '1';
         registerBtn.style.cursor = 'pointer';
       }
     }
 
-    function updateRequirement(id, valid) {
-      const el = document.getElementById(id);
-      if (valid) {
-        el.style.color = '#51cf66';
-        el.querySelector('.icon').textContent = '●';
-      } else {
-        el.style.color = '#ff6b6b';
-        el.querySelector('.icon').textContent = '○';
-      }
-    }
-
     if (passwordInput && confirmInput) {
       passwordInput.addEventListener('input', checkPasswords);
       confirmInput.addEventListener('input', checkPasswords);
-      // Initialize on load
-      checkPasswords();
     }
 
     const form = document.querySelector('form');
