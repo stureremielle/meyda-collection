@@ -54,7 +54,7 @@ function isAdmin()
 function customerLogin($email, $password)
 {
     $pdo = getPDO();
-    $stmt = $pdo->prepare("SELECT id_pelanggan, nama, password_hash, alamat FROM pelanggan WHERE email = :email");
+    $stmt = $pdo->prepare("SELECT id_pelanggan, nama, password_hash, alamat, is_active FROM pelanggan WHERE email = :email");
     $stmt->execute([':email' => $email]);
     $customer = $stmt->fetch();
 
@@ -62,7 +62,11 @@ function customerLogin($email, $password)
         $hash = $customer['password_hash'] ?? null;
         if (!empty($hash)) {
             if (!password_verify($password, $hash))
-                return false;
+                return ['success' => false, 'error' => 'Invalid email or password.'];
+        }
+
+        if (!$customer['is_active']) {
+            return ['success' => false, 'error' => 'Please activate your account via the link sent to your email.'];
         }
 
         // Login success: attach cart to this customer's account in-session
@@ -98,9 +102,9 @@ function customerLogin($email, $password)
         $_SESSION['cart'] = $dbCart;
         $_SESSION['cart_owner'] = $custId;
 
-        return true;
+        return ['success' => true, 'error' => null];
     }
-    return false;
+    return ['success' => false, 'error' => 'Account not found.'];
 }
 
 function staffLogin($username, $password)
@@ -218,5 +222,24 @@ function generateCSRFToken()
 function validateCSRFToken($token)
 {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+/**
+ * Validate password complexity
+ * Requirements: Min 8 chars, at least one number, one special character
+ * @return array ['success' => bool, 'error' => string|null]
+ */
+function validatePasswordComplexity($password)
+{
+    if (strlen($password) < 8) {
+        return ['success' => false, 'error' => 'Password must be at least 8 characters long.'];
+    }
+    if (!preg_match('/[0-9]/', $password)) {
+        return ['success' => false, 'error' => 'Password must contain at least one number.'];
+    }
+    if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
+        return ['success' => false, 'error' => 'Password must contain at least one special character.'];
+    }
+    return ['success' => true, 'error' => null];
 }
 ?>

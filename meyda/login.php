@@ -17,12 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (empty($email) || empty($password)) {
     $error = 'Email and password are required.';
   } else {
-    if (customerLogin($email, $password)) {
+    $result = customerLogin($email, $password);
+    if ($result['success']) {
       $redirect = $_GET['redirect'] ?? 'index';
       header('Location: ' . $redirect);
       exit;
     } else {
-      $error = 'Invalid email or password. Please try again or register if you don\'t have an account.';
+      $error = $result['error'];
     }
   }
 }
