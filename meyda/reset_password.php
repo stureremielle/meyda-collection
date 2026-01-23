@@ -32,16 +32,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
         } elseif ($password !== $password_confirm) {
             $error = 'Passwords do not match.';
         } else {
-            try {
-                $hash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("UPDATE pelanggan SET password_hash = :hash, reset_token = NULL, reset_expires_at = NULL WHERE id_pelanggan = :id");
-                $stmt->execute([
-                    ':hash' => $hash,
-                    ':id' => $user['id_pelanggan']
-                ]);
-                $success = 'Your password has been reset successfully. You can now login.';
-            } catch (Exception $e) {
-                $error = 'An error occurred: ' . $e->getMessage();
+            $complexity = validatePasswordComplexity($password);
+            if (!$complexity['success']) {
+                $error = $complexity['error'];
+            } else {
+                try {
+                    $hash = password_hash($password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("UPDATE pelanggan SET password_hash = :hash, reset_token = NULL, reset_expires_at = NULL WHERE id_pelanggan = :id");
+                    $stmt->execute([
+                        ':hash' => $hash,
+                        ':id' => $user['id_pelanggan']
+                    ]);
+                    $success = 'Your password has been reset successfully. You can now login.';
+                } catch (Exception $e) {
+                    $error = 'An error occurred: ' . $e->getMessage();
+                }
             }
         }
     }
@@ -77,24 +82,30 @@ $csrf_token = generateCSRFToken();
                 </div>
 
                 <?php if (!empty($error)): ?>
-                    <div class="alert alert-error"><?php echo h($error); ?></div>
+                    <div class="alert alert-error">
+                        <?php echo h($error); ?>
+                    </div>
                 <?php endif; ?>
                 <?php if (!empty($success)): ?>
-                    <div class="alert alert-success"><?php echo h($success); ?></div>
+                    <div class="alert alert-success">
+                        <?php echo h($success); ?>
+                    </div>
                     <div style="margin-top: 32px; text-align: center;">
                         <a href="login" class="btn-primary">Go to Login</a>
                     </div>
                 <?php elseif (!$error): ?>
                     <form method="post" class="login-form">
                         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                        
+
                         <div class="form-group">
                             <label for="password">New Password</label>
                             <div class="password-field-wrapper">
-                                <input type="password" id="password" name="password" required placeholder="••••••••">
+                                <input type="password" id="password" name="password" required placeholder="••••••••"
+                                    pattern="(?=.*\d)(?=.*[!@#$%^&*(),.?\&quot;:{}|<>]).{8,}"
+                                    title="Minimum 8 characters, at least one number and one special character">
                                 <button type="button" class="toggle-password" onclick="togglePassword('password', this)">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                         <circle cx="12" cy="12" r="3"></circle>
                                     </svg>
@@ -105,21 +116,43 @@ $csrf_token = generateCSRFToken();
                         <div class="form-group">
                             <label for="password_confirm">Confirm New Password</label>
                             <div class="password-field-wrapper">
-                                <input type="password" id="password_confirm" name="password_confirm" required placeholder="••••••••">
-                                <button type="button" class="toggle-password" onclick="togglePassword('password_confirm', this)">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                <input type="password" id="password_confirm" name="password_confirm" required
+                                    placeholder="••••••••">
+                                <button type="button" class="toggle-password"
+                                    onclick="togglePassword('password_confirm', this)">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                         <circle cx="12" cy="12" r="3"></circle>
                                     </svg>
                                 </button>
                             </div>
-                            <div id="password-error" style="color: #ff6b6b; font-size: 12px; margin-top: 4px; display: none;">
+                            <div id="password-error"
+                                style="color: #ff6b6b; font-size: 12px; margin-top: 4px; display: none;">
                                 Passwords do not match
                             </div>
                         </div>
 
-                        <button type="submit" id="reset-btn" class="btn-primary" style="margin-top: 8px;">Reset Password</button>
+                        <div id="password-requirements"
+                            style="margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 13px;">
+                            <p style="margin-bottom: 8px; color: var(--muted); font-weight: 600;">Password Requirements:</p>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                                <li id="req-length"
+                                    style="color: #ff6b6b; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                                    <span class="icon">○</span> Minimum 8 characters
+                                </li>
+                                <li id="req-number"
+                                    style="color: #ff6b6b; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                                    <span class="icon">○</span> At least one number
+                                </li>
+                                <li id="req-special" style="color: #ff6b6b; display: flex; align-items: center; gap: 8px;">
+                                    <span class="icon">○</span> At least one special character
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button type="submit" id="reset-btn" class="btn-primary" style="margin-top: 8px;">Reset
+                            Password</button>
                     </form>
                 <?php endif; ?>
             </div>
@@ -147,23 +180,52 @@ $csrf_token = generateCSRFToken();
         function checkPasswords() {
             const p1 = passwordInput.value;
             const p2 = confirmInput.value;
-            
-            if (p2 && p1 !== p2) {
+
+            // Update requirements indicators
+            const hasLength = p1.length >= 8;
+            const hasNumber = /[0-9]/.test(p1);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(p1);
+
+            updateRequirement('req-length', hasLength);
+            updateRequirement('req-number', hasNumber);
+            updateRequirement('req-special', hasSpecial);
+
+            const isComplex = hasLength && hasNumber && hasSpecial;
+            const match = !p2 || p1 === p2;
+
+            if (!match) {
                 errorMsg.style.display = 'block';
+            } else {
+                errorMsg.style.display = 'none';
+            }
+
+            if (!isComplex || !match) {
                 resetBtn.disabled = true;
                 resetBtn.style.opacity = '0.5';
                 resetBtn.style.cursor = 'not-allowed';
             } else {
-                errorMsg.style.display = 'none';
                 resetBtn.disabled = false;
                 resetBtn.style.opacity = '1';
                 resetBtn.style.cursor = 'pointer';
             }
         }
 
+        function updateRequirement(id, valid) {
+            const el = document.getElementById(id);
+            if (valid) {
+                el.style.color = '#51cf66';
+                el.querySelector('.icon').textContent = '●';
+            } else {
+                el.style.color = '#ff6b6b';
+                el.querySelector('.icon').textContent = '○';
+            }
+        }
+
         if (passwordInput && confirmInput) {
             passwordInput.addEventListener('input', checkPasswords);
             confirmInput.addEventListener('input', checkPasswords);
+            // Initialize on load
+            checkPasswords();
         }
 
         const form = document.querySelector('form');

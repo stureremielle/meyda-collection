@@ -164,6 +164,10 @@ SQL;
       $pdo->commit();
       $_SESSION["cart"] = [];
       
+      // Send Order Receipt Email
+      require_once __DIR__ . '/OrderMailer.php';
+      $mailResult = sendOrderReceiptEmail($id_transaksi);
+      
       // Clear DB cart if logged in
       if (isCustomer()) {
         $stmtDB = $pdo->prepare("DELETE FROM keranjang WHERE id_pelanggan = :cid");
@@ -171,6 +175,11 @@ SQL;
       }
 
       $success = "Checkout successful. Transaction ID: $id_transaksi";
+      if (!$mailResult['success']) {
+          $success .= " (Wait! We couldn't send the receipt email: " . $mailResult['error'] . ")";
+      } else {
+          $success .= " (Receipt email has been sent!)";
+      }
     } catch (Exception $e) {
       $pdo->rollBack();
       $error = "An error occurred during checkout: " . $e->getMessage();

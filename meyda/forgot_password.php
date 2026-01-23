@@ -30,14 +30,9 @@ function sendResetEmail($toEmail, $resetLink) {
     $headers[] = 'MIME-Version: 1.0';
     $headers[] = 'Content-type: text/html; charset=utf-8';
     $headers[] = 'From: MeyDa Collection <' . SMTP_USER . '>';
-    $headers[] = 'Reply-To: ' . SMTP_USER;
-    $headers[] = 'X-Mailer: PHP/' . phpversion();
-
-    if (mail($toEmail, $subject, $message, implode("\r\n", $headers))) {
-        return ['success' => true];
-    } else {
-        return ['success' => false, 'error' => 'The server failed to send the email. Please check your hosting mail settings.'];
-    }
+    require_once __DIR__ . '/SimpleSMTP.php';
+    $smtp = new SimpleSMTP(SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS);
+    return $smtp->send($toEmail, $subject, $message);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
