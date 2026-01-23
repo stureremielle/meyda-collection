@@ -255,7 +255,7 @@ if (!empty($_SESSION["cart"])) {
         <a href="cart" class="header-link">cart (<?php echo array_sum($_SESSION["cart"] ?? []); ?>)</a>
         <?php if (isLoggedIn()): ?>
           <?php if (isCustomer()): ?>
-            <a href="account" class="header-link">account</a>
+            <a href="account" class="header-link">profile</a>
             <a href="auth?action=logout" class="header-link">logout</a>
           <?php elseif (isStaff()): ?>
             <a href="auth?action=logout" class="header-link">logout</a>
